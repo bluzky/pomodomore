@@ -10,29 +10,47 @@ import SwiftUI
 struct TimerView: View {
     @StateObject private var viewModel = TimerViewModel()
 
+    /// Color for timer display based on current state
+    private var timerColor: Color {
+        switch viewModel.currentState {
+        case .running:
+            return .green
+        case .paused:
+            return .orange
+        case .idle, .completed:
+            return .primary
+        }
+    }
+
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
 
-            // Timer display - live countdown
+            // Timer display - live countdown with state-based colors
             Text(viewModel.timeFormatted)
                 .font(.system(size: 48, weight: .medium, design: .monospaced))
-                .foregroundColor(.primary)
+                .foregroundColor(timerColor)
+                .animation(.easeInOut(duration: 0.3), value: viewModel.currentState)
 
             Spacer()
 
             // Control buttons
             HStack(spacing: 12) {
-                Button("Start") {
+                // Start/Resume button - changes text based on state
+                Button(viewModel.currentState == .paused ? "Resume" : "Start") {
                     viewModel.start()
                 }
                 .buttonStyle(.bordered)
+                .disabled(viewModel.currentState == .running)
 
+                // Pause button - only visible when running
                 Button("Pause") {
                     viewModel.pause()
                 }
                 .buttonStyle(.bordered)
+                .disabled(viewModel.currentState != .running)
 
+                // Reset button - always available
                 Button("Reset") {
                     viewModel.reset()
                 }
