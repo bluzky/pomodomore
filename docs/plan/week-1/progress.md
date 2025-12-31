@@ -9,17 +9,22 @@
 
 ### Day 1 (Monday, Dec 31) - Menubar App Foundation
 **Planned:** 8 hours
-**Actual:** ___ hours
-**Status:** ⏳ Not Started
+**Actual:** ~2 hours
+**Status:** ✅ Complete
 
 **Completed:**
-- [ ] App runs in menubar (no dock icon)
-- [ ] Menubar icon visible
-- [ ] Basic menu with Quit option
-- [ ] App stays running when windows closed
+- [x] App runs in menubar (no dock icon)
+- [x] Menubar icon visible (🍅 tomato emoji)
+- [x] Basic menu with Quit option
+- [x] App stays running when windows closed
 
 **Notes:**
-_[Add notes during the day]_
+- Created Info.plist with LSUIElement = YES
+- Built AppDelegate with NSStatusBar integration
+- Used @NSApplicationDelegateAdaptor to bridge SwiftUI app to AppKit
+- Build: 0 errors, 0 warnings ✅
+- All manual tests passed
+- Much faster than estimated - straightforward implementation
 
 ---
 
