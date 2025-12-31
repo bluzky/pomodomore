@@ -64,18 +64,24 @@ _[Add notes during the day]_
 
 ### Day 4 (Thursday, Jan 3) - Control Buttons
 **Planned:** 7 hours
-**Actual:** ___ hours
-**Status:** ⏳ Not Started
+**Actual:** ~0.5 hours
+**Status:** ✅ Complete
 
 **Completed:**
-- [ ] Start button starts countdown
-- [ ] Pause button pauses timer
-- [ ] Reset button resets to 25:00
-- [ ] Button states update correctly
-- [ ] Timer colors change by state
+- [x] Start button starts countdown
+- [x] Pause button pauses timer (disabled when not running)
+- [x] Reset button resets to 25:00 (always available)
+- [x] Button states update correctly (Start/Resume text changes)
+- [x] Timer colors change by state (green=running, orange=paused, default=idle)
 
 **Notes:**
-_[Add notes during the day]_
+- Added timerColor computed property with switch on currentState
+- Implemented button state management with .disabled() modifiers
+- Start button shows "Resume" when paused, "Start" otherwise
+- Added smooth color transitions with .animation(.easeInOut)
+- Build: 0 errors, 0 warnings ✅
+- Much faster than estimated - ViewModel already had the logic from Day 3
+- Only needed to wire up UI state bindings and color indicators
 
 ---
 

@@ -23,16 +23,13 @@ struct TimerView: View {
 
             // Control buttons
             HStack(spacing: 12) {
-                Button("Start") {
-                    viewModel.start()
+                // Start/Pause toggle button
+                Button(viewModel.primaryActionTitle) {
+                    viewModel.toggle()
                 }
                 .buttonStyle(.bordered)
 
-                Button("Pause") {
-                    viewModel.pause()
-                }
-                .buttonStyle(.bordered)
-
+                // Reset button - always available
                 Button("Reset") {
                     viewModel.reset()
                 }
