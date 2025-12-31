@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct TimerView: View {
+    @StateObject private var viewModel = TimerViewModel()
+
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
 
-            // Timer display - large "25:00" text
-            Text("25:00")
+            // Timer display - live countdown
+            Text(viewModel.timeFormatted)
                 .font(.system(size: 48, weight: .medium, design: .monospaced))
                 .foregroundColor(.primary)
 
@@ -22,17 +24,17 @@ struct TimerView: View {
             // Control buttons
             HStack(spacing: 12) {
                 Button("Start") {
-                    print("Start tapped")
+                    viewModel.start()
                 }
                 .buttonStyle(.bordered)
 
                 Button("Pause") {
-                    print("Pause tapped")
+                    viewModel.pause()
                 }
                 .buttonStyle(.bordered)
 
                 Button("Reset") {
-                    print("Reset tapped")
+                    viewModel.reset()
                 }
                 .buttonStyle(.bordered)
             }
