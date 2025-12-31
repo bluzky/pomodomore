@@ -10,6 +10,10 @@ import SwiftData
 
 @main
 struct pomodomoreApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    // Commented out SwiftData boilerplate - will be used later for session persistence
+    /*
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -22,11 +26,14 @@ struct pomodomoreApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    */
 
     var body: some Scene {
+        // Empty WindowGroup - menubar app doesn't need initial window
+        // Timer window will be created later (Day 2)
         WindowGroup {
-            ContentView()
+            EmptyView()
         }
-        .modelContainer(sharedModelContainer)
+        // .modelContainer(sharedModelContainer)  // Commented out for now
     }
 }
