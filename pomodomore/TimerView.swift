@@ -23,19 +23,15 @@ struct TimerView: View {
 
             // Control buttons
             HStack(spacing: 12) {
-                // Start/Resume button - changes text based on state
-                Button(viewModel.currentState == .paused ? "Resume" : "Start") {
-                    viewModel.start()
+                // Start/Pause toggle button
+                Button(viewModel.currentState == .running ? "Pause" : "Start") {
+                    if viewModel.currentState == .running {
+                        viewModel.pause()
+                    } else {
+                        viewModel.start()
+                    }
                 }
                 .buttonStyle(.bordered)
-                .disabled(viewModel.currentState == .running)
-
-                // Pause button - only visible when running
-                Button("Pause") {
-                    viewModel.pause()
-                }
-                .buttonStyle(.bordered)
-                .disabled(viewModel.currentState != .running)
 
                 // Reset button - always available
                 Button("Reset") {
