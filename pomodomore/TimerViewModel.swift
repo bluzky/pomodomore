@@ -35,7 +35,21 @@ class TimerViewModel: ObservableObject {
         return String(format: "%02d:%02d", minutes, seconds)
     }
 
+    /// Title for the primary action button (Start/Pause)
+    var primaryActionTitle: String {
+        currentState == .running ? "Pause" : "Start"
+    }
+
     // MARK: - Public Methods
+
+    /// Toggle between start and pause states
+    func toggle() {
+        if currentState == .running {
+            pause()
+        } else {
+            start()
+        }
+    }
 
     /// Start the timer countdown
     func start() {

@@ -24,12 +24,8 @@ struct TimerView: View {
             // Control buttons
             HStack(spacing: 12) {
                 // Start/Pause toggle button
-                Button(viewModel.currentState == .running ? "Pause" : "Start") {
-                    if viewModel.currentState == .running {
-                        viewModel.pause()
-                    } else {
-                        viewModel.start()
-                    }
+                Button(viewModel.primaryActionTitle) {
+                    viewModel.toggle()
                 }
                 .buttonStyle(.bordered)
 
