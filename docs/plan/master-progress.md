@@ -11,15 +11,15 @@
 
 ```
 Week 0: ████████████████████ 100% (Project Setup Complete)
-Week 1: ░░░░░░░░░░░░░░░░░░░░   0% (Core Timer + Menubar)
+Week 1: ████░░░░░░░░░░░░░░░░  20% (Core Timer + Menubar - Day 1 Done)
 Week 2: ░░░░░░░░░░░░░░░░░░░░   0% (Timer Continuation)
 Week 3: ░░░░░░░░░░░░░░░░░░░░   0% (Settings + Themes/Fonts)
 Week 4: ░░░░░░░░░░░░░░░░░░░░   0% (Statistics + Persistence)
 Week 5: ░░░░░░░░░░░░░░░░░░░░   0% (Sounds + Notifications)
 Week 6: ░░░░░░░░░░░░░░░░░░░░   0% (Polish + Bug Fixes)
 
-MVP Progress:  0/12 core features
-Overall:       12%  (1/8 weeks)
+MVP Progress:  1/12 core features (Menubar integration ✅)
+Overall:       15%  (1.2/8 weeks)
 ```
 
 ---
@@ -42,12 +42,12 @@ Overall:       12%  (1/8 weeks)
 
 ---
 
-### 🔵 Week 1: Core Timer + Menubar Integration (Dec 31 - Jan 3)
-**Status:** Planned (Ready to Start)
+### 🟢 Week 1: Core Timer + Menubar Integration (Dec 31 - Jan 3)
+**Status:** In Progress (Day 1 Complete)
 **Target:** Basic timer running in menubar
 **Plan:** `docs/plan/week-1-plan.md`
 **Key Deliverables:**
-- [ ] Menubar app setup (LSUIElement, NSStatusBar)
+- [x] Menubar app setup (LSUIElement, NSStatusBar) ✅ Day 1
 - [ ] Timer window with countdown display
 - [ ] Basic timer logic (25:00 countdown)
 - [ ] Start/Pause/Reset button functionality
@@ -161,16 +161,16 @@ None currently.
 | Week | Planned Tasks | Completed | % Done | Notes |
 |------|---------------|-----------|--------|-------|
 | 0 | 5 | 5 | 100% | Project setup complete |
-| 1 | - | - | - | Not started |
+| 1 | 5 days | 1 day | 20% | Day 1 complete - menubar foundation working |
 | 2 | - | - | - | Not started |
 
 ---
 
 ## Next Actions
 
-1. **Immediate:** Start Week 1 planning (create `docs/plan/week-1-plan.md`)
-2. **Week 1 Focus:** Menubar integration + basic timer
-3. **Risk Watch:** SwiftUI + AppKit menubar complexity (mitigate early)
+1. **Immediate:** Start Day 2 - Timer Window UI
+2. **Week 1 Focus:** Complete basic timer window and countdown logic
+3. **Risk Watch:** Timer accuracy (validate Timer.publish vs DispatchSourceTimer)
 
 ---
 
