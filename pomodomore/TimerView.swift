@@ -10,27 +10,14 @@ import SwiftUI
 struct TimerView: View {
     @StateObject private var viewModel = TimerViewModel()
 
-    /// Color for timer display based on current state
-    private var timerColor: Color {
-        switch viewModel.currentState {
-        case .running:
-            return .green
-        case .paused:
-            return .orange
-        case .idle, .completed:
-            return .primary
-        }
-    }
-
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
 
-            // Timer display - live countdown with state-based colors
+            // Timer display - live countdown
             Text(viewModel.timeFormatted)
                 .font(.system(size: 48, weight: .medium, design: .monospaced))
-                .foregroundColor(timerColor)
-                .animation(.easeInOut(duration: 0.3), value: viewModel.currentState)
+                .foregroundColor(.primary)
 
             Spacer()
 
