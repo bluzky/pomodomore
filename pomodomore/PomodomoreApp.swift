@@ -1,5 +1,5 @@
 //
-//  pomodomoreApp.swift
+//  PomodomoreApp.swift
 //  pomodomore
 //
 //  Created by Flex on 12/31/25.
@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct pomodomoreApp: App {
+struct PomodomoreApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     // Commented out SwiftData boilerplate - will be used later for session persistence
