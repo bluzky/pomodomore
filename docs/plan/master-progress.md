@@ -42,9 +42,10 @@ Overall:       12%  (1/8 weeks)
 
 ---
 
-### ⏳ Week 1: Core Timer + Menubar Integration
-**Status:** Not Started
+### 🔵 Week 1: Core Timer + Menubar Integration (Dec 31 - Jan 3)
+**Status:** Planned (Ready to Start)
 **Target:** Basic timer running in menubar
+**Plan:** `docs/plan/week-1-plan.md`
 **Key Deliverables:**
 - [ ] Menubar app setup (LSUIElement, NSStatusBar)
 - [ ] Timer window with countdown display
