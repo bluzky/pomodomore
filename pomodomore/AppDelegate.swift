@@ -92,6 +92,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func toggleTimer() {
+        // Show timer window when starting from menubar
+        if windowManager.timerViewModel.currentState == .idle {
+            windowManager.showTimerWindow()
+        }
         windowManager.timerViewModel.toggle()
     }
 
