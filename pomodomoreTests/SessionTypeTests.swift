@@ -8,6 +8,7 @@
 import Testing
 @testable import pomodomore
 
+@MainActor
 struct SessionTypeTests {
 
     // MARK: - Duration Tests
