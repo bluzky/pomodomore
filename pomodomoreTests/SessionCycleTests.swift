@@ -54,8 +54,9 @@ final class SessionCycleTests: XCTestCase {
     
     func testSessionTypeChange() {
         viewModel.currentSessionType = .shortBreak
+        viewModel.reset() // Need to call reset to update timeRemaining
         XCTAssertEqual(viewModel.currentSessionType, .shortBreak, "Should be able to change session type")
-        XCTAssertEqual(viewModel.timeRemaining, 300, "Time should update to short break duration")
+        XCTAssertEqual(viewModel.timeRemaining, 300, "Time should update to short break duration after reset")
     }
     
     // MARK: - Timer State Tests

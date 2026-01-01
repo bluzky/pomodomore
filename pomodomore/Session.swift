@@ -11,16 +11,20 @@ import Foundation
 struct Session {
     /// The type of session that was completed
     let sessionType: SessionType
-    
+
     /// When the session was completed
     let completionTime: Date
-    
+
     /// Which Pomodoro in the current cycle (1-4), 0 for break sessions
     let sessionNumber: Int
-    
-    init(sessionType: SessionType, sessionNumber: Int = 0) {
+
+    /// The tag/category selected for this session (e.g., Study, Work)
+    let selectedTag: SessionTag
+
+    init(sessionType: SessionType, sessionNumber: Int = 0, selectedTag: SessionTag = .defaultTag) {
         self.sessionType = sessionType
         self.completionTime = Date()
         self.sessionNumber = sessionType == .pomodoro ? sessionNumber : 0
+        self.selectedTag = selectedTag
     }
 }

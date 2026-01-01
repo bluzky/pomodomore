@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 /// View model managing Pomodoro timer state and countdown logic
 @MainActor
@@ -24,6 +25,12 @@ class TimerViewModel: ObservableObject {
 
     /// Current active session (nil until first completion)
     @Published var currentSession: Session?
+
+    /// Currently selected tag for the next Pomodoro session
+    @Published var selectedTag: SessionTag = .defaultTag
+
+    /// Last selected tag (persisted as default for next session)
+    @Published var lastSelectedTag: SessionTag = .defaultTag
 
     /// Time remaining in seconds
     @Published var timeRemaining: Int = 1500 // 25 minutes = 1500 seconds
@@ -52,6 +59,20 @@ class TimerViewModel: ObservableObject {
     /// Title for the primary action button (Start/Pause)
     var primaryActionTitle: String {
         currentState == .running ? "Pause" : "Start"
+    }
+
+    /// Color for the timer display based on current state and session type
+    var timerColor: Color {
+        switch (currentState, currentSessionType) {
+        case (.running, .pomodoro):
+            return .green
+        case (.paused, .pomodoro):
+            return .orange
+        case (.running, .shortBreak), (.running, .longBreak):
+            return .cyan
+        default:
+            return .primary
+        }
     }
 
     // MARK: - Public Methods
@@ -103,9 +124,21 @@ class TimerViewModel: ObservableObject {
         currentState = .idle
         timeRemaining = currentSessionType.duration
         timerCancellable?.cancel()
-        
+
         // Don't reset session counter or type - just restart current session
         print("🔄 Reset to: \(currentSessionType.displayName.isEmpty ? "Pomodoro" : currentSessionType.displayName)")
+    }
+
+    /// Stop the current session and return to idle Pomodoro state
+    func stop() {
+        print("🛑 Session stopped")
+        currentState = .idle
+        currentSessionType = .pomodoro
+        timeRemaining = currentSessionType.duration
+        timerCancellable?.cancel()
+
+        // Preserve completedSessions (cycle progress) and selectedTag (user choice)
+        print("🛑 Stopped - Session counter: \(completedSessions), Tag: \(selectedTag.name)")
     }
 
     // MARK: - Private Methods
@@ -127,17 +160,22 @@ class TimerViewModel: ObservableObject {
         print("✅ Timer completed!")
         currentState = .completed
         timerCancellable?.cancel()
-        
-        // Create completed session record
-        let completedSession = Session(sessionType: currentSessionType, sessionNumber: completedSessions + 1)
+
+        // Create completed session record with selected tag
+        let completedSession = Session(
+            sessionType: currentSessionType,
+            sessionNumber: completedSessions + 1,
+            selectedTag: selectedTag
+        )
         currentSession = completedSession
-        
-        // Update session counter if this was a Pomodoro
+
+        // Update session counter and save tag if this was a Pomodoro
         if currentSessionType == .pomodoro {
             completedSessions += 1
-            print("📊 Completed Pomodoro \(completedSessions)/4")
+            lastSelectedTag = selectedTag // Save for next session default
+            print("📊 Completed Pomodoro \(completedSessions)/4 - Tag: \(selectedTag.name)")
         }
-        
+
         // Auto-transition to next session
         transitionToNextSession()
     }
@@ -145,7 +183,7 @@ class TimerViewModel: ObservableObject {
     /// Transition to the next session type based on Pomodoro cycle logic
     private func transitionToNextSession() {
         let nextSessionType: SessionType
-        
+
         switch currentSessionType {
         case .pomodoro:
             // After Pomodoro, take a break
@@ -153,18 +191,20 @@ class TimerViewModel: ObservableObject {
         case .shortBreak:
             // After short break, back to Pomodoro
             nextSessionType = .pomodoro
+            selectedTag = lastSelectedTag // Restore last selected tag as default
         case .longBreak:
             // After long break, reset counter and back to Pomodoro
             completedSessions = 0
             nextSessionType = .pomodoro
+            selectedTag = lastSelectedTag // Restore last selected tag as default
             print("🔄 Cycle reset! Starting new Pomodoro cycle")
         }
-        
+
         // Update session type and reset timer
         currentSessionType = nextSessionType
         timeRemaining = nextSessionType.duration
         currentState = .idle
-        
+
         print("🔄 Auto-transitioned to: \(nextSessionType.displayName.isEmpty ? "Pomodoro" : nextSessionType.displayName)")
     }
 }
