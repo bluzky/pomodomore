@@ -178,14 +178,24 @@ struct TimerViewModelTests {
         }
     }
 
-    @Test func lastSelectedTagUpdatesOnCompletion() {
+    @Test func lastSelectedTagUpdatesOnCompletion() async throws {
         let viewModel = TimerViewModel()
-        viewModel.selectedTag = .research
-        viewModel.timeRemaining = 0
 
-        // Simulate completion (would normally be called by tick())
-        // We can't easily test private complete() method, but we test the logic indirectly
-        #expect(viewModel.selectedTag == .research, "Selected tag should be Research before completion")
+        // Set up initial state
+        viewModel.selectedTag = .research
+        #expect(viewModel.lastSelectedTag == .defaultTag, "Should start with default tag")
+
+        // Set short duration and start timer to trigger completion
+        viewModel.timeRemaining = 2
+        viewModel.start()
+
+        // Wait for timer to complete (2 seconds + generous buffer for test reliability)
+        try await Task.sleep(for: .seconds(3))
+
+        // After Pomodoro completes, lastSelectedTag should be updated
+        #expect(viewModel.lastSelectedTag == .research, "lastSelectedTag should update to Research after Pomodoro completion")
+        #expect(viewModel.completedSessions == 1, "Should have 1 completed session")
+        #expect(viewModel.currentSessionType == .shortBreak, "Should transition to Short Break")
     }
 
     // MARK: - Stop Method Tests
