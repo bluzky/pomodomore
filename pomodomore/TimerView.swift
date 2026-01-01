@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TimerView: View {
-    @StateObject private var viewModel = TimerViewModel()
+    @ObservedObject var viewModel: TimerViewModel
 
     var body: some View {
         VStack(spacing: 20) {
@@ -55,6 +55,6 @@ struct TimerView: View {
 
 // Preview for development
 #Preview {
-    TimerView()
+    TimerView(viewModel: WindowManager.shared.timerViewModel)
         .frame(width: 320, height: 200)
 }

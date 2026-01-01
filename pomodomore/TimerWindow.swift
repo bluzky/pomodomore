@@ -9,7 +9,7 @@ import Cocoa
 import SwiftUI
 
 class TimerWindow: NSWindow {
-    init() {
+    init(windowManager: WindowManager) {
         super.init(
             contentRect: NSRect(x: 0, y: 0, width: 320, height: 200),
             styleMask: [.titled, .closable, .miniaturizable],
@@ -23,8 +23,8 @@ class TimerWindow: NSWindow {
         self.isReleasedWhenClosed = false // Don't destroy window when closed
         self.isMovableByWindowBackground = true // Allow dragging from content area
 
-        // Host SwiftUI view
-        let timerView = TimerView()
+        // Host SwiftUI view with shared timer view model
+        let timerView = TimerView(viewModel: windowManager.timerViewModel)
         self.contentView = NSHostingView(rootView: timerView)
     }
 

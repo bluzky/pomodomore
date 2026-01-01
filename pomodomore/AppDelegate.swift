@@ -7,30 +7,65 @@
 
 import Cocoa
 import SwiftUI
+import Combine
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
-    var timerWindow: TimerWindow?
+    var timerStatusMenuItem: NSMenuItem?
+    let windowManager = WindowManager.shared
+    private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Create status bar item
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem?.button {
-            // Set tomato emoji as icon
+            // Set initial title with just tomato emoji
             button.title = "🍅"
         }
 
         // Create menu
         let menu = NSMenu()
 
-        // Add Open Timer menu item
-        let openTimerItem = NSMenuItem(
-            title: "Open Timer",
+        // Add Show Timer menu item
+        let showTimerItem = NSMenuItem(
+            title: "Show Timer",
             action: #selector(showTimerWindow),
             keyEquivalent: "t"
         )
-        menu.addItem(openTimerItem)
+        menu.addItem(showTimerItem)
+
+        // Add separator
+        menu.addItem(NSMenuItem.separator())
+
+        // Add Start/Pause menu item
+        let startPauseItem = NSMenuItem(
+            title: "Start",
+            action: #selector(toggleTimer),
+            keyEquivalent: "s"
+        )
+        menu.addItem(startPauseItem)
+        timerStatusMenuItem = startPauseItem // Reuse this for Start/Pause text
+
+        // Add Reset menu item
+        let resetItem = NSMenuItem(
+            title: "Reset",
+            action: #selector(resetTimer),
+            keyEquivalent: "r"
+        )
+        menu.addItem(resetItem)
+
+        // Add separator
+        menu.addItem(NSMenuItem.separator())
+
+        // Add Always on Top toggle
+        let alwaysOnTopItem = NSMenuItem(
+            title: "Always on Top",
+            action: #selector(toggleAlwaysOnTop),
+            keyEquivalent: ""
+        )
+        alwaysOnTopItem.state = windowManager.alwaysOnTop ? .on : .off
+        menu.addItem(alwaysOnTopItem)
 
         // Add separator
         menu.addItem(NSMenuItem.separator())
@@ -45,14 +80,34 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Assign menu to status item
         statusItem?.menu = menu
+
+        // Setup observers for timer state changes
+        setupTimerObservers()
     }
 
     @objc func showTimerWindow() {
-        if timerWindow == nil {
-            timerWindow = TimerWindow()
+        windowManager.showTimerWindow()
+    }
+
+    @objc func toggleTimer() {
+        windowManager.timerViewModel.toggle()
+    }
+
+    @objc func resetTimer() {
+        windowManager.timerViewModel.reset()
+    }
+
+    @objc func toggleAlwaysOnTop() {
+        windowManager.alwaysOnTop.toggle()
+
+        // Update menu item checkmark
+        if let menu = statusItem?.menu {
+            for item in menu.items {
+                if item.title == "Always on Top" {
+                    item.state = windowManager.alwaysOnTop ? .on : .off
+                }
+            }
         }
-        timerWindow?.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
     }
 
     @objc func quitApp() {
@@ -62,5 +117,44 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         // Keep app running even when all windows are closed
         return false
+    }
+
+    // MARK: - Timer Status Updates
+
+    private func setupTimerObservers() {
+        // Observe time remaining changes
+        windowManager.timerViewModel.$timeRemaining
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateMenubarStatus()
+            }
+            .store(in: &cancellables)
+
+        // Observe timer state changes
+        windowManager.timerViewModel.$currentState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateMenubarStatus()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func updateMenubarStatus() {
+        let viewModel = windowManager.timerViewModel
+        let timeText = viewModel.timeFormatted
+
+        // Update menubar button title (shows on menubar)
+        // Show time when running or paused, hide when idle
+        if let button = statusItem?.button {
+            switch viewModel.currentState {
+            case .running, .paused:
+                button.title = "🍅 \(timeText)"
+            case .idle, .completed:
+                button.title = "🍅"
+            }
+        }
+
+        // Update Start/Pause menu item text
+        timerStatusMenuItem?.title = viewModel.primaryActionTitle
     }
 }

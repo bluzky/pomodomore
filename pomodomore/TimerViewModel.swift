@@ -9,6 +9,7 @@ import Foundation
 import Combine
 
 /// View model managing Pomodoro timer state and countdown logic
+@MainActor
 class TimerViewModel: ObservableObject {
     // MARK: - Published Properties
 

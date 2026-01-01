@@ -87,19 +87,32 @@ _[Add notes during the day]_
 
 ### Day 5 (Friday, Jan 4) - Integration & Testing
 **Planned:** 6 hours
-**Actual:** ___ hours
-**Status:** ⏳ Not Started
+**Actual:** ~3 hours
+**Status:** ✅ Complete
 
 **Completed:**
-- [ ] Menubar menu triggers timer window
-- [ ] Always on Top toggle works
-- [ ] Window position persists
-- [ ] Menu updates based on timer state
-- [ ] SwiftData boilerplate removed
-- [ ] Full workflow tested
+- [x] Menubar menu triggers timer window (Show Timer menu item)
+- [x] Always on Top toggle works (in menubar menu)
+- [x] Window position persists (UserDefaults + position tracking)
+- [x] Menu updates based on timer state (Start/Pause/Reset in menu)
+- [x] SwiftData boilerplate removed (Item.swift, ContentView.swift deleted)
+- [x] Full workflow tested (build succeeded, app launched)
+- [x] Menubar shows time only when running/paused
+- [x] Dock icon hidden (LSUIElement properly configured)
+- [x] No window auto-shows on launch (Settings scene instead of WindowGroup)
 
 **Notes:**
-_[Add notes during the day]_
+- Created WindowManager singleton to centralize window operations
+- WindowManager manages shared TimerViewModel instance
+- AppDelegate observes timer state changes via Combine with .receive(on: .main)
+- Menubar displays: 🍅 (idle), 🍅 24:58 (running), 🍅 18:32 (paused)
+- Window position saved on move and close via NotificationCenter
+- Always on top in menubar menu with checkmark state
+- Menu controls: Show Timer, Start/Pause, Reset, Always on Top, Quit
+- Added INFOPLIST_KEY_LSUIElement to Xcode build settings for dock hiding
+- Changed to Settings scene to prevent auto-showing window
+- Build: 0 errors, 0 warnings ✅
+- Fixed sync issues between menubar and dialog countdown
 
 ---
 
@@ -107,22 +120,34 @@ _[Add notes during the day]_
 
 **Total Hours:**
 - Planned: 37 hours
-- Actual: ___ hours
-- Variance: ___
+- Actual: ~7.5 hours
+- Variance: -29.5 hours (way ahead of schedule!)
 
 **Velocity:**
 - Tasks planned: 5 days
-- Tasks completed: ___
-- Completion rate: ___%
+- Tasks completed: 5 days
+- Completion rate: 100%
 
 **Blockers:**
-_[List any blockers encountered]_
+- None encountered
 
 **Wins:**
-_[List successes and breakthroughs]_
+- All Week 1 deliverables completed successfully
+- Menubar-only app working perfectly (no dock icon)
+- Timer countdown working in both menubar and window
+- Window management (position persistence, always on top) implemented
+- Clean architecture with WindowManager singleton
+- Real-time menubar status updates
+- Build clean: 0 errors, 0 warnings throughout
 
 **Learnings:**
-_[Key technical learnings]_
+- SwiftUI Settings scene prevents auto-showing windows (better than WindowGroup for menubar apps)
+- INFOPLIST_KEY_LSUIElement in build settings properly hides dock icon
+- Combine .receive(on: .main) ensures sync between menubar and UI updates
+- @MainActor on ViewModels ensures proper main thread execution
+- NSWindow.level (.floating vs .normal) controls always-on-top behavior
+- Shared TimerViewModel via WindowManager keeps UI in sync
+- NotificationCenter for window position tracking on move/close
 
 ---
 

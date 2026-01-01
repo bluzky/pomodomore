@@ -11,15 +11,15 @@
 
 ```
 Week 0: ████████████████████ 100% (Project Setup Complete)
-Week 1: ████░░░░░░░░░░░░░░░░  20% (Core Timer + Menubar - Day 1 Done)
+Week 1: ████████████████████ 100% (Core Timer + Menubar - Complete!)
 Week 2: ░░░░░░░░░░░░░░░░░░░░   0% (Timer Continuation)
 Week 3: ░░░░░░░░░░░░░░░░░░░░   0% (Settings + Themes/Fonts)
 Week 4: ░░░░░░░░░░░░░░░░░░░░   0% (Statistics + Persistence)
 Week 5: ░░░░░░░░░░░░░░░░░░░░   0% (Sounds + Notifications)
 Week 6: ░░░░░░░░░░░░░░░░░░░░   0% (Polish + Bug Fixes)
 
-MVP Progress:  1/12 core features (Menubar integration ✅)
-Overall:       15%  (1.2/8 weeks)
+MVP Progress:  4/12 core features (Menubar ✅, Timer ✅, Start/Pause ✅, Reset ✅)
+Overall:       25%  (2/8 weeks)
 ```
 
 ---
@@ -42,16 +42,21 @@ Overall:       15%  (1.2/8 weeks)
 
 ---
 
-### 🟢 Week 1: Core Timer + Menubar Integration (Dec 31 - Jan 3)
-**Status:** In Progress (Day 1 Complete)
+### ✅ Week 1: Core Timer + Menubar Integration (Dec 31 - Jan 4)
+**Status:** Complete
 **Target:** Basic timer running in menubar
 **Plan:** `docs/plan/week-1-plan.md`
+**Progress:** `docs/plan/week-1/progress.md`
 **Key Deliverables:**
 - [x] Menubar app setup (LSUIElement, NSStatusBar) ✅ Day 1
-- [ ] Timer window with countdown display
-- [ ] Basic timer logic (25:00 countdown)
-- [ ] Start/Pause/Reset button functionality
-- [ ] Timer window shows/hides correctly
+- [x] Timer window with countdown display ✅ Days 2-3
+- [x] Basic timer logic (25:00 countdown) ✅ Day 3
+- [x] Start/Pause/Reset button functionality ✅ Day 4
+- [x] Timer window shows/hides correctly ✅ Day 5
+- [x] Window position persistence ✅ Day 5
+- [x] Always on top toggle ✅ Day 5
+- [x] Menubar controls (Start/Pause/Reset) ✅ Day 5
+- [x] Menubar shows live countdown ✅ Day 5
 
 ---
 
@@ -161,18 +166,18 @@ None currently.
 | Week | Planned Tasks | Completed | % Done | Notes |
 |------|---------------|-----------|--------|-------|
 | 0 | 5 | 5 | 100% | Project setup complete |
-| 1 | 5 days | 1 day | 20% | Day 1 complete - menubar foundation working |
+| 1 | 5 days | 5 days | 100% | All deliverables complete - menubar app with working timer |
 | 2 | - | - | - | Not started |
 
 ---
 
 ## Next Actions
 
-1. **Immediate:** Start Day 2 - Timer Window UI
-2. **Week 1 Focus:** Complete basic timer window and countdown logic
-3. **Risk Watch:** Timer accuracy (validate Timer.publish vs DispatchSourceTimer)
+1. **Immediate:** Complete Week 1 Review
+2. **Week 2 Planning:** Plan break timer and session cycle implementation
+3. **Week 2 Focus:** Break timer functionality (Short 5min, Long 15min) + session cycle logic
 
 ---
 
-**Last Updated:** December 31, 2024
-**Next Review:** End of Week 1
+**Last Updated:** January 4, 2025
+**Next Review:** End of Week 2
