@@ -41,15 +41,9 @@ struct TimerView: View {
 
             Spacer()
 
-            // Session indicators - 4 circles
-            HStack(spacing: 8) {
-                ForEach(0..<4, id: \.self) { _ in
-                    Circle()
-                        .stroke(Color.secondary, lineWidth: 2)
-                        .frame(width: 12, height: 12)
-                }
-            }
-            .padding(.bottom, 20)
+            // Session indicators - 4 circles showing cycle progress
+            SessionIndicatorsView(completedSessions: viewModel.completedSessions)
+                .padding(.bottom, 20)
         }
         .frame(width: 320, height: 200)
         .background(Color(NSColor.windowBackgroundColor))

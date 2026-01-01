@@ -22,11 +22,11 @@ enum SessionType {
     var duration: Int {
         switch self {
         case .pomodoro:
-            return 1500  // 25 minutes
+            return 10  // TESTING: 10 seconds (production: 1500 = 25 minutes)
         case .shortBreak:
-            return 300   // 5 minutes
+            return 5   // TESTING: 5 seconds (production: 300 = 5 minutes)
         case .longBreak:
-            return 900   // 15 minutes
+            return 8   // TESTING: 8 seconds (production: 900 = 15 minutes)
         }
     }
 
