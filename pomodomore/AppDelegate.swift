@@ -47,13 +47,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(startPauseItem)
         timerStatusMenuItem = startPauseItem // Reuse this for Start/Pause text
 
-        // Add Reset menu item
-        let resetItem = NSMenuItem(
-            title: "Reset",
-            action: #selector(resetTimer),
-            keyEquivalent: "r"
+        // Add Stop menu item (no key equivalent to avoid confusion)
+        let stopItem = NSMenuItem(
+            title: "Stop",
+            action: #selector(stopTimer),
+            keyEquivalent: ""
         )
-        menu.addItem(resetItem)
+        menu.addItem(stopItem)
 
         // Add separator
         menu.addItem(NSMenuItem.separator())
@@ -90,11 +90,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func toggleTimer() {
+        // Show timer window when starting from menubar
+        if windowManager.timerViewModel.currentState == .idle {
+            windowManager.showTimerWindow()
+        }
         windowManager.timerViewModel.toggle()
     }
 
-    @objc func resetTimer() {
-        windowManager.timerViewModel.reset()
+    @objc func stopTimer() {
+        windowManager.timerViewModel.stop()
     }
 
     @objc func toggleAlwaysOnTop() {
@@ -122,7 +126,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Timer Status Updates
 
     private func setupTimerObservers() {
-        // Observe time remaining changes
+        // Observe time remaining changes (for countdown updates)
         windowManager.timerViewModel.$timeRemaining
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -130,7 +134,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             .store(in: &cancellables)
 
-        // Observe timer state changes
+        // Observe timer state changes (for Start/Pause button and countdown visibility)
         windowManager.timerViewModel.$currentState
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -143,12 +147,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let viewModel = windowManager.timerViewModel
         let timeText = viewModel.timeFormatted
 
-        // Update menubar button title (shows on menubar)
-        // Show time when running or paused, hide when idle
+        // Update menubar button title (shows countdown time only)
+        // Show time when running or paused, hide when idle or completed
         if let button = statusItem?.button {
             switch viewModel.currentState {
             case .running, .paused:
-                button.title = "🍅 \(timeText)"
+                button.title = timeText
             case .idle, .completed:
                 button.title = "🍅"
             }
