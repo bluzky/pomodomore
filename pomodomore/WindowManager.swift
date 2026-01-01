@@ -61,8 +61,16 @@ class WindowManager: ObservableObject {
             setupPositionTracking()
         }
 
+        // Show window
         timerWindow?.makeKeyAndOrderFront(nil)
-        NSApp.activate(ignoringOtherApps: true)
+
+        // Behavior based on Always on Top setting:
+        // - When checked: Keep window on top (floating level)
+        // - When unchecked: Display and focus on timer
+        if !alwaysOnTop {
+            // Only activate app when not in always-on-top mode
+            NSApp.activate(ignoringOtherApps: true)
+        }
     }
 
     /// Save current window position to UserDefaults
