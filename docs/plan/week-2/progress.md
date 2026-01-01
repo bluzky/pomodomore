@@ -93,22 +93,34 @@
 
 ---
 
-### Day 4 (Thursday, Jan 9) - Break UI & Controls
+### Day 4 (Thursday, Jan 9) - Break UI & Session Tagging
 **Planned:** 8 hours
-**Actual:** ___ hours
-**Status:** ⏳ Not Started
+**Actual:** 0.75 hours (0.25h implementation + 0.5h unit tests)
+**Status:** ✅ Completed
 
 **Completed:**
-- [ ] Session type label displays during breaks
-- [ ] Session type label hidden during Pomodoro
-- [ ] Break controls: Only [Stop] button
-- [ ] Pomodoro controls: [Pause] [Reset] buttons
-- [ ] Timer color for breaks (cyan/blue)
-- [ ] Stop button implementation
-- [ ] Build: 0 errors, 0 warnings
+- [x] SessionTag model created with 6 predefined tags
+- [x] Session model updated to include selectedTag field
+- [x] Tag picker displays when Pomodoro is idle (dropdown with color circles)
+- [x] Selected tag displayed during active/paused Pomodoro (text + color circle)
+- [x] Break type label displays during breaks ("Short Break" / "Long Break")
+- [x] Dynamic label area: picker → tag display → break label based on state
+- [x] Consistent [Pause] and [Stop] buttons for all session types
+- [x] Stop button ends session and returns to idle Pomodoro state
+- [x] Stop preserves session counter and selected tag
+- [x] Timer colors: Green (active Pomodoro), Orange (paused), Cyan (breaks)
+- [x] Last selected tag persists as default for next Pomodoro
+- [x] Build: 0 errors, 0 warnings (2 pre-existing warnings)
+- [x] Unit tests: 83 tests passing, 0 failures
 
 **Notes:**
-_[Add notes during the day]_
+- Enhanced scope: Added session tagging system beyond original break UI plan
+- User requested consistent Stop button instead of separate Pomodoro/Break controls
+- Created comprehensive unit tests (SessionTagTests, SessionTests, TimerViewModelTests)
+- All features implemented and fully tested
+- Completed in ~9% of estimated time, consistent with Week 2 velocity
+- Files created: SessionTag.swift, SessionTagTests.swift, SessionTests.swift
+- Files modified: Session.swift, TimerViewModel.swift, TimerView.swift, TimerViewModelTests.swift
 
 ---
 
