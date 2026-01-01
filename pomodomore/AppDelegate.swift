@@ -12,7 +12,6 @@ import Combine
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     var timerStatusMenuItem: NSMenuItem?
-    var stopMenuItem: NSMenuItem?
     let windowManager = WindowManager.shared
     private var cancellables = Set<AnyCancellable>()
 
@@ -48,14 +47,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(startPauseItem)
         timerStatusMenuItem = startPauseItem // Reuse this for Start/Pause text
 
-        // Add Stop menu item
+        // Add Stop menu item (no key equivalent to avoid confusion)
         let stopItem = NSMenuItem(
             title: "Stop",
             action: #selector(stopTimer),
-            keyEquivalent: "r"
+            keyEquivalent: ""
         )
         menu.addItem(stopItem)
-        stopMenuItem = stopItem
 
         // Add separator
         menu.addItem(NSMenuItem.separator())
@@ -128,7 +126,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Timer Status Updates
 
     private func setupTimerObservers() {
-        // Observe time remaining changes
+        // Observe time remaining changes (for countdown updates)
         windowManager.timerViewModel.$timeRemaining
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -136,16 +134,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             .store(in: &cancellables)
 
-        // Observe timer state changes
+        // Observe timer state changes (for Start/Pause button and countdown visibility)
         windowManager.timerViewModel.$currentState
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.updateMenubarStatus()
-            }
-            .store(in: &cancellables)
-
-        // Observe session type changes
-        windowManager.timerViewModel.$currentSessionType
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.updateMenubarStatus()
