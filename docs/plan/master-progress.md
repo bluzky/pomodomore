@@ -12,13 +12,13 @@
 ```
 Week 0: ████████████████████ 100% (Project Setup Complete)
 Week 1: ████████████████████ 100% (Core Timer + Menubar - Complete!)
-Week 2: ░░░░░░░░░░░░░░░░░░░░   0% (Timer Continuation)
+Week 2: ░░░░░░░░░░░░░░░░░░░░   0% (Breaks + Session Cycle - In Progress)
 Week 3: ░░░░░░░░░░░░░░░░░░░░   0% (Settings + Themes/Fonts)
 Week 4: ░░░░░░░░░░░░░░░░░░░░   0% (Statistics + Persistence)
 Week 5: ░░░░░░░░░░░░░░░░░░░░   0% (Sounds + Notifications)
 Week 6: ░░░░░░░░░░░░░░░░░░░░   0% (Polish + Bug Fixes)
 
-MVP Progress:  4/12 core features (Menubar ✅, Timer ✅, Start/Pause ✅, Reset ✅)
+MVP Progress:  6/12 core features (Menubar ✅, Timer ✅, Start/Pause ✅, Reset ✅, Always on Top ✅, Window Position ✅)
 Overall:       25%  (2/8 weeks)
 ```
 
@@ -60,15 +60,20 @@ Overall:       25%  (2/8 weeks)
 
 ---
 
-### ⏳ Week 2: Timer Feature Completion
-**Status:** Not Started
+### ⏳ Week 2: Timer Feature Completion (Jan 6-10, 2025)
+**Status:** In Progress
 **Target:** Full Pomodoro cycle working
+**Plan:** `docs/plan/week-2-plan.md`
+**Progress:** `docs/plan/week-2/progress.md` (to be created)
 **Key Deliverables:**
-- [ ] Break timer functionality (Short 5min, Long 15min)
-- [ ] Session cycle logic (4 Pomodoros → Long Break)
-- [ ] Session indicators (4 circles UI)
-- [ ] Always on Top toggle
-- [ ] Window position memory
+- [ ] Session type system (Pomodoro, Short Break, Long Break) - Day 1
+- [ ] Break timer functionality (Short 5min, Long 15min) - Day 1
+- [ ] Session cycle logic (4 Pomodoros → Long Break) - Day 2
+- [ ] Session indicators (4 circles UI) - Day 3
+- [ ] Break UI with appropriate controls - Day 4
+- [ ] Full cycle testing and integration - Day 5
+- [x] Always on Top toggle ✅ (Completed Week 1)
+- [x] Window position memory ✅ (Completed Week 1)
 
 ---
 
@@ -134,12 +139,14 @@ Overall:       25%  (2/8 weeks)
 ## MVP Feature Checklist
 
 ### Core Functionality (Week 1-2)
-- [ ] Menubar integration with icon
-- [ ] Timer countdown (Pomodoro/Break)
-- [ ] Start/Pause/Stop/Reset controls
-- [ ] Session cycle logic
-- [ ] Session indicators (4 circles)
-- [ ] Always on Top toggle
+- [x] Menubar integration with icon ✅ Week 1
+- [x] Timer countdown (Pomodoro) ✅ Week 1
+- [ ] Timer countdown (Break modes) - Week 2 Day 1
+- [x] Start/Pause/Reset controls ✅ Week 1
+- [ ] Stop control (for breaks) - Week 2 Day 4
+- [ ] Session cycle logic - Week 2 Day 2
+- [ ] Session indicators (4 circles) - Week 2 Day 3
+- [x] Always on Top toggle ✅ Week 1
 
 ### Customization (Week 3)
 - [ ] Settings dialog
@@ -173,11 +180,12 @@ None currently.
 
 ## Next Actions
 
-1. **Immediate:** Complete Week 1 Review
-2. **Week 2 Planning:** Plan break timer and session cycle implementation
-3. **Week 2 Focus:** Break timer functionality (Short 5min, Long 15min) + session cycle logic
+1. **Week 2 Day 1:** Implement session type system (Pomodoro, Short Break, Long Break)
+2. **Week 2 Day 2:** Build session cycle logic (4 Pomodoros → Long Break)
+3. **Week 2 Day 3:** Create session indicators UI (4 circles)
+4. **Week 2 Focus:** Complete full Pomodoro cycle implementation
 
 ---
 
-**Last Updated:** January 4, 2025
+**Last Updated:** January 6, 2025
 **Next Review:** End of Week 2
