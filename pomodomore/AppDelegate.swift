@@ -12,6 +12,7 @@ import Combine
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     var timerStatusMenuItem: NSMenuItem?
+    var stopMenuItem: NSMenuItem?
     let windowManager = WindowManager.shared
     private var cancellables = Set<AnyCancellable>()
 
@@ -47,13 +48,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(startPauseItem)
         timerStatusMenuItem = startPauseItem // Reuse this for Start/Pause text
 
-        // Add Reset menu item
-        let resetItem = NSMenuItem(
-            title: "Reset",
-            action: #selector(resetTimer),
+        // Add Stop menu item
+        let stopItem = NSMenuItem(
+            title: "Stop",
+            action: #selector(stopTimer),
             keyEquivalent: "r"
         )
-        menu.addItem(resetItem)
+        menu.addItem(stopItem)
+        stopMenuItem = stopItem
 
         // Add separator
         menu.addItem(NSMenuItem.separator())
@@ -93,8 +95,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         windowManager.timerViewModel.toggle()
     }
 
-    @objc func resetTimer() {
-        windowManager.timerViewModel.reset()
+    @objc func stopTimer() {
+        windowManager.timerViewModel.stop()
     }
 
     @objc func toggleAlwaysOnTop() {
@@ -137,18 +139,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self?.updateMenubarStatus()
             }
             .store(in: &cancellables)
+
+        // Observe session type changes
+        windowManager.timerViewModel.$currentSessionType
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateMenubarStatus()
+            }
+            .store(in: &cancellables)
     }
 
     private func updateMenubarStatus() {
         let viewModel = windowManager.timerViewModel
         let timeText = viewModel.timeFormatted
 
-        // Update menubar button title (shows on menubar)
-        // Show time when running or paused, hide when idle
+        // Update menubar button title (shows countdown time only)
+        // Show time when running or paused, hide when idle or completed
         if let button = statusItem?.button {
             switch viewModel.currentState {
             case .running, .paused:
-                button.title = "🍅 \(timeText)"
+                button.title = timeText
             case .idle, .completed:
                 button.title = "🍅"
             }
