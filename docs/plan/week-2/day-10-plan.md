@@ -40,7 +40,6 @@ Complete Week 2 deliverables with comprehensive testing, menubar integration for
 
 - [ ] Menubar menu updates based on session type (Start/Pause for Pomodoro, Stop for Breaks)
 - [ ] Menubar countdown displays for all session types (Pomodoro, Short Break, Long Break)
-- [ ] Menubar shows session type in title (e.g., "Pomodoro 25:00", "Short Break 05:00")
 - [ ] Full cycle test completed with shortened durations:
   - 4 Pomodoros with 3 Short Breaks
   - Long Break after 4th Pomodoro
@@ -66,11 +65,11 @@ Complete Week 2 deliverables with comprehensive testing, menubar integration for
 **Estimate:** 2 hours
 
 **Acceptance Criteria:**
-- Menubar title updates based on current session:
-  - Idle Pomodoro: "Pomodoro" (no countdown)
-  - Active Pomodoro: "Pomodoro 25:00" → "Pomodoro 00:00"
-  - Short Break: "Short Break 05:00" → "Short Break 00:00"
-  - Long Break: "Long Break 15:00" → "Long Break 00:00"
+- Menubar countdown updates based on current session:
+  - Idle Pomodoro: No countdown shown
+  - Active/Paused Pomodoro: "25:00" → "00:00"
+  - Short Break: "05:00" → "00:00"
+  - Long Break: "15:00" → "00:00"
 - Menubar menu items update based on session state:
   - Idle Pomodoro: "Start" menu item
   - Active Pomodoro: "Pause" menu item
@@ -84,20 +83,15 @@ Complete Week 2 deliverables with comprehensive testing, menubar integration for
 
 **Implementation Notes:**
 - Update `AppDelegate.swift` menubar construction
-- Add computed property for menubar title:
-  ```swift
-  var menubarTitle: String {
-      let typePrefix = currentSessionType == .pomodoro ? "Pomodoro" : currentSessionType.displayName
-      return currentState == .idle ? typePrefix : "\(typePrefix) \(timeFormatted)"
-  }
-  ```
+- Menubar shows countdown time only (no session type prefix):
+  - Use `timeFormatted` from ViewModel directly
+  - Show empty or app name when idle
 - Update menu item labels based on `currentState` and `currentSessionType`
 - Ensure timer updates trigger menubar refresh (observe ViewModel changes)
 
 **Files to Modify:**
 - `pomodomore/AppDelegate.swift`
 - `pomodomore/WindowManager.swift` (if needed for coordination)
-- `pomodomore/ViewModels/TimerViewModel.swift` (add menubarTitle computed property)
 
 ---
 
@@ -392,19 +386,19 @@ End of day checklist:
 
 **Full Cycle Test Script:**
 ```
-1. Verify idle state: Menubar shows "Pomodoro", window shows tag picker
+1. Verify idle state: Menubar shows no countdown, window shows tag picker
 2. Select tag "Study"
 3. Click Start → Timer runs for 10s
-   - Observe: Menubar updates to "Pomodoro 00:10" → "Pomodoro 00:00"
+   - Observe: Menubar updates to "00:10" → "00:00"
    - Observe: Session indicator shows ●○○○ after completion
 4. Auto-transition to Short Break (5s)
-   - Observe: Menubar shows "Short Break 00:05" → "Short Break 00:00"
+   - Observe: Menubar shows "00:05" → "00:00"
 5. Auto-transition back to idle Pomodoro
-   - Observe: Menubar shows "Pomodoro"
+   - Observe: Menubar shows no countdown
    - Observe: Tag picker defaults to "Study"
 6. Repeat for Pomodoros 2, 3, 4
 7. After Pomodoro 4: Verify Long Break starts (8s)
-   - Observe: Menubar shows "Long Break 00:08" → "Long Break 00:00"
+   - Observe: Menubar shows "00:08" → "00:00"
 8. After Long Break: Verify counter resets
    - Observe: Session indicators show ○○○○
    - Observe: Back to idle Pomodoro state
