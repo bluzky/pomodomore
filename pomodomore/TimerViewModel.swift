@@ -16,8 +16,14 @@ class TimerViewModel: ObservableObject {
     /// Current state of the timer
     @Published var currentState: TimerState = .idle
 
-    /// Current session type (Pomodoro, Short Break, or Long Break)
+/// Current session type (Pomodoro, Short Break, or Long Break)
     @Published var currentSessionType: SessionType = .pomodoro
+
+    /// Number of completed Pomodoro sessions in current cycle (0-4)
+    @Published var completedSessions: Int = 0
+
+    /// Current active session (nil until first completion)
+    @Published var currentSession: Session?
 
     /// Time remaining in seconds
     @Published var timeRemaining: Int = 1500 // 25 minutes = 1500 seconds
@@ -97,6 +103,9 @@ class TimerViewModel: ObservableObject {
         currentState = .idle
         timeRemaining = currentSessionType.duration
         timerCancellable?.cancel()
+        
+        // Don't reset session counter or type - just restart current session
+        print("🔄 Reset to: \(currentSessionType.displayName.isEmpty ? "Pomodoro" : currentSessionType.displayName)")
     }
 
     // MARK: - Private Methods
@@ -118,5 +127,44 @@ class TimerViewModel: ObservableObject {
         print("✅ Timer completed!")
         currentState = .completed
         timerCancellable?.cancel()
+        
+        // Create completed session record
+        let completedSession = Session(sessionType: currentSessionType, sessionNumber: completedSessions + 1)
+        currentSession = completedSession
+        
+        // Update session counter if this was a Pomodoro
+        if currentSessionType == .pomodoro {
+            completedSessions += 1
+            print("📊 Completed Pomodoro \(completedSessions)/4")
+        }
+        
+        // Auto-transition to next session
+        transitionToNextSession()
+    }
+    
+    /// Transition to the next session type based on Pomodoro cycle logic
+    private func transitionToNextSession() {
+        let nextSessionType: SessionType
+        
+        switch currentSessionType {
+        case .pomodoro:
+            // After Pomodoro, take a break
+            nextSessionType = completedSessions == 4 ? .longBreak : .shortBreak
+        case .shortBreak:
+            // After short break, back to Pomodoro
+            nextSessionType = .pomodoro
+        case .longBreak:
+            // After long break, reset counter and back to Pomodoro
+            completedSessions = 0
+            nextSessionType = .pomodoro
+            print("🔄 Cycle reset! Starting new Pomodoro cycle")
+        }
+        
+        // Update session type and reset timer
+        currentSessionType = nextSessionType
+        timeRemaining = nextSessionType.duration
+        currentState = .idle
+        
+        print("🔄 Auto-transitioned to: \(nextSessionType.displayName.isEmpty ? "Pomodoro" : nextSessionType.displayName)")
     }
 }
