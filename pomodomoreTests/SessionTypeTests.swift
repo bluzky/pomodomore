@@ -11,7 +11,7 @@ import Testing
 @MainActor
 struct SessionTypeTests {
 
-    // MARK: - Duration Tests
+    // MARK: - Duration Tests (MainActor)
 
     @Test func pomodoroDuration() {
         let sessionType = SessionType.pomodoro
@@ -26,6 +26,32 @@ struct SessionTypeTests {
     @Test func longBreakDuration() {
         let sessionType = SessionType.longBreak
         #expect(sessionType.duration == 900, "Long Break should be 15 minutes (900 seconds)")
+    }
+
+    // MARK: - Non-Isolated Duration Tests
+
+    @Test func pomodoroDurationFromConfig() {
+        let sessionType = SessionType.pomodoro
+        let config = SessionDurations.defaultDurations
+        #expect(sessionType.duration(from: config) == 1500, "Pomodoro should be 25 minutes from default config")
+    }
+
+    @Test func shortBreakDurationFromConfig() {
+        let sessionType = SessionType.shortBreak
+        let config = SessionDurations.defaultDurations
+        #expect(sessionType.duration(from: config) == 300, "Short Break should be 5 minutes from default config")
+    }
+
+    @Test func longBreakDurationFromConfig() {
+        let sessionType = SessionType.longBreak
+        let config = SessionDurations.defaultDurations
+        #expect(sessionType.duration(from: config) == 900, "Long Break should be 15 minutes from default config")
+    }
+
+    @Test func testDurations() {
+        let sessionType = SessionType.pomodoro
+        let testConfig = SessionDurations.testDurations
+        #expect(sessionType.duration(from: testConfig) == 10, "Pomodoro test duration should be 10 seconds")
     }
 
     // MARK: - Display Name Tests

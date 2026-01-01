@@ -18,10 +18,17 @@ enum SessionType {
     /// 15-minute long break after completing 4 Pomodoros
     case longBreak
 
-    /// Duration of the session in seconds (from ConfigManager)
+    /// Duration of the session in seconds (from configuration)
+    /// Accesses current durations from ConfigManager
     @MainActor
     var duration: Int {
-        ConfigManager.shared.duration(for: self)
+        ConfigManager.shared.durations.duration(for: self)
+    }
+
+    /// Duration from a specific configuration (non-isolated)
+    /// Use this when you need to access duration without MainActor context
+    func duration(from config: SessionDurations) -> Int {
+        config.duration(for: self)
     }
 
     /// Display name for the session type

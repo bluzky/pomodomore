@@ -8,30 +8,27 @@
 import Foundation
 import Combine
 
-/// Manages application configuration and settings
-@MainActor
-class ConfigManager: ObservableObject {
-    /// Shared singleton instance
-    static let shared = ConfigManager()
+// MARK: - Session Durations Configuration
 
-    // MARK: - Session Duration Settings
+/// Non-isolated configuration for session durations
+struct SessionDurations: Sendable {
+    let pomodoroDuration: Int
+    let shortBreakDuration: Int
+    let longBreakDuration: Int
 
-    /// Duration for Pomodoro sessions in seconds (default: 25 minutes)
-    @Published var pomodoroDuration: Int = 1500
+    /// Default production durations
+    static let defaultDurations = SessionDurations(
+        pomodoroDuration: 1500,   // 25 minutes
+        shortBreakDuration: 300,   // 5 minutes
+        longBreakDuration: 900     // 15 minutes
+    )
 
-    /// Duration for short break sessions in seconds (default: 5 minutes)
-    @Published var shortBreakDuration: Int = 300
-
-    /// Duration for long break sessions in seconds (default: 15 minutes)
-    @Published var longBreakDuration: Int = 900
-
-    // MARK: - Initialization
-
-    private init() {
-        // Private initializer to enforce singleton pattern
-    }
-
-    // MARK: - Convenience Methods
+    /// Test durations for faster manual/automated testing
+    static let testDurations = SessionDurations(
+        pomodoroDuration: 10,   // 10 seconds
+        shortBreakDuration: 5,   // 5 seconds
+        longBreakDuration: 8     // 8 seconds
+    )
 
     /// Get duration for a specific session type
     func duration(for sessionType: SessionType) -> Int {
@@ -44,20 +41,50 @@ class ConfigManager: ObservableObject {
             return longBreakDuration
         }
     }
+}
+
+// MARK: - Configuration Manager
+
+/// Manages application configuration and settings
+@MainActor
+class ConfigManager: ObservableObject {
+    /// Shared singleton instance
+    static let shared = ConfigManager()
+
+    // MARK: - Published Configuration
+
+    /// Current session durations (observable for UI updates)
+    @Published private(set) var durations: SessionDurations = .defaultDurations
+
+    // MARK: - Initialization
+
+    private init() {
+        // Private initializer to enforce singleton pattern
+    }
+
+    // MARK: - Configuration Methods
+
+    /// Update session durations
+    func setDurations(_ newDurations: SessionDurations) {
+        durations = newDurations
+    }
 
     /// Reset all durations to default values
     func resetToDefaults() {
-        pomodoroDuration = 1500  // 25 minutes
-        shortBreakDuration = 300  // 5 minutes
-        longBreakDuration = 900   // 15 minutes
+        durations = .defaultDurations
     }
 
-    // MARK: - Testing Support
+    /// Set test durations for faster testing
+    func setTestDurations() {
+        durations = .testDurations
+    }
 
-    /// Set test durations for faster testing (all values in seconds)
-    func setTestDurations(pomodoro: Int = 10, shortBreak: Int = 5, longBreak: Int = 8) {
-        pomodoroDuration = pomodoro
-        shortBreakDuration = shortBreak
-        longBreakDuration = longBreak
+    /// Set custom durations (all values in seconds)
+    func setCustomDurations(pomodoro: Int, shortBreak: Int, longBreak: Int) {
+        durations = SessionDurations(
+            pomodoroDuration: pomodoro,
+            shortBreakDuration: shortBreak,
+            longBreakDuration: longBreak
+        )
     }
 }
