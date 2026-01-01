@@ -14,6 +14,9 @@ struct TimerView: View {
         VStack(spacing: 20) {
             Spacer()
 
+            // Session type label (will be shown for breaks in Day 9)
+            // Text(viewModel.currentSessionType.displayName)
+
             // Timer display - live countdown
             Text(viewModel.timeFormatted)
                 .font(.system(size: 48, weight: .medium, design: .monospaced))

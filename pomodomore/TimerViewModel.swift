@@ -16,16 +16,23 @@ class TimerViewModel: ObservableObject {
     /// Current state of the timer
     @Published var currentState: TimerState = .idle
 
+    /// Current session type (Pomodoro, Short Break, or Long Break)
+    @Published var currentSessionType: SessionType = .pomodoro
+
     /// Time remaining in seconds
     @Published var timeRemaining: Int = 1500 // 25 minutes = 1500 seconds
 
     // MARK: - Private Properties
 
-    /// Total duration of a Pomodoro session in seconds
-    private let totalTime: Int = 1500 // 25 minutes
-
     /// Subscription to the timer publisher
     private var timerCancellable: AnyCancellable?
+
+    // MARK: - Initialization
+
+    init() {
+        // Initialize time remaining based on default session type
+        self.timeRemaining = currentSessionType.duration
+    }
 
     // MARK: - Computed Properties
 
@@ -88,7 +95,7 @@ class TimerViewModel: ObservableObject {
     func reset() {
         print("🔄 Timer reset")
         currentState = .idle
-        timeRemaining = totalTime
+        timeRemaining = currentSessionType.duration
         timerCancellable?.cancel()
     }
 
