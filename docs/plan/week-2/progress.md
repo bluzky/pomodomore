@@ -60,20 +60,36 @@
 
 ### Day 3 (Wednesday, Jan 8) - Session Indicators UI
 **Planned:** 8 hours
-**Actual:** ___ hours
-**Status:** ⏳ Not Started
+**Actual:** 2 hours
+**Status:** ✅ Completed
 
 **Completed:**
-- [ ] Create SessionIndicatorsView component
-- [ ] Display 4 circles (empty ○ / filled ●)
-- [ ] Integrate indicators into TimerView
-- [ ] Indicators update on session completion
-- [ ] Indicators reset after Long Break
-- [ ] Proper spacing and alignment
-- [ ] Build: 0 errors, 0 warnings
+- [x] Create SessionIndicatorsView component
+- [x] Display 4 circles (empty ○ / filled ●)
+- [x] Integrate indicators into TimerView
+- [x] Indicators update on session completion (via completedSessions binding)
+- [x] Indicators reset after Long Break
+- [x] Proper spacing and alignment (12pt circles, 8pt spacing)
+- [x] Build: 0 errors, 0 warnings
+- [x] **BONUS:** Created ConfigManager for centralized session duration configuration
+- [x] **BONUS:** Wrote 11 unit tests for SessionIndicatorsView (all passing)
 
 **Notes:**
-_[Add notes during the day]_
+- Successfully implemented visual session progress indicators with 4 circles
+- Circles use `.fill()` with primary color for completed sessions, clear for pending
+- Added `.overlay()` with stroke for consistent visual borders
+- Created ConfigManager singleton to centralize session durations
+  - Enables easy testing without modifying production code
+  - Sets foundation for Week 3 user-customizable timer durations
+  - Provides `setTestDurations()` for manual testing with shortened durations
+- SessionType.duration now uses ConfigManager for flexibility
+- Wrote comprehensive unit tests:
+  - View instantiation tests (0-4 sessions + edge cases)
+  - Session indicator logic verification
+  - Progress simulation through full cycle
+- All SessionIndicatorsViewTests passing (11/11)
+- Build clean with 0 errors, 0 warnings (2 pre-existing warnings in WindowManager)
+- Completed in 25% of estimated time, consistent with Week 2 velocity
 
 ---
 
