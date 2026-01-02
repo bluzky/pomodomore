@@ -114,6 +114,84 @@ This project uses **Solo Dev + AI Methodology**. See [dev_start.md](./dev_start.
 
 ---
 
+## Project Structure
+
+Organized by feature and architectural layer for maintainability.
+
+```
+pomodomore/
+├── App/                        # Application entry point and lifecycle
+│   ├── AppDelegate.swift       # macOS app delegate (menubar, window management)
+│   └── PomodomoreApp.swift     # SwiftUI app entry point
+│
+├── Models/                     # Data models and types
+│   ├── Session.swift           # Completed Pomodoro session model
+│   ├── SessionTag.swift        # Session categorization (Work, Study, etc.)
+│   ├── SessionType.swift       # Session types (Pomodoro, Short/Long Break)
+│   ├── Settings.swift          # Application settings model (Codable)
+│   └── TimerState.swift        # Timer state enum (idle, running, paused, completed)
+│
+├── Views/                      # SwiftUI views
+│   ├── Timer/                  # Timer-related views
+│   │   ├── TimerView.swift         # Main timer display with controls
+│   │   ├── TimerWindow.swift       # Timer window configuration
+│   │   └── SessionIndicatorsView.swift  # Session progress dots (○○○●)
+│   │
+│   └── Dashboard/              # Dashboard and Settings views
+│       ├── DashboardSettingsView.swift  # Main window with sidebar navigation
+│       ├── DashboardView.swift          # Today stats + weekly chart
+│       ├── GeneralSettingsView.swift    # General settings (startup, about)
+│       ├── PomodoroSettingsView.swift   # Pomodoro timer configuration
+│       └── SoundSettingsView.swift      # Sound and notification settings
+│
+├── ViewModels/                 # View models and business logic
+│   └── TimerViewModel.swift    # Timer state management and logic
+│
+├── Services/                   # Application services and managers
+│   ├── ConfigManager.swift     # Session duration configuration
+│   ├── SettingsManager.swift   # Settings state management (ObservableObject)
+│   └── WindowManager.swift     # Window lifecycle and positioning
+│
+├── Assets.xcassets/            # Images, colors, and other assets
+├── Info.plist                  # Application configuration
+└── README.md                   # Architecture documentation
+```
+
+### Architecture Pattern
+
+- **Models**: Pure Swift structs/enums, all `Codable` for persistence
+- **Views**: SwiftUI organized by feature (Timer, Dashboard)
+- **ViewModels**: `@MainActor` ObservableObject classes
+- **Services**: Singleton managers for app-wide concerns
+- **App**: Entry point and macOS lifecycle
+
+### Key Design Patterns
+
+1. **Settings Management**:
+   - Use `@EnvironmentObject` for `SettingsManager.shared` in views
+   - Parent view injects: `.environmentObject(SettingsManager.shared)`
+   - Child views access: `@EnvironmentObject var settingsManager: SettingsManager`
+
+2. **Window Management**:
+   - `WindowManager.shared` handles all window lifecycle
+   - Timer window and Dashboard window both managed here
+
+3. **State Flow**:
+   ```
+   User Interaction → View → ViewModel → Service/Manager → Model
+                       ↑                                      ↓
+                       └──────── @Published updates ─────────┘
+   ```
+
+### Naming Conventions
+
+- **Models**: Singular nouns (`Session`, `Settings`)
+- **Views**: Descriptive + "View" suffix (`TimerView`, `DashboardView`)
+- **ViewModels**: Descriptive + "ViewModel" suffix (`TimerViewModel`)
+- **Services**: Descriptive + "Manager" suffix (`SettingsManager`, `WindowManager`)
+
+---
+
 ## Quick Start
 
 1. **Read:** [dev_start.md](./dev_start.md)
