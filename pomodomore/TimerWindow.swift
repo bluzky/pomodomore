@@ -11,23 +11,37 @@ import SwiftUI
 class TimerWindow: NSWindow {
     init(windowManager: WindowManager) {
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 320, height: 200),
-            styleMask: [.titled, .closable, .miniaturizable],
+            contentRect: NSRect(x: 0, y: 0, width: 200, height: 110),
+            styleMask: [.borderless],
             backing: .buffered,
             defer: false
         )
 
         // Window configuration
-        self.title = "Pomodoro Timer"
+        self.level = .floating // Keep window above others
         self.center()
         self.isReleasedWhenClosed = false // Don't destroy window when closed
         self.isMovableByWindowBackground = true // Allow dragging from content area
+        self.backgroundColor = .clear // Transparent background
+        self.isOpaque = false // Allow transparency
+        self.hasShadow = true // Keep shadow for depth
 
         // Host SwiftUI view with shared timer view model
         let timerView = TimerView(viewModel: windowManager.timerViewModel)
-        self.contentView = NSHostingView(rootView: timerView)
+        let hostingView = NSHostingView(rootView: timerView)
+
+        // Disable clipping to allow dropdown and popups to overflow
+        hostingView.wantsLayer = true
+        hostingView.layer?.masksToBounds = false
+
+        self.contentView = hostingView
     }
 
+    // Allow borderless window to become key window (receive keyboard focus)
+    override var canBecomeKey: Bool {
+        return true
+    }
+    
     // Override to prevent window from being destroyed on close
     override func close() {
         self.orderOut(nil) // Hide instead of close

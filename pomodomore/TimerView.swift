@@ -7,81 +7,369 @@
 
 import SwiftUI
 
-struct TimerView: View {
-    @ObservedObject var viewModel: TimerViewModel
+// MARK: - Custom Traffic Light Button
+struct TrafficLightButton: View {
+    let type: ButtonType
+    let action: () -> Void
+
+    enum ButtonType {
+        case close
+        case minimize
+        case maximize
+    }
+
+    @State private var isHovered = false
 
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
+        Button(action: action) {
+            ZStack {
+                Circle()
+                    .fill(type.backgroundColor(isHovered: isHovered))
+                    .frame(width: 12, height: 12)
 
-            // Session label area - dynamic based on state
-            if viewModel.currentState == .idle && viewModel.currentSessionType == .pomodoro {
-                // Idle Pomodoro: Tag picker
-                Picker("Tag", selection: $viewModel.selectedTag) {
-                    ForEach(SessionTag.predefinedTags) { tag in
+                if isHovered {
+                    Image(systemName: type.symbol)
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundColor(type.iconColor)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.15)) {
+                isHovered = hovering
+            }
+        }
+    }
+}
+
+extension TrafficLightButton.ButtonType {
+    func backgroundColor(isHovered: Bool) -> Color {
+        switch self {
+        case .close:
+            return isHovered ? Color(red: 1.0, green: 0.37, blue: 0.34) : Color.primary.opacity(0.3) // Red on hover, gray default
+        case .minimize:
+            return Color(red: 1.0, green: 0.77, blue: 0.22) // #FFBD2E
+        case .maximize:
+            return Color(red: 0.35, green: 0.83, blue: 0.44) // #28C940
+        }
+    }
+    
+    var iconColor: Color {
+        switch self {
+        case .close: return Color(red: 0.6, green: 0.0, blue: 0.0) // Dark red
+        case .minimize: return .white
+        case .maximize: return .white
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .close: return "xmark"
+        case .minimize: return "minus"
+        case .maximize: return "plus"
+        }
+    }
+}
+
+// MARK: - Sound Button Style
+struct SoundButtonStyle: ButtonStyle {
+    @State private var isHovered = false
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundColor(iconColor(isPressed: configuration.isPressed))
+            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+            .animation(.easeOut(duration: 0.15), value: isHovered)
+            .onHover { hovering in
+                isHovered = hovering
+            }
+    }
+    
+    private func iconColor(isPressed: Bool) -> Color {
+        if isPressed {
+            return .primary.opacity(0.9)
+        } else if isHovered {
+            return .primary.opacity(0.8)
+        } else {
+            return .primary.opacity(0.6)
+        }
+    }
+}
+
+// MARK: - Custom Tag Select Button
+struct TagSelectButton: View {
+    @Binding var selectedTag: SessionTag
+    @State private var showPopover = false
+
+    var body: some View {
+        Button(action: {
+            showPopover.toggle()
+        }) {
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(selectedTag.color)
+                    .frame(width: 6, height: 6)
+                Text(selectedTag.name)
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundColor(.primary)
+            }
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: $showPopover, arrowEdge: .bottom) {
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(SessionTag.predefinedTags) { tag in
+                    Button(action: {
+                        selectedTag = tag
+                        showPopover = false
+                    }) {
                         HStack(spacing: 6) {
                             Circle()
                                 .fill(tag.color)
-                                .frame(width: 8, height: 8)
+                                .frame(width: 6, height: 6)
                             Text(tag.name)
+                                .font(.system(size: 12))
+                                .foregroundColor(.primary)
+                            Spacer()
                         }
-                        .tag(tag)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .background(selectedTag.id == tag.id ? Color.accentColor.opacity(0.15) : Color.clear)
+                }
+            }
+            .frame(width: 120)
+            .padding(.vertical, 2)
+            .background(
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .fill(Color(nsColor: .controlBackgroundColor))
+            )
+        }
+    }
+}
+
+// MARK: - Hover Button Style
+struct HoverButtonStyle: ButtonStyle {
+    let hoverColor: Color?
+    
+    init(hoverColor: Color? = nil) {
+        self.hoverColor = hoverColor
+    }
+    
+    func makeBody(configuration: Configuration) -> some View {
+        HoverButtonContent(configuration: configuration, hoverColor: hoverColor)
+    }
+    
+    struct HoverButtonContent: View {
+        let configuration: Configuration
+        let hoverColor: Color?
+        @State private var isHovered = false
+        
+        var body: some View {
+            configuration.label
+                .background(
+                    Circle()
+                        .fill(backgroundColorForState)
+                )
+                .foregroundStyle(iconColorForState)
+                .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+                .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+                .animation(.easeOut(duration: 0.15), value: isHovered)
+                .onHover { hovering in
+                    isHovered = hovering
+                }
+        }
+        
+        private var backgroundColorForState: Color {
+            if configuration.isPressed {
+                return Color.primary.opacity(0.15)
+            } else if isHovered {
+                return Color.primary.opacity(0.12)
+            } else {
+                return Color.primary.opacity(0.08)
+            }
+        }
+        
+        private var iconColorForState: Color {
+            if let hoverColor = hoverColor, (isHovered || configuration.isPressed) {
+                return hoverColor
+            } else {
+                return .primary
+            }
+        }
+    }
+}
+
+// MARK: - Timer View
+struct TimerView: View {
+    @ObservedObject var viewModel: TimerViewModel
+    @State private var isWindowFocused: Bool = false
+    @State private var isHovered: Bool = false
+
+    // Controls are always visible when idle/paused state, or on hover
+    private var shouldShowControls: Bool {
+        viewModel.currentState == .idle || viewModel.currentState == .paused || isHovered
+    }
+    
+    // Timer scales up and repositions when controls are hidden
+    private var timerFontSize: CGFloat {
+        shouldShowControls ? 36 : 42
+    }
+    
+    private var timerVerticalOffset: CGFloat {
+        shouldShowControls ? 0 : 10
+    }
+
+    var body: some View {
+        ZStack {
+            // Top controls row - absolute positioning
+            HStack(spacing: 0) {
+                // Close button - 6px from left (traffic light style)
+                TrafficLightButton(type: .close) {
+                    closeWindow()
+                }
+                .padding(.leading, 6)
+                
+                Spacer()
+                
+                // Sound controls - right side
+                HStack(spacing: 4) {
+                    // Sound toggle - 160px from left (or 22px from right)
+                    Button(action: {
+                        // TODO: Toggle sound
+                    }) {
+                        Image(systemName: "speaker.wave.2.fill")
+                            .font(.system(size: 10))
+                            .frame(width: 16, height: 16)
+                    }
+                    .buttonStyle(SoundButtonStyle())
+                    
+                    // Music toggle - 182px from left (or 2px from right)
+                    Button(action: {
+                        // TODO: Show ambient sound picker
+                    }) {
+                        Image(systemName: "music.note")
+                            .font(.system(size: 10))
+                            .frame(width: 16, height: 16)
+                    }
+                    .buttonStyle(SoundButtonStyle())
+                }
+                .padding(.trailing, 2)
+            }
+            .frame(height: 16)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .padding(.top, 6)
+            .opacity(shouldShowControls ? 1 : 0)
+            .animation(.easeOut(duration: 0.25), value: shouldShowControls)
+            
+            // Center content area
+            VStack(spacing: 0) {
+                // Tag label - 30px from top
+                Group {
+                    if viewModel.currentSessionType == .pomodoro {
+                        // Pomodoro: Show custom tag select button (idle) or display tag (active/paused)
+                        if viewModel.currentState == .idle {
+                            TagSelectButton(selectedTag: $viewModel.selectedTag)
+                        } else {
+                            HStack(spacing: 4) {
+                                Circle()
+                                    .fill(viewModel.selectedTag.color)
+                                    .frame(width: 6, height: 6)
+                                Text(viewModel.selectedTag.name)
+                                    .font(.system(size: 11, weight: .regular))
+                                    .foregroundColor(.primary)
+                            }
+                        }
+                    } else {
+                        // Break sessions: Show break type label
+                        Text(viewModel.currentSessionType.displayName)
+                            .font(.system(size: 11, weight: .regular))
+                            .foregroundColor(.primary)
                     }
                 }
-                .pickerStyle(.menu)
-                .labelsHidden()
-            } else if viewModel.currentSessionType == .pomodoro {
-                // Active/Paused Pomodoro: Show selected tag with color circle
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(viewModel.selectedTag.color)
-                        .frame(width: 8, height: 8)
-                    Text(viewModel.selectedTag.name)
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(.primary)
-                }
-            } else {
-                // Break sessions: Show break type label
-                Text(viewModel.currentSessionType.displayName)
-                    .font(.system(size: 16, weight: .regular))
+                .frame(height: 16)
+                .padding(.top, 20)
+                
+                // Timer - 50px from top when controls visible
+                Text(viewModel.timeFormatted)
+                    .font(.system(size: timerFontSize, weight: .medium, design: .monospaced))
                     .foregroundColor(.primary)
+                    .offset(y: timerVerticalOffset)
+                    .animation(.easeOut(duration: 0.25), value: shouldShowControls)
+                
+                Spacer()
             }
-
-            // Timer display - live countdown with dynamic color
-            Text(viewModel.timeFormatted)
-                .font(.system(size: 48, weight: .medium, design: .monospaced))
-                .foregroundColor(viewModel.timerColor)
-
-            Spacer()
-
-            // Control buttons - consistent for all session types
-            HStack(spacing: 12) {
-                // Start/Pause toggle button
-                Button(viewModel.primaryActionTitle) {
-                    viewModel.toggle()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            
+            // Bottom buttons - only visible when timer is running (and controls should show)
+            HStack(spacing: 8) {
+                // Pause button (only when running)
+                if viewModel.currentState == .running {
+                    Button(action: { viewModel.toggle() }) {
+                        Image(systemName: "pause.fill")
+                            .font(.system(size: 10))
+                            .frame(width: 22, height: 22)
+                    }
+                    .buttonStyle(HoverButtonStyle(hoverColor: .orange))
                 }
-                .buttonStyle(.bordered)
-
-                // Stop button - ends session and returns to idle Pomodoro
-                Button("Stop") {
-                    viewModel.stop()
+                
+                // Stop button (only when running)
+                if viewModel.currentState == .running {
+                    Button(action: { viewModel.stop() }) {
+                        Image(systemName: "stop.fill")
+                            .font(.system(size: 10))
+                            .frame(width: 22, height: 22)
+                    }
+                    .buttonStyle(HoverButtonStyle(hoverColor: .red))
                 }
-                .buttonStyle(.bordered)
+                
+                // Start button (when idle or paused)
+                if viewModel.currentState == .idle || viewModel.currentState == .paused {
+                    Button(action: { viewModel.toggle() }) {
+                        Image(systemName: "play.fill")
+                            .font(.system(size: 10))
+                            .frame(width: 22, height: 22)
+                    }
+                    .buttonStyle(HoverButtonStyle())
+                }
             }
-
-            Spacer()
-
-            // Session indicators - 4 circles showing cycle progress
-            SessionIndicatorsView(completedSessions: viewModel.completedSessions)
-                .padding(.bottom, 20)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            .padding(.bottom, 6)
+            .opacity(shouldShowControls ? 1 : 0)
+            .animation(.easeOut(duration: 0.25), value: shouldShowControls)
         }
-        .frame(width: 320, height: 200)
-        .background(Color(NSColor.windowBackgroundColor))
+        .frame(width: 200, height: 110)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(Color(nsColor: .windowBackgroundColor).opacity(0.8))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
+        )
+        .onHover { hovering in
+            isHovered = hovering
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in
+            isWindowFocused = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didResignKeyNotification)) { _ in
+            isWindowFocused = false
+        }
+    }
+
+    private func closeWindow() {
+        if let window = NSApplication.shared.windows.first(where: { $0 is TimerWindow }) {
+            window.close()
+        }
     }
 }
 
 // Preview for development
 #Preview {
     TimerView(viewModel: WindowManager.shared.timerViewModel)
-        .frame(width: 320, height: 200)
+        .frame(width: 200, height: 110)
 }
