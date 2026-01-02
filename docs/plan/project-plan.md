@@ -16,9 +16,9 @@ PomodoMore is a lightweight macOS menubar application implementing the Pomodoro 
 ## Timeline
 
 - **Week 1-2:** Core timer functionality + menubar integration
-- **Week 3:** Settings system + theme/font customization
-- **Week 4:** Statistics tracking + data persistence → **MVP Ship**
-- **Week 5:** Sound system + notifications
+- **Week 3:** Essential settings + sound system + notifications
+- **Week 4:** Theme/font customization
+- **Week 5:** Statistics tracking + data persistence → **MVP Ship**
 - **Week 6:** Polish, bug fixes, edge cases
 - **Week 7-8:** Testing, refinement → **Final Release v1.0**
 
