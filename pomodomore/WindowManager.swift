@@ -23,6 +23,9 @@ class WindowManager: ObservableObject {
     /// The main timer window
     private(set) var timerWindow: TimerWindow?
 
+    /// The dashboard + settings window
+    private var settingsWindow: NSWindow?
+
     /// Always on top state
     @Published var alwaysOnTop: Bool {
         didSet {
@@ -71,6 +74,31 @@ class WindowManager: ObservableObject {
             // Only activate app when not in always-on-top mode
             NSApp.activate(ignoringOtherApps: true)
         }
+    }
+
+    /// Show or bring to front the dashboard + settings window
+    func showDashboardSettingsWindow() {
+        if settingsWindow == nil {
+            // Create the settings view
+            let settingsView = DashboardSettingsView()
+
+            // Create hosting controller
+            let hostingController = NSHostingController(rootView: settingsView)
+
+            // Create window
+            let window = NSWindow(contentViewController: hostingController)
+            window.title = "PomodoMore"
+            window.styleMask = [.titled, .closable, .fullSizeContentView]
+            window.titlebarAppearsTransparent = false
+            window.setContentSize(NSSize(width: 720, height: 520))
+            window.center()
+
+            settingsWindow = window
+        }
+
+        // Show window
+        settingsWindow?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     /// Save current window position to UserDefaults

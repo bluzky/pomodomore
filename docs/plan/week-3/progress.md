@@ -7,18 +7,49 @@
 
 ## Daily Log
 
-### Day 1 (Monday) - Settings Dialog UI Foundation
-**Planned:** 8h | **Actual:** ___ h
-**Status:** ⏳ Not Started
+### Day 1 (Monday) - Dashboard + Settings Window Foundation
+**Planned:** 8h | **Actual:** ~2-3h
+**Status:** ✅ Complete
 
 **Tasks:**
-- [ ] Create Settings model with duration properties
-- [ ] Create SettingsView.swift with duration controls
-- [ ] Add Settings menu item to menubar
-- [ ] Create SettingsManager singleton
-- [ ] Test: Settings window opens/closes
+- [x] Create Settings model with all properties (General, Pomodoro, Sound, Appearance, Session)
+- [x] Create SettingsManager singleton with @Published settings
+- [x] Create DashboardSettingsView with sidebar navigation (720×520px, 200px sidebar)
+- [x] Create DashboardView with Today cards and week chart placeholder
+- [x] Create GeneralSettingsView (startup toggle, about section)
+- [x] Create PomodoroSettingsView (duration steppers, auto-start toggle)
+- [x] Create SoundSettingsView (notifications, sound dropdowns)
+- [x] Add Dashboard menu item to menubar (Cmd+,)
+- [x] Implement sidebar with Apple Music style (SF Symbols, hover effects)
+- [x] Hide Stop button when timer is idle
+- [x] Test: Window opens, navigation works, all sections display
+
+**Files Created:**
+- `Models/Settings.swift`
+- `Services/SettingsManager.swift`
+- `Views/DashboardSettingsView.swift`
+- `Views/DashboardView.swift`
+- `Views/GeneralSettingsView.swift`
+- `Views/PomodoroSettingsView.swift`
+- `Views/SoundSettingsView.swift`
+
+**Files Modified:**
+- `PomodomoreApp.swift` (fixed SwiftUI.Settings namespace conflict)
+- `AppDelegate.swift` (added Dashboard menu item, Stop button visibility)
+- `WindowManager.swift` (added showDashboardSettingsWindow method)
+
+**Build Status:**
+- ✅ BUILD SUCCEEDED
+- ✅ 0 errors
+- ⚠️ 2 pre-existing warnings (WindowManager actor isolation)
 
 **Notes:**
+- Completed ahead of schedule (~2-3 hours vs 8 planned)
+- Sidebar design matches Apple Music aesthetic
+- Fixed width (520px) for settings views prevents content shifting
+- Dashboard remains flexible width
+- All UI polish items completed (hover effects, proper spacing, icons)
+- Ready for Day 2: Settings persistence implementation
 
 ---
 
