@@ -48,7 +48,6 @@ enum DashboardSection: String, CaseIterable, Identifiable {
 
 /// Main window for Dashboard and Settings with sidebar navigation
 struct DashboardSettingsView: View {
-    @StateObject private var settingsManager = SettingsManager.shared
     @State private var selectedSection: DashboardSection = .dashboard
     @Environment(\.dismiss) private var dismiss
 
@@ -76,6 +75,7 @@ struct DashboardSettingsView: View {
             .frame(width: 520)
         }
         .frame(width: 720, height: 520)
+        .environmentObject(SettingsManager.shared)
     }
 
     // MARK: - Sidebar

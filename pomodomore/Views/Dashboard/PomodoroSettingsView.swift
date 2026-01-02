@@ -11,7 +11,7 @@ import SwiftUI
 
 /// Pomodoro timer configuration settings
 struct PomodoroSettingsView: View {
-    @ObservedObject var settingsManager = SettingsManager.shared
+    @EnvironmentObject var settingsManager: SettingsManager
 
     var body: some View {
         ScrollView {

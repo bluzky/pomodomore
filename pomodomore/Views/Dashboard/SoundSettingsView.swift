@@ -11,7 +11,7 @@ import SwiftUI
 
 /// Sound and notification configuration settings
 struct SoundSettingsView: View {
-    @ObservedObject var settingsManager = SettingsManager.shared
+    @EnvironmentObject var settingsManager: SettingsManager
 
     private let tickSoundOptions = ["None", "Tick 1", "Tick 2", "Tick 3", "Glass", "Tink", "Pop"]
     private let ambientSoundOptions = ["None", "White Noise", "Rain", "Cafe", "Forest", "Ocean"]

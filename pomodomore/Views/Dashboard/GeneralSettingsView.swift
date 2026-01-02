@@ -11,7 +11,7 @@ import SwiftUI
 
 /// General application settings
 struct GeneralSettingsView: View {
-    @ObservedObject var settingsManager = SettingsManager.shared
+    @EnvironmentObject var settingsManager: SettingsManager
 
     var body: some View {
         ScrollView {
