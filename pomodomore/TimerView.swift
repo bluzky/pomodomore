@@ -72,22 +72,39 @@ extension TrafficLightButton.ButtonType {
     }
 }
 
-// MARK: - Sound Button Style
-struct SoundButtonStyle: ButtonStyle {
+// MARK: - Interactive Button Style Base
+private struct InteractiveButtonContent: View {
+    let configuration: ButtonStyle.Configuration
+    let pressScale: CGFloat
     @State private var isHovered = false
-    
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .foregroundColor(iconColor(isPressed: configuration.isPressed))
-            .scaleEffect(configuration.isPressed ? 0.9 : 1.0)
+    let content: (_ isPressed: Bool, _ isHovered: Bool) -> AnyView
+
+    var body: some View {
+        content(configuration.isPressed, isHovered)
+            .scaleEffect(configuration.isPressed ? pressScale : 1.0)
             .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
             .animation(.easeOut(duration: 0.15), value: isHovered)
             .onHover { hovering in
                 isHovered = hovering
             }
     }
-    
-    private func iconColor(isPressed: Bool) -> Color {
+}
+
+// MARK: - Sound Button Style
+struct SoundButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        InteractiveButtonContent(
+            configuration: configuration,
+            pressScale: 0.9
+        ) { isPressed, isHovered in
+            AnyView(
+                configuration.label
+                    .foregroundColor(iconColor(isPressed: isPressed, isHovered: isHovered))
+            )
+        }
+    }
+
+    private func iconColor(isPressed: Bool, isHovered: Bool) -> Color {
         if isPressed {
             return .primary.opacity(0.9)
         } else if isHovered {
@@ -154,51 +171,42 @@ struct TagSelectButton: View {
 // MARK: - Hover Button Style
 struct HoverButtonStyle: ButtonStyle {
     let hoverColor: Color?
-    
+
     init(hoverColor: Color? = nil) {
         self.hoverColor = hoverColor
     }
-    
+
     func makeBody(configuration: Configuration) -> some View {
-        HoverButtonContent(configuration: configuration, hoverColor: hoverColor)
+        InteractiveButtonContent(
+            configuration: configuration,
+            pressScale: 0.95
+        ) { isPressed, isHovered in
+            AnyView(
+                configuration.label
+                    .background(
+                        Circle()
+                            .fill(backgroundColor(isPressed: isPressed, isHovered: isHovered))
+                    )
+                    .foregroundStyle(iconColor(isPressed: isPressed, isHovered: isHovered))
+            )
+        }
     }
-    
-    struct HoverButtonContent: View {
-        let configuration: Configuration
-        let hoverColor: Color?
-        @State private var isHovered = false
-        
-        var body: some View {
-            configuration.label
-                .background(
-                    Circle()
-                        .fill(backgroundColorForState)
-                )
-                .foregroundStyle(iconColorForState)
-                .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-                .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
-                .animation(.easeOut(duration: 0.15), value: isHovered)
-                .onHover { hovering in
-                    isHovered = hovering
-                }
+
+    private func backgroundColor(isPressed: Bool, isHovered: Bool) -> Color {
+        if isPressed {
+            return Color.primary.opacity(0.15)
+        } else if isHovered {
+            return Color.primary.opacity(0.12)
+        } else {
+            return Color.primary.opacity(0.08)
         }
-        
-        private var backgroundColorForState: Color {
-            if configuration.isPressed {
-                return Color.primary.opacity(0.15)
-            } else if isHovered {
-                return Color.primary.opacity(0.12)
-            } else {
-                return Color.primary.opacity(0.08)
-            }
-        }
-        
-        private var iconColorForState: Color {
-            if let hoverColor = hoverColor, (isHovered || configuration.isPressed) {
-                return hoverColor
-            } else {
-                return .primary
-            }
+    }
+
+    private func iconColor(isPressed: Bool, isHovered: Bool) -> Color {
+        if let hoverColor = hoverColor, (isHovered || isPressed) {
+            return hoverColor
+        } else {
+            return .primary
         }
     }
 }
@@ -206,7 +214,6 @@ struct HoverButtonStyle: ButtonStyle {
 // MARK: - Timer View
 struct TimerView: View {
     @ObservedObject var viewModel: TimerViewModel
-    @State private var isWindowFocused: Bool = false
     @State private var isHovered: Bool = false
 
     // Controls are always visible when idle/paused state, or on hover
@@ -352,12 +359,6 @@ struct TimerView: View {
         )
         .onHover { hovering in
             isHovered = hovering
-        }
-        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) { _ in
-            isWindowFocused = true
-        }
-        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didResignKeyNotification)) { _ in
-            isWindowFocused = false
         }
     }
 
