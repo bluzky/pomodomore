@@ -14,7 +14,7 @@ struct PomodomoreApp: App {
     var body: some Scene {
         // Settings scene doesn't auto-open on launch (unlike WindowGroup)
         // This ensures only the menubar icon shows, not a window
-        Settings {
+        SwiftUI.Settings {
             EmptyView()
         }
     }

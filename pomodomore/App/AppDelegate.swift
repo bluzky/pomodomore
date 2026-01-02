@@ -12,6 +12,7 @@ import Combine
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     var timerStatusMenuItem: NSMenuItem?
+    var stopMenuItem: NSMenuItem?
     let windowManager = WindowManager.shared
     private var cancellables = Set<AnyCancellable>()
 
@@ -53,7 +54,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             action: #selector(stopTimer),
             keyEquivalent: ""
         )
+        stopItem.isHidden = true // Hidden by default when idle
         menu.addItem(stopItem)
+        stopMenuItem = stopItem
 
         // Add separator
         menu.addItem(NSMenuItem.separator())
@@ -66,6 +69,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         )
         alwaysOnTopItem.state = windowManager.alwaysOnTop ? .on : .off
         menu.addItem(alwaysOnTopItem)
+
+        // Add separator
+        menu.addItem(NSMenuItem.separator())
+
+        // Add Dashboard menu item
+        let dashboardItem = NSMenuItem(
+            title: "Dashboard",
+            action: #selector(showDashboard),
+            keyEquivalent: ","
+        )
+        menu.addItem(dashboardItem)
 
         // Add separator
         menu.addItem(NSMenuItem.separator())
@@ -114,6 +128,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    @objc func showDashboard() {
+        windowManager.showDashboardSettingsWindow()
+    }
+
     @objc func quitApp() {
         NSApplication.shared.terminate(nil)
     }
@@ -160,5 +178,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Update Start/Pause menu item text
         timerStatusMenuItem?.title = viewModel.primaryActionTitle
+
+        // Show/hide Stop menu item based on state
+        stopMenuItem?.isHidden = viewModel.currentState == .idle
     }
 }

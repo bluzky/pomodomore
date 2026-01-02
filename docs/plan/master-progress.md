@@ -82,9 +82,11 @@ Overall:       38%  (3/8 weeks)
 
 ---
 
-### ⏳ Week 3: Essential Settings + Sounds
+### ⏳ Week 3: Essential Settings + Sounds (Jan 13-17, 2026)
 **Status:** Ready to Start
 **Target:** Core settings and audio feedback
+**Plan:** `docs/plan/week-3-plan.md`
+**Progress:** `docs/plan/week-3/progress.md`
 **Key Deliverables:**
 - [ ] Basic Settings dialog (timer durations only)
 - [ ] Settings persistence (settings.json)
