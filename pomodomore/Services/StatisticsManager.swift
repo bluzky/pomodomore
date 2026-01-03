@@ -6,11 +6,12 @@
 //
 
 import Foundation
+import Combine
 
 // MARK: - Statistics Manager
 
 /// Aggregates session data for Dashboard statistics
-class StatisticsManager {
+final class StatisticsManager: ObservableObject {
     /// Shared singleton instance
     static let shared = StatisticsManager()
 
@@ -147,23 +148,20 @@ class StatisticsManager {
 
     /// Week range for a specific offset
     private func weekRange(for offset: Int) -> (start: Date, end: Date) {
-        let today = Date()
+        let today = calendar.startOfDay(for: Date())
 
-        // Find the Monday of the target week
         let weekday = calendar.component(.weekday, from: today)
-        let daysFromMonday = (weekday + 5) % 7 // Monday = 0 days offset
+        let daysFromMonday = (weekday + 5) % 7
         let weekOffset = offset * 7
 
         guard let monday = calendar.date(byAdding: .day, value: -daysFromMonday + weekOffset, to: today) else {
             return (today, today)
         }
 
-        // Find the Sunday of that week
         guard let sunday = calendar.date(byAdding: .day, value: 6, to: monday) else {
             return (monday, monday)
         }
 
-        // Set end of day for Sunday
         var sundayComponents = calendar.dateComponents([.year, .month, .day], from: sunday)
         sundayComponents.hour = 23
         sundayComponents.minute = 59
@@ -186,8 +184,9 @@ class StatisticsManager {
 
     // MARK: - Refresh
 
-    /// Force reload of session data (useful after completing a session)
+    /// Force reload of session data and notify observers (triggers UI updates)
     func refresh() {
         cachedSessions = nil
+        objectWillChange.send()
     }
 }

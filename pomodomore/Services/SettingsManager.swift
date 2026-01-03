@@ -39,8 +39,10 @@ class SettingsManager: ObservableObject {
         // Auto-save when settings change (debounced 500ms)
         $settings
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.storage.saveSettings(self?.settings ?? Settings())
+            .sink { [weak self] newSettings in
+                guard let self = self else { return }
+                self.storage.saveSettings(newSettings)
+                ConfigManager.shared.updateFromSettings(newSettings)
             }
             .store(in: &cancellables)
     }

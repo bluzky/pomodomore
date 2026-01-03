@@ -11,10 +11,8 @@ import SwiftUI
 
 /// Dashboard showing today's stats and weekly chart
 struct DashboardView: View {
+    @StateObject private var statistics = StatisticsManager.shared
     @State private var currentWeekOffset: Int = 0
-
-    /// Statistics manager for real data
-    private let statistics = StatisticsManager.shared
 
     var body: some View {
         ScrollView {
