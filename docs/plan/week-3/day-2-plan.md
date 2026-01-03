@@ -198,14 +198,14 @@ class StatisticsManager {
 
 | Time | Activity |
 |------|----------|
-| | |
-| | |
-| | |
-| | |
-| | |
-| | |
-| | |
-| | |
+| 10:00 - 10:30 | Create StorageManager.swift |
+| 10:30 - 11:00 | Make Settings Codable |
+| 11:00 - 11:30 | Update SettingsManager with auto-save |
+| 11:30 - 12:00 | Create StatisticsManager.swift |
+| 12:00 - 13:00 | Lunch |
+| 13:00 - 14:00 | Connect Dashboard to real data |
+| 14:00 - 14:30 | Update ConfigManager + App init |
+| 14:30 - 15:00 | Test, build, commit |
 
 ---
 
