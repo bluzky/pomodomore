@@ -49,7 +49,6 @@ enum DashboardSection: String, CaseIterable, Identifiable, Hashable {
 /// Main window for Dashboard and Settings with sidebar navigation
 struct DashboardSettingsView: View {
     @State private var selectedSection: DashboardSection = .dashboard
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationSplitView {
@@ -58,19 +57,9 @@ struct DashboardSettingsView: View {
                 .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 220)
         } detail: {
             // Content Area
-            VStack(spacing: 0) {
-                contentArea
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                // Action buttons (only for settings sections)
-                if selectedSection.isSettingsSection {
-                    Divider()
-                    actionButtons
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                }
-            }
-            .navigationTitle(selectedSection.displayName)
+            contentArea
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .navigationTitle(selectedSection.displayName)
         }
         .navigationSplitViewStyle(.balanced)
         .frame(width: 720, height: 520)
@@ -155,19 +144,6 @@ struct DashboardSettingsView: View {
             .frame(width: 520, alignment: .center)
             .frame(maxHeight: .infinity)
             .background(Color(NSColor.windowBackgroundColor))
-        }
-    }
-
-    // MARK: - Action Buttons
-
-    private var actionButtons: some View {
-        HStack {
-            Spacer()
-
-            Button("Close") {
-                dismiss()
-            }
-            .keyboardShortcut(.defaultAction)
         }
     }
 }
