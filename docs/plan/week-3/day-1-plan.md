@@ -18,7 +18,7 @@ Day complete when:
 - [ ] Sound settings view shows notifications toggle and sound dropdowns (placeholder)
 - [ ] Settings menu item in menubar opens Dashboard + Settings window
 - [ ] Sidebar navigation switches between all sections smoothly
-- [ ] Cancel/Save buttons work (close window, persistence added Day 2)
+- [ ] Close button works (auto-save enabled)
 - [ ] Build: 0 errors, 0 warnings
 - [ ] Manual testing: All UI sections display and navigate correctly
 
@@ -74,8 +74,8 @@ Day complete when:
 - [ ] Active section shows arrow indicator (◀) and background highlight
 - [ ] Content area (560px) switches based on sidebar selection
 - [ ] Smooth transitions between sections (no flicker)
-- [ ] Cancel/Save buttons appear for settings sections (not Dashboard)
-- [ ] Clicking Cancel or Save closes window
+- [ ] Close button appears for settings sections (not Dashboard)
+- [ ] Clicking Close closes window
 - [ ] Build clean with no errors
 
 **Implementation Notes:**
@@ -86,7 +86,7 @@ Day complete when:
 - Conditional rendering for content area using switch statement
 - Use `.frame(width: 720, height: 520)` on window
 - Appearance section greyed out (disabled) - Week 4 scope
-- Cancel/Save buttons in HStack at bottom of content area, only for settings sections
+- Close button in HStack at bottom of content area, only for settings sections
 
 ---
 
@@ -148,8 +148,7 @@ Day complete when:
 - [ ] Window appears centered on screen
 - [ ] Can switch between all sections smoothly
 - [ ] All UI elements render correctly
-- [ ] Cancel button closes window
-- [ ] Save button closes window (persistence added Day 2)
+- [ ] Close button closes window (settings auto-save)
 - [ ] Window can be reopened after closing
 - [ ] Build: 0 errors, 0 warnings
 - [ ] No console warnings during testing
@@ -162,8 +161,7 @@ Day complete when:
 - [ ] Pomodoro shows all steppers with correct default values
 - [ ] Sound shows toggles and dropdowns
 - [ ] Appearance is greyed out (disabled)
-- [ ] Click Cancel on any settings section → Window closes
-- [ ] Click Save on any settings section → Window closes
+- [ ] Click Close on any settings section → Window closes
 - [ ] Reopen Settings → Everything still works
 - [ ] No visual glitches or layout issues
 
@@ -250,10 +248,9 @@ DashboardSettingsView (720×520)
    - Sound: Toggles work, dropdowns show options
 
 5. **Button Behavior:**
-   - Settings sections show Cancel/Save
-   - Dashboard section does NOT show Cancel/Save
-   - Cancel closes window
-   - Save closes window
+   - Settings sections show Close button
+   - Dashboard section does NOT show Close button
+   - Close closes window (settings auto-save)
 
 6. **Build Verification:**
    - ⌘+B → 0 errors, 0 warnings

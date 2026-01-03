@@ -87,4 +87,13 @@ class ConfigManager: ObservableObject {
             longBreakDuration: longBreak
         )
     }
+
+    /// Update durations from Settings
+    func updateFromSettings(_ settings: Settings) {
+        durations = SessionDurations(
+            pomodoroDuration: settings.pomodoro.pomodoroDuration,
+            shortBreakDuration: settings.pomodoro.shortBreakDuration,
+            longBreakDuration: settings.pomodoro.longBreakDuration
+        )
+    }
 }

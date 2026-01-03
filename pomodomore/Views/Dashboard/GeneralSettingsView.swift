@@ -15,52 +15,39 @@ struct GeneralSettingsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 0) {
                 // Startup Section
-                startupSection
+                SettingsSectionHeader(title: "Startup")
+
+                SettingsToggleRow(
+                    label: "Start on login",
+                    isOn: $settingsManager.settings.general.startOnLogin
+                )
 
                 // About Section
-                aboutSection
+                SettingsSectionHeader(title: "About")
 
-                Spacer()
+                VStack(alignment: .leading, spacing: 8) {
+                    InfoRow(label: "Application", value: "PomodoMore")
+                    InfoRow(label: "Version", value: "1.0")
+                    InfoRow(label: "Description", value: "A beautiful Pomodoro timer for macOS")
+
+                    Link("View on GitHub", destination: URL(string: "https://github.com/bluzky/pomodomore")!)
+                        .font(.system(size: 13))
+                        .padding(.top, 4)
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+
+                Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(24)
+            .padding(.horizontal, 20)
+            .padding(.top, 24)
+            .padding(.bottom, 12)
         }
         .frame(width: 520, alignment: .leading)
         .frame(maxHeight: .infinity)
         .background(Color(NSColor.windowBackgroundColor))
-    }
-
-    // MARK: - Startup Section
-
-    private var startupSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Startup")
-                .font(.system(size: 14, weight: .semibold))
-
-            Toggle("Start on login", isOn: $settingsManager.settings.general.startOnLogin)
-                .toggleStyle(.switch)
-        }
-    }
-
-    // MARK: - About Section
-
-    private var aboutSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("About")
-                .font(.system(size: 14, weight: .semibold))
-
-            VStack(alignment: .leading, spacing: 8) {
-                InfoRow(label: "Application", value: "PomodoMore")
-                InfoRow(label: "Version", value: "1.0")
-                InfoRow(label: "Description", value: "A beautiful Pomodoro timer for macOS")
-
-                Link("View on GitHub", destination: URL(string: "https://github.com/bluzky/pomodomore")!)
-                    .font(.system(size: 13))
-                    .padding(.top, 4)
-            }
-        }
     }
 }
 

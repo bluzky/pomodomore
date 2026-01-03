@@ -13,6 +13,9 @@ import SwiftUI
 struct DashboardView: View {
     @State private var currentWeekOffset: Int = 0
 
+    /// Statistics manager for real data
+    private let statistics = StatisticsManager.shared
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -21,9 +24,12 @@ struct DashboardView: View {
 
                 // This Week Section
                 thisWeekSection
+
+                Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(24)
+            .padding(.horizontal, 24)
+            .padding(.bottom, 12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(NSColor.windowBackgroundColor))
@@ -39,19 +45,19 @@ struct DashboardView: View {
             HStack(spacing: 12) {
                 StatCard(
                     title: "Sessions",
-                    value: "4",
+                    value: "\(statistics.todaySessions)",
                     icon: "🍅"
                 )
 
                 StatCard(
                     title: "Minutes",
-                    value: "96",
+                    value: "\(statistics.todayMinutes)",
                     icon: "⏱"
                 )
 
                 StatCard(
                     title: "Streak",
-                    value: "12",
+                    value: "\(statistics.currentStreak)",
                     icon: "🔥"
                 )
             }
@@ -94,13 +100,13 @@ struct DashboardView: View {
 
     private var weekChart: some View {
         HStack(alignment: .bottom, spacing: 12) {
-            ForEach(0..<7) { day in
+            ForEach(0..<7, id: \.self) { day in
                 VStack(spacing: 4) {
                     // Bar
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.accentColor)
                         .frame(maxWidth: .infinity)
-                        .frame(height: CGFloat.random(in: 30...100))
+                        .frame(height: barHeight(for: day))
 
                     // Day label
                     Text(dayLabel(for: day))
@@ -112,6 +118,15 @@ struct DashboardView: View {
         .frame(maxWidth: .infinity)
         .frame(height: 140)
         .padding(.vertical, 8)
+    }
+
+    private func barHeight(for dayIndex: Int) -> CGFloat {
+        let sessions = statistics.weekSessions(for: currentWeekOffset)
+        guard dayIndex < sessions.count else { return 0 }
+        let count = sessions[dayIndex]
+        guard count > 0 else { return 4 }
+        // Scale: max 8 sessions = 100 height, min 1 session = 20 height
+        return CGFloat(max(20, min(100, count * 15)))
     }
 
     // MARK: - Helpers
@@ -130,7 +145,7 @@ struct StatCard: View {
     let icon: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .center, spacing: 8) {
             Text(title)
                 .font(.system(size: 11))
                 .foregroundColor(.secondary)
@@ -143,11 +158,17 @@ struct StatCard: View {
                     .font(.system(size: 20))
             }
         }
-        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, alignment: .center)
         .frame(height: 80)
         .padding(12)
-        .background(Color(NSColor.controlBackgroundColor))
-        .cornerRadius(8)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color(NSColor.controlBackgroundColor))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                )
+        )
     }
 }
 

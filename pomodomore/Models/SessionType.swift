@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents the type of Pomodoro session
-enum SessionType {
+enum SessionType: String, Codable {
     /// Standard 25-minute Pomodoro work session
     case pomodoro
 

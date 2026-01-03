@@ -15,119 +15,64 @@ struct PomodoroSettingsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                // Session Durations
-                durationsSection
+            VStack(alignment: .leading, spacing: 0) {
+                // Session Durations Section
+                SettingsSectionHeader(title: "Session Durations")
 
-                // Auto-Start
-                autoStartSection
+                SettingsStepperRow(
+                    label: "Pomodoro",
+                    value: Binding(
+                        get: { settingsManager.settings.pomodoro.pomodoroDuration / 60 },
+                        set: { settingsManager.settings.pomodoro.pomodoroDuration = $0 * 60 }
+                    ),
+                    range: 1...60,
+                    valueFormatter: { "\($0) min" }
+                )
 
-                Spacer()
+                SettingsStepperRow(
+                    label: "Short Break",
+                    value: Binding(
+                        get: { settingsManager.settings.pomodoro.shortBreakDuration / 60 },
+                        set: { settingsManager.settings.pomodoro.shortBreakDuration = $0 * 60 }
+                    ),
+                    range: 1...30,
+                    valueFormatter: { "\($0) min" }
+                )
+
+                SettingsStepperRow(
+                    label: "Long Break",
+                    value: Binding(
+                        get: { settingsManager.settings.pomodoro.longBreakDuration / 60 },
+                        set: { settingsManager.settings.pomodoro.longBreakDuration = $0 * 60 }
+                    ),
+                    range: 1...60,
+                    valueFormatter: { "\($0) min" }
+                )
+
+                SettingsStepperRow(
+                    label: "Long Break Interval",
+                    value: $settingsManager.settings.pomodoro.longBreakInterval,
+                    range: 2...10,
+                    valueFormatter: { "\($0) sessions" }
+                )
+
+                // Auto-Start Section
+                SettingsSectionHeader(title: "Auto-Start")
+
+                SettingsToggleRow(
+                    label: "Automatically start next session",
+                    isOn: $settingsManager.settings.pomodoro.autoStartNextSession
+                )
+
+                Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(24)
+            .padding(.horizontal, 20)
+            .padding(.top, 24)
+            .padding(.bottom, 12)
         }
         .frame(width: 520, alignment: .leading)
         .frame(maxHeight: .infinity)
         .background(Color(NSColor.windowBackgroundColor))
-    }
-
-    // MARK: - Durations Section
-
-    private var durationsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Session Durations")
-                .font(.system(size: 14, weight: .semibold))
-
-            VStack(spacing: 12) {
-                DurationStepper(
-                    label: "Pomodoro",
-                    value: $settingsManager.settings.pomodoro.pomodoroDuration,
-                    range: 60...3600,
-                    step: 60
-                )
-
-                DurationStepper(
-                    label: "Short Break",
-                    value: $settingsManager.settings.pomodoro.shortBreakDuration,
-                    range: 60...1800,
-                    step: 60
-                )
-
-                DurationStepper(
-                    label: "Long Break",
-                    value: $settingsManager.settings.pomodoro.longBreakDuration,
-                    range: 60...3600,
-                    step: 60
-                )
-
-                HStack {
-                    Text("Long Break Interval")
-                        .font(.system(size: 13))
-                        .frame(width: 150, alignment: .leading)
-
-                    Stepper(
-                        value: $settingsManager.settings.pomodoro.longBreakInterval,
-                        in: 2...10
-                    ) {
-                        Text("\(settingsManager.settings.pomodoro.longBreakInterval) sessions")
-                            .font(.system(size: 13))
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: - Auto-Start Section
-
-    private var autoStartSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Auto-Start")
-                .font(.system(size: 14, weight: .semibold))
-
-            Toggle("Automatically start next session", isOn: $settingsManager.settings.pomodoro.autoStartNextSession)
-                .toggleStyle(.switch)
-        }
-    }
-}
-
-// MARK: - Duration Stepper
-
-struct DurationStepper: View {
-    let label: String
-    @Binding var value: Int
-    let range: ClosedRange<Int>
-    let step: Int
-
-    private var minutes: Int {
-        value / 60
-    }
-
-    private var minutesBinding: Binding<Int> {
-        Binding(
-            get: { value / 60 },
-            set: { value = $0 * 60 }
-        )
-    }
-
-    var body: some View {
-        HStack {
-            Text(label)
-                .font(.system(size: 13))
-                .frame(width: 150, alignment: .leading)
-
-            Stepper(
-                value: minutesBinding,
-                in: (range.lowerBound / 60)...(range.upperBound / 60),
-                step: step / 60
-            ) {
-                Text("\(minutes) min")
-                    .font(.system(size: 13))
-                    .foregroundColor(.secondary)
-                    .frame(width: 60, alignment: .trailing)
-            }
-        }
     }
 }
 
