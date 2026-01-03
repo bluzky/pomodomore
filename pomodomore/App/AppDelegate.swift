@@ -15,14 +15,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var stopMenuItem: NSMenuItem?
     let windowManager = WindowManager.shared
     private var cancellables = Set<AnyCancellable>()
+    private var appIcon: NSImage?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Create status bar item
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
+        // Load app icon
+        appIcon = NSImage(imageLiteralResourceName: "AppIcon")
+
         if let button = statusItem?.button {
-            // Set initial title with just tomato emoji
-            button.title = "🍅"
+            button.image = appIcon
+            // Adjust image position to align properly in status bar
+            button.imagePosition = .imageLeft
+            // Scale image appropriately for status bar (18x18 is standard)
+            button.image?.size = NSSize(width: 18, height: 18)
         }
 
         // Create menu
@@ -165,14 +172,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let viewModel = windowManager.timerViewModel
         let timeText = viewModel.timeFormatted
 
-        // Update menubar button title (shows countdown time only)
-        // Show time when running or paused, hide when idle or completed
+        // Update menubar button (shows time with icon)
+        // Show time when running or paused, just icon when idle or completed
         if let button = statusItem?.button {
+            button.image = appIcon
+            button.image?.size = NSSize(width: 18, height: 18)
+
             switch viewModel.currentState {
             case .running, .paused:
                 button.title = timeText
             case .idle, .completed:
-                button.title = "🍅"
+                button.title = ""
             }
         }
 

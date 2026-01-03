@@ -14,8 +14,8 @@ struct SoundSettingsView: View {
     @EnvironmentObject var settingsManager: SettingsManager
     private let soundManager = SoundManager.shared
 
-    private let tickSoundOptions = ["None", "Tick 1", "Tick 2", "Tick 3", "Glass", "Tink", "Pop"]
-    private let ambientSoundOptions = ["None", "White Noise", "Rain", "Cafe", "Forest", "Ocean"]
+    private let tickSoundOptions = SoundManager.availableTickSounds
+    private let completionSoundOptions = SoundManager.availableCompletionSounds
 
     var body: some View {
         ScrollView {
@@ -34,11 +34,11 @@ struct SoundSettingsView: View {
                 SettingsPickerRow(
                     label: "Sound",
                     selection: $settingsManager.settings.sound.completionSound,
-                    options: SoundType.allCases,
+                    options: completionSoundOptions,
                     optionLabel: { $0.displayName }
                 )
                 .onChange(of: settingsManager.settings.sound.completionSound) { _, newValue in
-                    soundManager.play(newValue)
+                    soundManager.playCompletionSound(newValue)
                 }
 
                 Text("Sound played when timer completes")
@@ -56,8 +56,12 @@ struct SoundSettingsView: View {
                     options: tickSoundOptions,
                     optionLabel: { $0 }
                 )
+                .onChange(of: settingsManager.settings.sound.tickSound) { _, newValue in
+                    // Preview the selected tick sound (cancels any existing preview)
+                    soundManager.previewTickSound(soundName: newValue)
+                }
 
-                Text("Play a tick sound every second during Pomodoro sessions")
+                Text("Play a looping tick sound during Pomodoro sessions")
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
                     .padding(.horizontal, 16)
@@ -69,8 +73,8 @@ struct SoundSettingsView: View {
                 SettingsPickerRow(
                     label: "Sound",
                     selection: $settingsManager.settings.sound.ambientSound,
-                    options: ambientSoundOptions,
-                    optionLabel: { $0 }
+                    options: SoundManager.availableAmbientSounds,
+                    optionLabel: { $0.displayName }
                 )
 
                 Text("Play ambient sound during Pomodoro sessions")

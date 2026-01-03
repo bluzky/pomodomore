@@ -15,8 +15,17 @@ class StorageManager {
     static let shared = StorageManager()
 
     private let fileManager = FileManager.default
-    private let encoder = JSONEncoder()
-    private let decoder = JSONDecoder()
+    private let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        return encoder
+    }()
+    private let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return decoder
+    }()
 
     // MARK: - File URLs
 
@@ -71,7 +80,7 @@ class StorageManager {
         }
     }
 
-    /// Loads settings from the settings.json file
+    /// Loads settings from the settings.json file with migration support
     /// - Returns: The loaded settings, or nil if loading failed
     func loadSettings() -> Settings? {
         guard fileManager.fileExists(atPath: settingsURL.path) else {
@@ -81,13 +90,62 @@ class StorageManager {
 
         do {
             let data = try Data(contentsOf: settingsURL)
-            let settings = try decoder.decode(Settings.self, from: data)
-            print("StorageManager: Settings loaded successfully")
-            return settings
+
+            // First try normal decoding
+            if let settings = try? decoder.decode(Settings.self, from: data) {
+                print("StorageManager: Settings loaded successfully")
+                return settings
+            }
+
+            // If normal decoding fails, try to migrate old settings
+            print("StorageManager: Attempting to migrate old settings format...")
+            if let migratedSettings = migrateSettings(data: data) {
+                // Save migrated settings
+                saveSettings(migratedSettings)
+                print("StorageManager: Settings migrated successfully")
+                return migratedSettings
+            }
+
+            print("StorageManager: Failed to load settings: migration failed")
+            return nil
         } catch {
             print("StorageManager: Failed to load settings: \(error)")
             return nil
         }
+    }
+
+    /// Migrates old settings format to new format
+    private func migrateSettings(data: Data) -> Settings? {
+        // Create a decoder that handles the old format
+        let decoder = JSONDecoder()
+
+        // Try to decode with custom key path strategy for ambientSound
+        guard let jsonObject = try? JSONSerialization.jsonObject(with: data),
+              var jsonDict = jsonObject as? [String: Any] else {
+            return nil
+        }
+
+        // Migrate old ambient sound values to new enum values
+        let ambientMigration: [String: String] = [
+            "Rain": "Spring Rain",
+            "White Noise": "Water Stream",
+            "Cafe": "Morning Forest",
+            "Forest": "Morning Forest",
+            "Ocean": "Ocean Wave"
+        ]
+
+        if let oldAmbient = jsonDict["ambientSound"] as? String,
+           let newAmbient = ambientMigration[oldAmbient] {
+            jsonDict["ambientSound"] = newAmbient
+            print("StorageManager: Migrated ambientSound from '\(oldAmbient)' to '\(newAmbient)'")
+        }
+
+        // Re-serialize and decode
+        guard let newData = try? JSONSerialization.data(withJSONObject: jsonDict) else {
+            return nil
+        }
+
+        return try? decoder.decode(Settings.self, from: newData)
     }
 
     // MARK: - Session Operations
@@ -107,18 +165,32 @@ class StorageManager {
     /// Loads sessions from the sessions.json file
     /// - Returns: The loaded sessions array, or empty array if file doesn't exist
     func loadSessions() -> [Session] {
+        print("💾 StorageManager.loadSessions() - Looking for file at: \(sessionsURL.path)")
+
         guard fileManager.fileExists(atPath: sessionsURL.path) else {
-            // File doesn't exist on first launch - this is normal
+            print("❌ StorageManager: Sessions file does not exist at path: \(sessionsURL.path)")
+
+            // Check if file exists in other common locations
+            let altPath = sessionsURL.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Pomodomore/sessions.json")
+            if fileManager.fileExists(atPath: altPath.path) {
+                print("⚠️ Found sessions at alternate path: \(altPath.path)")
+            }
+
             return []
         }
 
         do {
             let data = try Data(contentsOf: sessionsURL)
+            print("✅ StorageManager: Read \(data.count) bytes from file")
+
             let sessions = try decoder.decode([Session].self, from: data)
-            print("StorageManager: Loaded \(sessions.count) sessions")
+            print("✅ StorageManager: Successfully decoded \(sessions.count) sessions")
             return sessions
         } catch {
-            print("StorageManager: Failed to load sessions: \(error)")
+            print("❌ StorageManager: Failed to load sessions: \(error)")
+            if let decodingError = error as? DecodingError {
+                print("   Decoding error details: \(decodingError)")
+            }
             return []
         }
     }

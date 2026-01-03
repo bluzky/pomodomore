@@ -27,10 +27,16 @@ final class StatisticsManager: ObservableObject {
     /// Load sessions with caching
     private func getSessions() -> [Session] {
         if let cached = cachedSessions {
+            print("📊 StatisticsManager: Using cached sessions (\(cached.count) sessions)")
             return cached
         }
         let sessions = storage.loadSessions()
         cachedSessions = sessions
+        print("📊 StatisticsManager: Loaded \(sessions.count) sessions from storage")
+        if sessions.count > 0 {
+            print("   First session: \(sessions[0].completionTime)")
+            print("   Last session: \(sessions[sessions.count-1].completionTime)")
+        }
         return sessions
     }
 
@@ -38,8 +44,12 @@ final class StatisticsManager: ObservableObject {
 
     /// Number of completed Pomodoro sessions today
     var todaySessions: Int {
-        let todaySessions = filterSessions(from: startOfToday(), to: endOfToday())
-        return todaySessions.filter { $0.sessionType == .pomodoro }.count
+        let start = startOfToday()
+        let end = endOfToday()
+        let todaySessions = filterSessions(from: start, to: end)
+        let count = todaySessions.filter { $0.sessionType == .pomodoro }.count
+        print("📊 StatisticsManager.todaySessions: \(count) (from \(start) to \(end))")
+        return count
     }
 
     /// Total focus minutes from Pomodoro sessions today
@@ -113,6 +123,11 @@ final class StatisticsManager: ObservableObject {
                 dailyCounts[weekday] += 1
             }
         }
+
+        print("📊 StatisticsManager.weekSessions(offset: \(offset))")
+        print("   Week range: \(weekStart) to \(weekEnd)")
+        print("   Found \(weekSessions.count) sessions in range")
+        print("   Daily counts: \(dailyCounts)")
 
         return dailyCounts
     }
