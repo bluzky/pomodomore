@@ -12,6 +12,7 @@ import SwiftUI
 /// Sound and notification configuration settings
 struct SoundSettingsView: View {
     @EnvironmentObject var settingsManager: SettingsManager
+    private let soundManager = SoundManager.shared
 
     private let tickSoundOptions = ["None", "Tick 1", "Tick 2", "Tick 3", "Glass", "Tink", "Pop"]
     private let ambientSoundOptions = ["None", "White Noise", "Rain", "Cafe", "Forest", "Ocean"]
@@ -26,6 +27,25 @@ struct SoundSettingsView: View {
                     label: "Enable completion notifications",
                     isOn: $settingsManager.settings.sound.notificationsEnabled
                 )
+
+                // Completion Sound Section
+                SettingsSectionHeader(title: "Completion Sound")
+
+                SettingsPickerRow(
+                    label: "Sound",
+                    selection: $settingsManager.settings.sound.completionSound,
+                    options: SoundType.allCases,
+                    optionLabel: { $0.displayName }
+                )
+                .onChange(of: settingsManager.settings.sound.completionSound) { _, newValue in
+                    soundManager.play(newValue)
+                }
+
+                Text("Sound played when timer completes")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8)
 
                 // Tick Sound Section
                 SettingsSectionHeader(title: "Tick Sound")
