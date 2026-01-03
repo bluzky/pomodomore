@@ -87,6 +87,9 @@ struct SoundSettings: Codable {
     /// Enable completion notifications
     var notificationsEnabled: Bool = true
 
+    /// Completion sound type
+    var completionSound: SoundType = .blow
+
     /// Tick sound option (e.g., "None", "Tick 1", "Tick 2")
     var tickSound: String = "None"
 
@@ -95,10 +98,12 @@ struct SoundSettings: Codable {
 
     init(
         notificationsEnabled: Bool = true,
+        completionSound: SoundType = .blow,
         tickSound: String = "None",
         ambientSound: String = "None"
     ) {
         self.notificationsEnabled = notificationsEnabled
+        self.completionSound = completionSound
         self.tickSound = tickSound
         self.ambientSound = ambientSound
     }

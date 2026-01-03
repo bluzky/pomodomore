@@ -92,14 +92,35 @@
 ---
 
 ### Day 3 (Wednesday) - Sound System Foundation
-**Planned:** 8h | **Actual:** ___ h
-**Status:** ⏳ Not Started
+**Planned:** 8h | **Actual:** ~2h
+**Status:** ✅ Complete
 
 **Tasks:**
-- [ ] Create SoundManager with AVFoundation
-- [ ] Define SoundType enum
-- [ ] Implement sound playback and caching
-- [ ] Test: Play sounds on demand
+- [x] Create SoundType enum (Blow, Glass, Hero, Morse, Ping, Submarine, Tink, Typewriter)
+- [x] Create SoundManager with AppKit/NSSound (sandbox-compatible)
+- [x] Add completionSound to Settings model
+- [x] Add simple picker control to SoundSettingsView
+- [x] Sound plays on selection
+- [x] Remove volume control (keep it simple)
+
+**Files Created:**
+- `Models/SoundType.swift`
+- `Services/SoundManager.swift`
+
+**Files Modified:**
+- `Models/Settings.swift` (added completionSound property)
+- `Views/Dashboard/SoundSettingsView.swift` (simplified picker)
+
+**Build Status:**
+- ✅ BUILD SUCCEEDED
+- ✅ 0 errors
+- ⚠️ 2 pre-existing warnings (WindowManager)
+
+**Notes:**
+- Uses AppKit's built-in NSSound.Name (works in sandbox)
+- Simple picker control - plays sound on selection
+- Removed volume control for simplicity
+- Ready for Day 4: Hook sounds to timer completion + notifications
 
 **Notes:**
 
