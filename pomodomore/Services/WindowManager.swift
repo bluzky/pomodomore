@@ -85,13 +85,28 @@ class WindowManager: ObservableObject {
             // Create hosting controller
             let hostingController = NSHostingController(rootView: settingsView)
 
-            // Create window
+            // Create window with unified toolbar style
             let window = NSWindow(contentViewController: hostingController)
             window.title = "PomodoMore"
             window.styleMask = [.titled, .closable, .fullSizeContentView]
-            window.titlebarAppearsTransparent = false
+            window.titlebarAppearsTransparent = true
+            window.titleVisibility = .hidden
             window.setContentSize(NSSize(width: 720, height: 520))
             window.center()
+
+            // Disable zoom/maximize button and hide miniaturize button
+            window.standardWindowButton(.zoomButton)?.isHidden = true
+            window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+
+            // Prevent window from being resized
+            window.minSize = NSSize(width: 720, height: 520)
+            window.maxSize = NSSize(width: 720, height: 520)
+
+            // Configure toolbar for unified appearance
+            let toolbar = NSToolbar()
+            toolbar.showsBaselineSeparator = false
+            window.toolbar = toolbar
+            window.toolbarStyle = .unified
 
             settingsWindow = window
         }

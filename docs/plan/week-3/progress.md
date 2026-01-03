@@ -54,17 +54,40 @@
 ---
 
 ### Day 2 (Tuesday) - Settings Persistence
-**Planned:** 8h | **Actual:** ___ h
-**Status:** ⏳ Not Started
+**Planned:** 8h | **Actual:** ~2h
+**Status:** ✅ Complete
 
 **Tasks:**
-- [ ] Create StorageManager for JSON operations
-- [ ] Make Settings Codable
-- [ ] Implement save/load functionality
-- [ ] Apply settings to ConfigManager on launch
-- [ ] Test: Settings persist across restarts
+- [x] Create StorageManager for JSON operations
+- [x] Make Settings and Session Codable
+- [x] Implement auto-save with 500ms debounce
+- [x] Apply settings to ConfigManager on launch
+- [x] Connect Dashboard to real session data
+- [x] Test: Settings persist across restarts
+
+**Files Created:**
+- `Services/StorageManager.swift`
+- `Services/StatisticsManager.swift`
+
+**Files Modified:**
+- `Models/Session.swift` (added Codable)
+- `Models/SessionType.swift` (added Codable)
+- `Services/SettingsManager.swift` (added auto-save)
+- `Services/ConfigManager.swift` (added updateFromSettings)
+- `Views/DashboardView.swift` (connected to real data)
+- `App/PomodomoreApp.swift` (load settings on launch)
+- `Views/DashboardSettingsView.swift` (removed Save button, now auto-save)
+
+**Build Status:**
+- ✅ BUILD SUCCEEDED
+- ✅ 0 errors
+- ⚠️ 2 pre-existing warnings (WindowManager actor isolation)
 
 **Notes:**
+- Auto-save implemented using Combine debounce
+- No Save/Cancel buttons needed anymore
+- Dashboard shows real session data (today's sessions, minutes, streak)
+- Week chart displays actual session counts
 
 ---
 

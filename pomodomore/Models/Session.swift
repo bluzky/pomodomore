@@ -8,7 +8,7 @@
 import Foundation
 
 /// Represents a completed Pomodoro session with metadata
-struct Session {
+struct Session: Codable {
     /// The type of session that was completed
     let sessionType: SessionType
 

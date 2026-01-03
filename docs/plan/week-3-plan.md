@@ -67,8 +67,7 @@ Week 1-2 delivered a fully functional Pomodoro timer with session cycles, breaks
 - General settings displays startup toggle and about info
 - Pomodoro settings shows duration steppers
 - Sound settings shows toggles and dropdowns
-- Cancel/Save buttons appear for settings sections (not Dashboard)
-- Cancel closes window, Save closes window (persistence added Day 2)
+- Settings auto-save (no Save/Cancel buttons needed)
 
 **UI Specifications:**
 ```
@@ -87,8 +86,7 @@ Week 1-2 delivered a fully functional Pomodoro timer with session cycles, breaks
 ║  Sound         ║                                                  ║
 ║  Appearance    ║  (Appearance greyed out - Week 4)               ║
 ║                ║                                                  ║
-║                ║                      [Cancel]        [Save]      ║
-║                ║                      (for settings sections)      ║
+║                ║                                                  ║
 ╚════════════════╩══════════════════════════════════════════════════╝
 
 Dimensions: 720 × 520 pixels
@@ -104,7 +102,7 @@ Modal window
 - Today cards: HStack with 3 cards (170px × 80px each)
 - Chart: Simple bar view placeholder (full implementation Week 5)
 - Flat layout: No section boxes, just headers and spacing
-- Settings sections show Cancel/Save, Dashboard doesn't
+- Settings auto-save (no buttons, changes persist immediately)
 
 ---
 
@@ -120,7 +118,7 @@ Modal window
   - Create directory if it doesn't exist
 - Make `Settings` model Codable
 - SettingsManager loads settings on app init
-- SettingsManager saves settings when Save button clicked
+- Settings auto-save when settings change (debounced)
 - Apply loaded settings to ConfigManager on app launch
 - Connect Dashboard to real session data
   - Today: Count sessions from today's date
@@ -142,7 +140,8 @@ Modal window
 
 **Testing:**
 - Build clean (0 errors, 0 warnings)
-- Change settings → Save → Quit app → Relaunch → Settings restored
+- Settings auto-save after 500ms debounce when changed
+- Change settings → Quit app → Relaunch → Settings restored
 - JSON file created at correct location with correct structure
 - Invalid JSON file handled gracefully (fall back to defaults)
 - Missing settings file handled (create with defaults)
@@ -337,7 +336,7 @@ Ready to start another Pomodoro?
   - Ensure spacing matches mockups
   - Verify colors and fonts
   - Test sidebar hover states
-  - Verify Cancel/Save button behavior
+  - Verify settings auto-save behavior
 - Create Week 3 summary document
 - Build: 0 errors, 0 warnings
 - All tests passing
@@ -357,7 +356,7 @@ Ready to start another Pomodoro?
   - Dashboard updates after each session
   - Streak increments correctly
 - Test settings persistence:
-  - Change all settings → Save → Quit → Relaunch → Verify all restored
+  - Change all settings → Quit → Relaunch → Verify all restored
   - Verify ConfigManager updates when settings change
   - Verify timer uses new durations after save
 - Test edge cases:

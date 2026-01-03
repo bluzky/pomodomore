@@ -18,90 +18,56 @@ struct SoundSettingsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 0) {
                 // Notifications Section
-                notificationsSection
+                SettingsSectionHeader(title: "Notifications")
+
+                SettingsToggleRow(
+                    label: "Enable completion notifications",
+                    isOn: $settingsManager.settings.sound.notificationsEnabled
+                )
 
                 // Tick Sound Section
-                tickSoundSection
+                SettingsSectionHeader(title: "Tick Sound")
+
+                SettingsPickerRow(
+                    label: "Sound",
+                    selection: $settingsManager.settings.sound.tickSound,
+                    options: tickSoundOptions,
+                    optionLabel: { $0 }
+                )
+
+                Text("Play a tick sound every second during Pomodoro sessions")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8)
 
                 // Ambient Sound Section
-                ambientSoundSection
+                SettingsSectionHeader(title: "Ambient Sound")
 
-                Spacer()
+                SettingsPickerRow(
+                    label: "Sound",
+                    selection: $settingsManager.settings.sound.ambientSound,
+                    options: ambientSoundOptions,
+                    optionLabel: { $0 }
+                )
+
+                Text("Play ambient sound during Pomodoro sessions")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8)
+
+                Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(24)
+            .padding(.horizontal, 20)
+            .padding(.top, 24)
+            .padding(.bottom, 12)
         }
         .frame(width: 520, alignment: .leading)
         .frame(maxHeight: .infinity)
         .background(Color(NSColor.windowBackgroundColor))
-    }
-
-    // MARK: - Notifications Section
-
-    private var notificationsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Notifications")
-                .font(.system(size: 14, weight: .semibold))
-
-            Toggle("Enable completion notifications", isOn: $settingsManager.settings.sound.notificationsEnabled)
-                .toggleStyle(.switch)
-        }
-    }
-
-    // MARK: - Tick Sound Section
-
-    private var tickSoundSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Tick Sound")
-                .font(.system(size: 14, weight: .semibold))
-
-            HStack {
-                Text("Sound")
-                    .font(.system(size: 13))
-                    .frame(width: 100, alignment: .leading)
-
-                Picker("", selection: $settingsManager.settings.sound.tickSound) {
-                    ForEach(tickSoundOptions, id: \.self) { option in
-                        Text(option).tag(option)
-                    }
-                }
-                .pickerStyle(.menu)
-                .frame(width: 150)
-            }
-
-            Text("Play a tick sound every second during Pomodoro sessions")
-                .font(.system(size: 11))
-                .foregroundColor(.secondary)
-        }
-    }
-
-    // MARK: - Ambient Sound Section
-
-    private var ambientSoundSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Ambient Sound")
-                .font(.system(size: 14, weight: .semibold))
-
-            HStack {
-                Text("Sound")
-                    .font(.system(size: 13))
-                    .frame(width: 100, alignment: .leading)
-
-                Picker("", selection: $settingsManager.settings.sound.ambientSound) {
-                    ForEach(ambientSoundOptions, id: \.self) { option in
-                        Text(option).tag(option)
-                    }
-                }
-                .pickerStyle(.menu)
-                .frame(width: 150)
-            }
-
-            Text("Play ambient sound during Pomodoro sessions")
-                .font(.system(size: 11))
-                .foregroundColor(.secondary)
-        }
     }
 }
 
