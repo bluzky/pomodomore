@@ -17,7 +17,7 @@ class TimerViewModel: ObservableObject {
     /// Current state of the timer
     @Published var currentState: TimerState = .idle
 
-/// Current session type (Pomodoro, Short Break, or Long Break)
+    /// Current session type (Pomodoro, Short Break, or Long Break)
     @Published var currentSessionType: SessionType = .pomodoro
 
     /// Number of completed Pomodoro sessions in current cycle (0-4)
@@ -32,8 +32,20 @@ class TimerViewModel: ObservableObject {
     /// Last selected tag (persisted as default for next session)
     @Published var lastSelectedTag: SessionTag = .defaultTag
 
+    /// Whether tick sound is currently enabled (toggled by sound button)
+    @Published var isTickSoundEnabled: Bool = true
+
     /// Time remaining in seconds
     @Published var timeRemaining: Int = 1500 // 25 minutes = 1500 seconds
+
+    // MARK: - Services
+
+    private let settingsManager = SettingsManager.shared
+    private let soundManager = SoundManager.shared
+    private let notificationManager = NotificationManager.shared
+    private let storageManager = StorageManager.shared
+    private let statisticsManager = StatisticsManager.shared
+    private let windowManager = WindowManager.shared
 
     // MARK: - Private Properties
 
@@ -45,6 +57,36 @@ class TimerViewModel: ObservableObject {
     init() {
         // Initialize time remaining based on default session type
         self.timeRemaining = currentSessionType.duration
+
+        // Load tick sound enabled state from settings
+        self.isTickSoundEnabled = settingsManager.settings.sound.soundButtonEnabled
+
+        // Request notification permission on first launch
+        Task {
+            await notificationManager.requestPermission()
+        }
+    }
+
+    // MARK: - Sound Control
+
+    /// Toggle tick sound on/off
+    func toggleTickSound() {
+        isTickSoundEnabled.toggle()
+
+        // Update settings
+        settingsManager.settings.sound.soundButtonEnabled = isTickSoundEnabled
+
+        // If timer is running, start/stop tick sound accordingly
+        if currentState == .running && currentSessionType == .pomodoro {
+            if isTickSoundEnabled {
+                let tickSound = settingsManager.settings.sound.tickSound
+                if tickSound != "None" {
+                    soundManager.startTickLoop(soundName: tickSound)
+                }
+            } else {
+                soundManager.stopTickLoop()
+            }
+        }
     }
 
     // MARK: - Computed Properties
@@ -97,6 +139,22 @@ class TimerViewModel: ObservableObject {
         print("▶️ Timer started")
         currentState = .running
 
+        // Play start sound
+        soundManager.playStart()
+
+        // Start sounds for Pomodoro sessions
+        if currentSessionType == .pomodoro {
+            let tickSound = settingsManager.settings.sound.tickSound
+            let ambientSound = settingsManager.settings.sound.ambientSound
+
+            if isTickSoundEnabled && tickSound != "None" {
+                soundManager.startTickLoop(soundName: tickSound)
+            }
+            if ambientSound != .none {
+                soundManager.startAmbient(ambientSound)
+            }
+        }
+
         // Create timer that fires every second
         timerCancellable = Timer.publish(every: 1.0, on: .main, in: .common)
             .autoconnect()
@@ -116,6 +174,10 @@ class TimerViewModel: ObservableObject {
         print("⏸️ Timer paused at \(timeFormatted)")
         currentState = .paused
         timerCancellable?.cancel()
+
+        // Stop looping sounds first, then play stop sound
+        soundManager.stopLoopingSounds()
+        soundManager.playStop()
     }
 
     /// Reset the timer to initial state
@@ -124,6 +186,10 @@ class TimerViewModel: ObservableObject {
         currentState = .idle
         timeRemaining = currentSessionType.duration
         timerCancellable?.cancel()
+
+        // Stop looping sounds first, then play stop sound
+        soundManager.stopLoopingSounds()
+        soundManager.playStop()
 
         // Don't reset session counter or type - just restart current session
         print("🔄 Reset to: \(currentSessionType.displayName.isEmpty ? "Pomodoro" : currentSessionType.displayName)")
@@ -136,6 +202,10 @@ class TimerViewModel: ObservableObject {
         currentSessionType = .pomodoro
         timeRemaining = currentSessionType.duration
         timerCancellable?.cancel()
+
+        // Stop looping sounds first, then play stop sound
+        soundManager.stopLoopingSounds()
+        soundManager.playStop()
 
         // Preserve completedSessions (cycle progress) and selectedTag (user choice)
         print("🛑 Stopped - Session counter: \(completedSessions), Tag: \(selectedTag.name)")
@@ -161,6 +231,17 @@ class TimerViewModel: ObservableObject {
         currentState = .completed
         timerCancellable?.cancel()
 
+        // Stop all sounds on completion
+        soundManager.stopAll()
+
+        // Play completion sound
+        // - If timer window is visible: play directly (notification is suppressed)
+        // - If timer window is hidden: notification will play the sound
+        let completionSound = settingsManager.settings.sound.completionSound
+        if windowManager.isTimerWindowVisible {
+            soundManager.playCompletionSound(completionSound)
+        }
+
         // Create completed session record with selected tag
         let completedSession = Session(
             sessionType: currentSessionType,
@@ -169,17 +250,42 @@ class TimerViewModel: ObservableObject {
         )
         currentSession = completedSession
 
+        // Save session to storage (only Pomodoro sessions are tracked in stats)
+        if currentSessionType == .pomodoro {
+            var allSessions = storageManager.loadSessions()
+            allSessions.append(completedSession)
+            storageManager.saveSessions(allSessions)
+
+            // Refresh statistics to update dashboard
+            statisticsManager.refresh()
+
+            print("💾 Session saved to storage - Total sessions: \(allSessions.count)")
+        }
+
         // Update session counter and save tag if this was a Pomodoro
         if currentSessionType == .pomodoro {
             completedSessions += 1
             lastSelectedTag = selectedTag // Save for next session default
             print("📊 Completed Pomodoro \(completedSessions)/4 - Tag: \(selectedTag.name)")
+
+            // Send notification for Pomodoro completion (includes completion sound when window is hidden)
+            Task {
+                await notificationManager.showPomodoroComplete(
+                    sessionsCompleted: completedSessions,
+                    totalInSet: settingsManager.settings.pomodoro.longBreakInterval
+                )
+            }
+        } else {
+            // Send notification for break completion (includes completion sound when window is hidden)
+            Task {
+                await notificationManager.showBreakComplete()
+            }
         }
 
         // Auto-transition to next session
         transitionToNextSession()
     }
-    
+
     /// Transition to the next session type based on Pomodoro cycle logic
     private func transitionToNextSession() {
         let nextSessionType: SessionType

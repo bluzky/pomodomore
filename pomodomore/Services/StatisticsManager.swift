@@ -8,6 +8,12 @@
 import Foundation
 import Combine
 
+#if DEBUG
+private let isDebug = true
+#else
+private let isDebug = false
+#endif
+
 // MARK: - Statistics Manager
 
 /// Aggregates session data for Dashboard statistics
@@ -27,10 +33,16 @@ final class StatisticsManager: ObservableObject {
     /// Load sessions with caching
     private func getSessions() -> [Session] {
         if let cached = cachedSessions {
+            if isDebug { print("📊 StatisticsManager: Using cached sessions (\(cached.count) sessions)") }
             return cached
         }
         let sessions = storage.loadSessions()
         cachedSessions = sessions
+        if isDebug { print("📊 StatisticsManager: Loaded \(sessions.count) sessions from storage") }
+        if sessions.count > 0 {
+            if isDebug { print("   First session: \(sessions[0].completionTime)") }
+            if isDebug { print("   Last session: \(sessions[sessions.count-1].completionTime)") }
+        }
         return sessions
     }
 
@@ -38,8 +50,12 @@ final class StatisticsManager: ObservableObject {
 
     /// Number of completed Pomodoro sessions today
     var todaySessions: Int {
-        let todaySessions = filterSessions(from: startOfToday(), to: endOfToday())
-        return todaySessions.filter { $0.sessionType == .pomodoro }.count
+        let start = startOfToday()
+        let end = endOfToday()
+        let todaySessions = filterSessions(from: start, to: end)
+        let count = todaySessions.filter { $0.sessionType == .pomodoro }.count
+        if isDebug { print("📊 StatisticsManager.todaySessions: \(count) (from \(start) to \(end))") }
+        return count
     }
 
     /// Total focus minutes from Pomodoro sessions today
@@ -112,6 +128,13 @@ final class StatisticsManager: ObservableObject {
             if let weekday = weekdayIndex(for: session.completionTime) {
                 dailyCounts[weekday] += 1
             }
+        }
+
+        if isDebug {
+            print("📊 StatisticsManager.weekSessions(offset: \(offset))")
+            print("   Week range: \(weekStart) to \(weekEnd)")
+            print("   Found \(weekSessions.count) sessions in range")
+            print("   Daily counts: \(dailyCounts)")
         }
 
         return dailyCounts

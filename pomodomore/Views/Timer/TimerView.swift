@@ -137,25 +137,14 @@ struct TagSelectButton: View {
         .popover(isPresented: $showPopover, arrowEdge: .bottom) {
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(SessionTag.predefinedTags) { tag in
-                    Button(action: {
-                        selectedTag = tag
-                        showPopover = false
-                    }) {
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(tag.color)
-                                .frame(width: 6, height: 6)
-                            Text(tag.name)
-                                .font(.system(size: 12))
-                                .foregroundColor(.primary)
-                            Spacer()
+                    TagPopoverItem(
+                        tag: tag,
+                        isSelected: selectedTag.id == tag.id,
+                        onSelect: {
+                            selectedTag = tag
+                            showPopover = false
                         }
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .background(selectedTag.id == tag.id ? Color.accentColor.opacity(0.15) : Color.clear)
+                    )
                 }
             }
             .frame(width: 120)
@@ -164,6 +153,42 @@ struct TagSelectButton: View {
                 RoundedRectangle(cornerRadius: 4, style: .continuous)
                     .fill(Color(nsColor: .controlBackgroundColor))
             )
+        }
+    }
+}
+
+// MARK: - Tag Popover Item with Hover Effect
+
+struct TagPopoverItem: View {
+    let tag: SessionTag
+    let isSelected: Bool
+    let onSelect: () -> Void
+
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: onSelect) {
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(tag.color)
+                    .frame(width: 6, height: 6)
+                Text(tag.name)
+                    .font(.system(size: 12))
+                    .foregroundColor(.primary)
+                Spacer()
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .background(
+            isSelected ? Color.accentColor.opacity(0.15) :
+            isHovered ? Color.primary.opacity(0.06) :
+            Color.clear
+        )
+        .onHover { hovering in
+            isHovered = hovering
         }
     }
 }
@@ -214,18 +239,21 @@ struct HoverButtonStyle: ButtonStyle {
 // MARK: - Timer View
 struct TimerView: View {
     @ObservedObject var viewModel: TimerViewModel
+    @EnvironmentObject var settingsManager: SettingsManager
+
     @State private var isHovered: Bool = false
+    @State private var showAmbientPopover: Bool = false
 
     // Controls are always visible when idle/paused state, or on hover
     private var shouldShowControls: Bool {
         viewModel.currentState == .idle || viewModel.currentState == .paused || isHovered
     }
-    
+
     // Timer scales up and repositions when controls are hidden
     private var timerFontSize: CGFloat {
         shouldShowControls ? 36 : 42
     }
-    
+
     private var timerVerticalOffset: CGFloat {
         shouldShowControls ? 0 : 10
     }
@@ -239,30 +267,37 @@ struct TimerView: View {
                     closeWindow()
                 }
                 .padding(.leading, 6)
-                
+
                 Spacer()
-                
+
                 // Sound controls - right side
                 HStack(spacing: 4) {
                     // Sound toggle - 160px from left (or 22px from right)
                     Button(action: {
-                        // TODO: Toggle sound
+                        viewModel.toggleTickSound()
                     }) {
-                        Image(systemName: "speaker.wave.2.fill")
+                        Image(systemName: viewModel.isTickSoundEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
                             .font(.system(size: 10))
                             .frame(width: 16, height: 16)
                     }
                     .buttonStyle(SoundButtonStyle())
-                    
+
                     // Music toggle - 182px from left (or 2px from right)
                     Button(action: {
-                        // TODO: Show ambient sound picker
+                        showAmbientPopover.toggle()
                     }) {
-                        Image(systemName: "music.note")
+                        Image(systemName: settingsManager.settings.sound.ambientSound == .none ? "music.note.slash" : "music.note")
                             .font(.system(size: 10))
                             .frame(width: 16, height: 16)
                     }
                     .buttonStyle(SoundButtonStyle())
+                    .popover(isPresented: $showAmbientPopover, arrowEdge: .bottom) {
+                        AmbientSoundPopoverView(
+                            selectedSound: $settingsManager.settings.sound.ambientSound,
+                            viewModel: viewModel,
+                            showPopover: $showAmbientPopover
+                        )
+                    }
                 }
                 .padding(.trailing, 2)
             }
@@ -271,7 +306,7 @@ struct TimerView: View {
             .padding(.top, 6)
             .opacity(shouldShowControls ? 1 : 0)
             .animation(.easeOut(duration: 0.25), value: shouldShowControls)
-            
+
             // Center content area
             VStack(spacing: 0) {
                 // Tag label - 30px from top
@@ -299,18 +334,18 @@ struct TimerView: View {
                 }
                 .frame(height: 16)
                 .padding(.top, 20)
-                
+
                 // Timer - 50px from top when controls visible
                 Text(viewModel.timeFormatted)
                     .font(.system(size: timerFontSize, weight: .medium, design: .monospaced))
                     .foregroundColor(.primary)
                     .offset(y: timerVerticalOffset)
                     .animation(.easeOut(duration: 0.25), value: shouldShowControls)
-                
+
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            
+
             // Bottom buttons - only visible when timer is running (and controls should show)
             HStack(spacing: 8) {
                 // Pause button (only when running)
@@ -322,7 +357,7 @@ struct TimerView: View {
                     }
                     .buttonStyle(HoverButtonStyle(hoverColor: .orange))
                 }
-                
+
                 // Stop button (only when running)
                 if viewModel.currentState == .running {
                     Button(action: { viewModel.stop() }) {
@@ -332,7 +367,7 @@ struct TimerView: View {
                     }
                     .buttonStyle(HoverButtonStyle(hoverColor: .red))
                 }
-                
+
                 // Start button (when idle or paused)
                 if viewModel.currentState == .idle || viewModel.currentState == .paused {
                     Button(action: { viewModel.toggle() }) {
@@ -365,6 +400,82 @@ struct TimerView: View {
     private func closeWindow() {
         if let window = NSApplication.shared.windows.first(where: { $0 is TimerWindow }) {
             window.close()
+        }
+    }
+}
+
+// MARK: - Ambient Sound Popover View
+
+struct AmbientSoundPopoverView: View {
+    @Binding var selectedSound: AmbientSound
+    @ObservedObject var viewModel: TimerViewModel
+    @Binding var showPopover: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(SoundManager.availableAmbientSounds) { sound in
+                AmbientSoundPopoverItem(
+                    sound: sound,
+                    isSelected: selectedSound == sound,
+                    onSelect: {
+                        selectedSound = sound
+                        showPopover = false
+
+                        // If Pomodoro is running, replace the current ambient sound immediately
+                        if viewModel.currentState == .running && viewModel.currentSessionType == .pomodoro {
+                            SoundManager.shared.stopAmbient()
+                            if sound != .none {
+                                SoundManager.shared.startAmbient(sound)
+                            }
+                        }
+                    }
+                )
+            }
+        }
+        .frame(width: 140)
+        .padding(.vertical, 2)
+        .background(
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .fill(Color(nsColor: .controlBackgroundColor))
+        )
+    }
+}
+
+// MARK: - Ambient Sound Popover Item with Hover Effect
+
+struct AmbientSoundPopoverItem: View {
+    let sound: AmbientSound
+    let isSelected: Bool
+    let onSelect: () -> Void
+
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: onSelect) {
+            HStack(spacing: 6) {
+                Image(systemName: sound == .none ? "music.note.slash" : "music.note")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+                    .frame(width: 10)
+
+                Text(sound.displayName)
+                    .font(.system(size: 12))
+                    .foregroundColor(.primary)
+
+                Spacer()
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .background(
+            isSelected ? Color.accentColor.opacity(0.15) :
+            isHovered ? Color.primary.opacity(0.06) :
+            Color.clear
+        )
+        .onHover { hovering in
+            isHovered = hovering
         }
     }
 }

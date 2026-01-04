@@ -26,8 +26,9 @@ class TimerWindow: NSWindow {
         self.isOpaque = false // Allow transparency
         self.hasShadow = true // Keep shadow for depth
 
-        // Host SwiftUI view with shared timer view model
+        // Host SwiftUI view with shared timer view model and environment objects
         let timerView = TimerView(viewModel: windowManager.timerViewModel)
+            .environmentObject(SettingsManager.shared)
         let hostingView = NSHostingView(rootView: timerView)
 
         // Disable clipping to allow dropdown and popups to overflow

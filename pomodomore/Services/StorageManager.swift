@@ -7,6 +7,12 @@
 
 import Foundation
 
+#if DEBUG
+private let isDebug = true
+#else
+private let isDebug = false
+#endif
+
 // MARK: - Storage Manager
 
 /// Handles JSON file operations for settings persistence
@@ -15,8 +21,17 @@ class StorageManager {
     static let shared = StorageManager()
 
     private let fileManager = FileManager.default
-    private let encoder = JSONEncoder()
-    private let decoder = JSONDecoder()
+    private let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        return encoder
+    }()
+    private let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return decoder
+    }()
 
     // MARK: - File URLs
 
@@ -52,7 +67,7 @@ class StorageManager {
             do {
                 try fileManager.createDirectory(at: appFolder, withIntermediateDirectories: true)
             } catch {
-                print("StorageManager: Failed to create app directory: \(error)")
+                if isDebug { print("StorageManager: Failed to create app directory: \(error)") }
             }
         }
     }
@@ -65,9 +80,9 @@ class StorageManager {
         do {
             let data = try encoder.encode(settings)
             try data.write(to: settingsURL, options: .atomic)
-            print("StorageManager: Settings saved to \(settingsURL.path)")
+            if isDebug { print("StorageManager: Settings saved to \(settingsURL.path)") }
         } catch {
-            print("StorageManager: Failed to save settings: \(error)")
+            if isDebug { print("StorageManager: Failed to save settings: \(error)") }
         }
     }
 
@@ -75,17 +90,17 @@ class StorageManager {
     /// - Returns: The loaded settings, or nil if loading failed
     func loadSettings() -> Settings? {
         guard fileManager.fileExists(atPath: settingsURL.path) else {
-            print("StorageManager: Settings file does not exist")
+            if isDebug { print("StorageManager: Settings file does not exist") }
             return nil
         }
 
         do {
             let data = try Data(contentsOf: settingsURL)
             let settings = try decoder.decode(Settings.self, from: data)
-            print("StorageManager: Settings loaded successfully")
+            if isDebug { print("StorageManager: Settings loaded successfully") }
             return settings
         } catch {
-            print("StorageManager: Failed to load settings: \(error)")
+            if isDebug { print("StorageManager: Failed to load settings: \(error)") }
             return nil
         }
     }
@@ -98,27 +113,41 @@ class StorageManager {
         do {
             let data = try encoder.encode(sessions)
             try data.write(to: sessionsURL, options: .atomic)
-            print("StorageManager: Sessions saved to \(sessionsURL.path)")
+            if isDebug { print("StorageManager: Sessions saved to \(sessionsURL.path)") }
         } catch {
-            print("StorageManager: Failed to save sessions: \(error)")
+            if isDebug { print("StorageManager: Failed to save sessions: \(error)") }
         }
     }
 
     /// Loads sessions from the sessions.json file
     /// - Returns: The loaded sessions array, or empty array if file doesn't exist
     func loadSessions() -> [Session] {
+        if isDebug { print("💾 StorageManager.loadSessions() - Looking for file at: \(sessionsURL.path)") }
+
         guard fileManager.fileExists(atPath: sessionsURL.path) else {
-            // File doesn't exist on first launch - this is normal
+            if isDebug { print("❌ StorageManager: Sessions file does not exist at path: \(sessionsURL.path)") }
+
+            // Check if file exists in other common locations
+            let altPath = sessionsURL.deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("Pomodomore/sessions.json")
+            if fileManager.fileExists(atPath: altPath.path) {
+                if isDebug { print("⚠️ Found sessions at alternate path: \(altPath.path)") }
+            }
+
             return []
         }
 
         do {
             let data = try Data(contentsOf: sessionsURL)
+            if isDebug { print("✅ StorageManager: Read \(data.count) bytes from file") }
+
             let sessions = try decoder.decode([Session].self, from: data)
-            print("StorageManager: Loaded \(sessions.count) sessions")
+            if isDebug { print("✅ StorageManager: Successfully decoded \(sessions.count) sessions") }
             return sessions
         } catch {
-            print("StorageManager: Failed to load sessions: \(error)")
+            if isDebug { print("❌ StorageManager: Failed to load sessions: \(error)") }
+            if let decodingError = error as? DecodingError {
+                if isDebug { print("   Decoding error details: \(decodingError)") }
+            }
             return []
         }
     }

@@ -48,6 +48,12 @@ class WindowManager: ObservableObject {
 
     // MARK: - Public Methods
 
+    /// Check if the timer window is currently visible
+    var isTimerWindowVisible: Bool {
+        guard let window = timerWindow else { return false }
+        return window.isVisible
+    }
+
     /// Show or bring to front the timer window
     func showTimerWindow() {
         if timerWindow == nil {

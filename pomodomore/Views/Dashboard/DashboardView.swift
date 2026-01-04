@@ -6,15 +6,28 @@
 //
 
 import SwiftUI
+import Charts
+
+// MARK: - Data Model
+
+/// Model for weekly chart data
+struct DaySessionData: Identifiable {
+    let id = UUID()
+    let day: String
+    let sessions: Int
+}
 
 // MARK: - Dashboard View
 
 /// Dashboard showing today's stats and weekly chart
 struct DashboardView: View {
-    @StateObject private var statistics = StatisticsManager.shared
+    @ObservedObject private var statistics = StatisticsManager.shared
     @State private var currentWeekOffset: Int = 0
 
     var body: some View {
+        #if DEBUG
+        let _ = print("🎨 DashboardView rendering - Today: \(statistics.todaySessions) sessions, \(statistics.todayMinutes) minutes, Streak: \(statistics.currentStreak)")
+        #endif
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 // Today Section
@@ -97,42 +110,50 @@ struct DashboardView: View {
     // MARK: - Week Chart
 
     private var weekChart: some View {
-        HStack(alignment: .bottom, spacing: 12) {
-            ForEach(0..<7, id: \.self) { day in
-                VStack(spacing: 4) {
-                    // Bar
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.accentColor)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: barHeight(for: day))
+        let chartData = chartData()
 
-                    // Day label
-                    Text(dayLabel(for: day))
-                        .font(.system(size: 11))
+        return Chart(chartData) { data in
+            BarMark(
+                x: .value("Day", data.day),
+                y: .value("Sessions", data.sessions)
+            )
+            .foregroundStyle(data.sessions > 0 ? Color.accentColor : Color.accentColor.opacity(0.3))
+            .cornerRadius(4)
+            .annotation(position: .top, alignment: .center, spacing: 4) {
+                if data.sessions > 0 {
+                    Text("\(data.sessions)")
+                        .font(.system(size: 10))
                         .foregroundColor(.secondary)
                 }
             }
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 140)
-        .padding(.vertical, 8)
+        .chartXAxis {
+            AxisMarks(position: .bottom) { _ in
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 0))
+                AxisValueLabel()
+            }
+        }
+        .chartYAxis {
+            AxisMarks(values: [0, 2, 4, 6, 8]) { _ in
+                AxisGridLine(stroke: StrokeStyle(lineWidth: 1))
+                    .foregroundStyle(Color.secondary.opacity(0.15))
+                AxisValueLabel()
+            }
+        }
+        .chartYScale(domain: 0...8)
+        .frame(height: 160)
     }
 
-    private func barHeight(for dayIndex: Int) -> CGFloat {
+    private func chartData() -> [DaySessionData] {
         let sessions = statistics.weekSessions(for: currentWeekOffset)
-        guard dayIndex < sessions.count else { return 0 }
-        let count = sessions[dayIndex]
-        guard count > 0 else { return 4 }
-        // Scale: max 8 sessions = 100 height, min 1 session = 20 height
-        return CGFloat(max(20, min(100, count * 15)))
-    }
-
-    // MARK: - Helpers
-
-    private func dayLabel(for index: Int) -> String {
         let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-        return days[index]
+
+        return zip(days, sessions).map { day, count in
+            DaySessionData(day: day, sessions: count)
+        }
     }
+
+    private let chartHeight: CGFloat = 160
 }
 
 // MARK: - Stat Card
