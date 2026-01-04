@@ -29,9 +29,9 @@
 
 /* Begin PBXFileReference section */
 		FF345AA42F0AAE64009B2843 /* Sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Sounds; path = pomodomore/Resources/Sounds; sourceTree = "<group>"; };
-		FF6B02AD2F052D0E00C005A4 /* pomodomore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pomodomore.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF6B02BC2F052D0F00C005A4 /* pomodomoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = pomodomoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FF6B02C62F052D0F00C005A4 /* pomodomoreUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = pomodomoreUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF6B02AD2F052D0E00C005A4 /* Pomo Domo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pomo Domo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF6B02BC2F052D0F00C005A4 /* pomodomoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = pomodomoreTests.xctest; path = "Pomo Domo.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF6B02C62F052D0F00C005A4 /* pomodomoreUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = pomodomoreUITests.xctest; path = "Pomo Domo.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -42,7 +42,6 @@
 				"Resources/Sounds/ambient/Morning forest.mp3",
 				"Resources/Sounds/ambient/Ocean wave.mp3",
 				"Resources/Sounds/ambient/Spring rain.mp3",
-				"Resources/Sounds/ambient/Water stream.mp3",
 				"Resources/Sounds/ambient/Wind chime.mp3",
 				"Resources/Sounds/notification/Bell 1.mp3",
 				"Resources/Sounds/notification/Bell 2.mp3",
@@ -135,7 +134,7 @@
 		FF6B02AE2F052D0E00C005A4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FF6B02AD2F052D0E00C005A4 /* pomodomore.app */,
+				FF6B02AD2F052D0E00C005A4 /* Pomo Domo.app */,
 				FF6B02BC2F052D0F00C005A4 /* pomodomoreTests.xctest */,
 				FF6B02C62F052D0F00C005A4 /* pomodomoreUITests.xctest */,
 			);
@@ -164,7 +163,7 @@
 			packageProductDependencies = (
 			);
 			productName = pomodomore;
-			productReference = FF6B02AD2F052D0E00C005A4 /* pomodomore.app */;
+			productReference = FF6B02AD2F052D0E00C005A4 /* Pomo Domo.app */;
 			productType = "com.apple.product-type.application";
 		};
 		FF6B02BB2F052D0F00C005A4 /* pomodomoreTests */ = {
@@ -461,8 +460,8 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = co.onekg.pomodomore;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = co.onekg.pomodone;
+				PRODUCT_NAME = "Pomo Domo";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -494,8 +493,8 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = co.onekg.pomodomore;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = co.onekg.pomodone;
+				PRODUCT_NAME = "Pomo Domo";
 				REGISTER_APP_GROUPS = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -517,7 +516,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 26.1;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = co.onekg.pomodomoreTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Pomo Domo";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -538,7 +537,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 26.1;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = co.onekg.pomodomoreTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Pomo Domo";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -557,7 +556,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = co.onekg.pomodomoreUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Pomo Domo";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -576,7 +575,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = co.onekg.pomodomoreUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Pomo Domo";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;

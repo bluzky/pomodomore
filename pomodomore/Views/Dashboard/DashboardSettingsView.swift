@@ -13,8 +13,8 @@ import SwiftUI
 enum DashboardSection: String, CaseIterable, Identifiable, Hashable {
     case dashboard
     case general
-    case pomodoro
     case sound
+    case about
     case appearance
 
     var id: String { rawValue }
@@ -23,8 +23,8 @@ enum DashboardSection: String, CaseIterable, Identifiable, Hashable {
         switch self {
         case .dashboard: return "Dashboard"
         case .general: return "General"
-        case .pomodoro: return "Pomodoro"
         case .sound: return "Sound"
+        case .about: return "About"
         case .appearance: return "Appearance"
         }
     }
@@ -33,8 +33,8 @@ enum DashboardSection: String, CaseIterable, Identifiable, Hashable {
         switch self {
         case .dashboard: return "chart.bar.fill"
         case .general: return "gearshape.fill"
-        case .pomodoro: return "timer"
         case .sound: return "speaker.wave.2.fill"
+        case .about: return "info.circle.fill"
         case .appearance: return "paintbrush.fill"
         }
     }
@@ -83,43 +83,42 @@ struct DashboardSettingsView: View {
 
             // Settings sections
             Section("Settings") {
-                NavigationLink(value: DashboardSection.general) {
-                    Label {
-                        Text("General")
-                    } icon: {
-                        Image(systemName: "gearshape.fill")
-                    }
-                }
+                 NavigationLink(value: DashboardSection.general) {
+                     Label {
+                         Text("General")
+                     } icon: {
+                         Image(systemName: "gearshape.fill")
+                     }
+                 }
 
-                NavigationLink(value: DashboardSection.pomodoro) {
-                    Label {
-                        Text("Pomodoro")
-                    } icon: {
-                        Image(systemName: "timer")
-                    }
-                }
+                 NavigationLink(value: DashboardSection.sound) {
+                     Label {
+                         Text("Sound")
+                     } icon: {
+                         Image(systemName: "speaker.wave.2.fill")
+                     }
+                 }
 
-                NavigationLink(value: DashboardSection.sound) {
-                    Label {
-                        Text("Sound")
-                    } icon: {
-                        Image(systemName: "speaker.wave.2.fill")
-                    }
-                }
+                 NavigationLink(value: DashboardSection.appearance) {
+                     Label {
+                         Text("Appearance")
+                     } icon: {
+                         Image(systemName: "paintbrush.fill")
+                     }
+                 }
+                 .disabled(true)
 
-                NavigationLink(value: DashboardSection.appearance) {
-                    Label {
-                        Text("Appearance")
-                    } icon: {
-                        Image(systemName: "paintbrush.fill")
-                    }
-                }
-                .disabled(true)
+                 NavigationLink(value: DashboardSection.about) {
+                     Label {
+                         Text("About")
+                     } icon: {
+                         Image(systemName: "info.circle.fill")
+                     }
+                 }
             }
         }
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
-        .background(Color.orange.opacity(0.3))
     }
 
     // MARK: - Content Area
@@ -131,10 +130,10 @@ struct DashboardSettingsView: View {
             DashboardView()
         case .general:
             GeneralSettingsView()
-        case .pomodoro:
-            PomodoroSettingsView()
         case .sound:
             SoundSettingsView()
+        case .about:
+            AboutView()
         case .appearance:
             VStack {
                 Text("Appearance Settings (Week 4)")

@@ -26,7 +26,7 @@ struct DashboardView: View {
 
     var body: some View {
         #if DEBUG
-        let _ = print("🎨 DashboardView rendering - Today: \(statistics.todaySessions) sessions, \(statistics.todayMinutes) minutes, Streak: \(statistics.currentStreak)")
+        let _ = print("🎨 DashboardView rendering - Today: \(statistics.todaySessions) sessions, \(statistics.todayMinutes) minutes, Current Streak: \(statistics.currentStreak)")
         #endif
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -67,7 +67,7 @@ struct DashboardView: View {
                 )
 
                 StatCard(
-                    title: "Streak",
+                    title: "Current Streak",
                     value: "\(statistics.currentStreak)",
                     icon: "🔥"
                 )

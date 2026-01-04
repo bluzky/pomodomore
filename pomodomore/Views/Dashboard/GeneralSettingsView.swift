@@ -19,28 +19,61 @@ struct GeneralSettingsView: View {
                 // Startup Section
                 SettingsSectionHeader(title: "Startup")
 
-                SettingsToggleRow(
-                    label: "Start on login",
-                    isOn: $settingsManager.settings.general.startOnLogin
+                 SettingsToggleRow(
+                     label: "Launch on start",
+                     isOn: $settingsManager.settings.general.startOnLogin
+                 )
+                 .onChange(of: settingsManager.settings.general.startOnLogin) { _, newValue in
+                     LoginItemsManager.shared.setLoginItem(enabled: newValue)
+                 }
+
+                // Session Durations Section
+                SettingsSectionHeader(title: "Session Durations")
+
+                SettingsStepperRow(
+                    label: "Pomodoro",
+                    value: Binding(
+                        get: { settingsManager.settings.pomodoro.pomodoroDuration / 60 },
+                        set: { settingsManager.settings.pomodoro.pomodoroDuration = $0 * 60 }
+                    ),
+                    range: 1...60,
+                    valueFormatter: { "\($0) min" }
                 )
-                .onChange(of: settingsManager.settings.general.startOnLogin) { _, newValue in
-                    LoginItemsManager.shared.setLoginItem(enabled: newValue)
-                }
 
-                // About Section
-                SettingsSectionHeader(title: "About")
+                SettingsStepperRow(
+                    label: "Short Break",
+                    value: Binding(
+                        get: { settingsManager.settings.pomodoro.shortBreakDuration / 60 },
+                        set: { settingsManager.settings.pomodoro.shortBreakDuration = $0 * 60 }
+                    ),
+                    range: 1...30,
+                    valueFormatter: { "\($0) min" }
+                )
 
-                VStack(alignment: .leading, spacing: 8) {
-                    InfoRow(label: "Application", value: "PomodoMore")
-                    InfoRow(label: "Version", value: "1.0")
-                    InfoRow(label: "Description", value: "A beautiful Pomodoro timer for macOS")
+                SettingsStepperRow(
+                    label: "Long Break",
+                    value: Binding(
+                        get: { settingsManager.settings.pomodoro.longBreakDuration / 60 },
+                        set: { settingsManager.settings.pomodoro.longBreakDuration = $0 * 60 }
+                    ),
+                    range: 1...60,
+                    valueFormatter: { "\($0) min" }
+                )
 
-                    Link("View on GitHub", destination: URL(string: "https://github.com/bluzky/pomodomore")!)
-                        .font(.system(size: 13))
-                        .padding(.top, 4)
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
+                SettingsStepperRow(
+                    label: "Long Break Interval",
+                    value: $settingsManager.settings.pomodoro.longBreakInterval,
+                    range: 2...10,
+                    valueFormatter: { "\($0) sessions" }
+                )
+
+                // Auto-Start Section
+                SettingsSectionHeader(title: "Auto-Start")
+
+                SettingsToggleRow(
+                    label: "Automatically start next session",
+                    isOn: $settingsManager.settings.pomodoro.autoStartNextSession
+                )
 
                 Spacer(minLength: 0)
             }
@@ -54,24 +87,7 @@ struct GeneralSettingsView: View {
     }
 }
 
-// MARK: - Info Row
 
-struct InfoRow: View {
-    let label: String
-    let value: String
-
-    var body: some View {
-        HStack {
-            Text(label)
-                .font(.system(size: 13))
-                .foregroundColor(.secondary)
-                .frame(width: 100, alignment: .leading)
-
-            Text(value)
-                .font(.system(size: 13))
-        }
-    }
-}
 
 // MARK: - Preview
 
