@@ -23,6 +23,9 @@ struct GeneralSettingsView: View {
                     label: "Start on login",
                     isOn: $settingsManager.settings.general.startOnLogin
                 )
+                .onChange(of: settingsManager.settings.general.startOnLogin) { _, newValue in
+                    LoginItemsManager.shared.setLoginItem(enabled: newValue)
+                }
 
                 // About Section
                 SettingsSectionHeader(title: "About")

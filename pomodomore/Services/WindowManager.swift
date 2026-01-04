@@ -110,7 +110,6 @@ class WindowManager: ObservableObject {
 
             // Configure toolbar for unified appearance
             let toolbar = NSToolbar()
-            toolbar.showsBaselineSeparator = false
             window.toolbar = toolbar
             window.toolbarStyle = .unified
 
@@ -167,7 +166,10 @@ class WindowManager: ObservableObject {
             object: window,
             queue: .main
         ) { [weak self] _ in
-            self?.saveWindowPosition()
+            guard let self else { return }
+            Task { @MainActor in
+                self.saveWindowPosition()
+            }
         }
 
         // Observer for window close (to save final position)
@@ -176,7 +178,10 @@ class WindowManager: ObservableObject {
             object: window,
             queue: .main
         ) { [weak self] _ in
-            self?.saveWindowPosition()
+            guard let self else { return }
+            Task { @MainActor in
+                self.saveWindowPosition()
+            }
         }
     }
 }
