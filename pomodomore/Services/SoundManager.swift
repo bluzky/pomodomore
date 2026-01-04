@@ -42,7 +42,7 @@ final class SoundManager: ObservableObject {
 
         stopTickLoop()
 
-        guard let player = createPlayer(for: soundName, type: .tick) else {
+        guard let player = createTickPlayer(for: soundName) else {
             return
         }
 
@@ -64,8 +64,8 @@ final class SoundManager: ObservableObject {
     // MARK: - Ambient Sounds (Looping)
 
     /// Start looping ambient sound
-    func startAmbient(_ sound: AmbientSound) {
-        guard sound != .none else { return }
+    func startAmbient(_ sound: AmbientSoundItem) {
+        guard sound.fileName.isEmpty == false else { return }
 
         stopAmbient()
 
@@ -116,7 +116,7 @@ final class SoundManager: ObservableObject {
     // MARK: - Completion Sounds (One-shot)
 
     /// Play completion sound from bundled resources
-    func playCompletionSound(_ sound: BundledCompletionSound) {
+    func playCompletionSound(_ sound: BundledSound) {
         // Stop any currently playing lifecycle sound first (memory leak fix)
         lifecyclePlayer?.stop()
         lifecyclePlayer = nil
@@ -126,7 +126,7 @@ final class SoundManager: ObservableObject {
         }
         lifecyclePlayer = player
         player.play()
-        if isDebug { print("🎵 Completion sound played: \(sound.rawValue)") }
+        if isDebug { print("🎵 Completion sound played: \(sound.name)") }
     }
 
     // MARK: - Preview Sounds
@@ -139,7 +139,7 @@ final class SoundManager: ObservableObject {
         previewTask?.cancel()
         stopTickLoop()
 
-        guard let player = createPlayer(for: soundName, type: .tick) else {
+        guard let player = createTickPlayer(for: soundName) else {
             return
         }
 
@@ -174,23 +174,9 @@ final class SoundManager: ObservableObject {
 
     // MARK: - Private Helpers
 
-    private enum SoundBundleType {
-        case tick
-        case ambient
-    }
-
-    private func createPlayer(for soundName: String, type: SoundBundleType) -> AVAudioPlayer? {
-        // Determine resource path
-        var resourcePath: String?
-        switch type {
-        case .tick:
-            resourcePath = Bundle.main.path(forResource: "tick \(soundName.replacingOccurrences(of: "Tick ", with: ""))", ofType: "mp3")
-        case .ambient:
-            return nil
-        }
-
-        guard let path = resourcePath else {
-            if isDebug { print("⚠️ Sound file not found: \(soundName)") }
+    private func createTickPlayer(for soundName: String) -> AVAudioPlayer? {
+        guard let path = Bundle.main.path(forResource: soundName, ofType: "mp3", inDirectory: "Sounds/ticks") else {
+            if isDebug { print("⚠️ Tick sound file not found: Sounds/ticks/\(soundName).mp3") }
             return nil
         }
 
@@ -203,11 +189,9 @@ final class SoundManager: ObservableObject {
         return player
     }
 
-    private func createAmbientPlayer(for sound: AmbientSound) -> AVAudioPlayer? {
-        let path = Bundle.main.path(forResource: sound.fileName, ofType: "mp3")
-
-        guard let path = path else {
-            if isDebug { print("⚠️ Ambient sound file not found: \(sound.fileName).mp3") }
+    private func createAmbientPlayer(for sound: AmbientSoundItem) -> AVAudioPlayer? {
+        guard let path = Bundle.main.path(forResource: sound.fileName, ofType: "mp3", inDirectory: "Sounds/ambient") else {
+            if isDebug { print("⚠️ Ambient sound file not found: Sounds/ambient/\(sound.fileName).mp3") }
             return nil
         }
 
@@ -222,8 +206,8 @@ final class SoundManager: ObservableObject {
 
     private func createLifecyclePlayer(for sound: LifecycleSound) -> AVAudioPlayer? {
         let fileName = sound.rawValue.lowercased() // "start" or "stop"
-        guard let path = Bundle.main.path(forResource: fileName, ofType: "mp3") else {
-            if isDebug { print("⚠️ Lifecycle sound file not found: \(fileName).mp3") }
+        guard let path = Bundle.main.path(forResource: fileName, ofType: "mp3", inDirectory: "Sounds") else {
+            if isDebug { print("⚠️ Lifecycle sound file not found: Sounds/\(fileName).mp3") }
             return nil
         }
 
@@ -236,16 +220,14 @@ final class SoundManager: ObservableObject {
         return player
     }
 
-    private func createCompletionPlayer(for sound: BundledCompletionSound) -> AVAudioPlayer? {
-        let path = Bundle.main.path(forResource: sound.fileName, ofType: sound.fileExtension)
-
-        guard let path = path else {
-            if isDebug { print("⚠️ Completion sound file not found: \(sound.fileName).\(sound.fileExtension)") }
+    private func createCompletionPlayer(for sound: BundledSound) -> AVAudioPlayer? {
+        guard let path = Bundle.main.path(forResource: sound.fileName, ofType: sound.fileExtension, inDirectory: "Sounds/notification") else {
+            if isDebug { print("⚠️ Completion sound file not found: Sounds/notification/\(sound.fileName).\(sound.fileExtension)") }
             return nil
         }
 
         guard let player = try? AVAudioPlayer(contentsOf: URL(fileURLWithPath: path)) else {
-            if isDebug { print("⚠️ Failed to create audio player for: \(sound.fileName)") }
+            if isDebug { print("⚠️ Failed to create audio player for: \(sound.name)") }
             return nil
         }
 
@@ -257,21 +239,25 @@ final class SoundManager: ObservableObject {
 // MARK: - Available Sound Lists
 
 extension SoundManager {
-    /// List of available tick sound names
-    static let availableTickSounds: [String] = [
-        "None",
-        "Tick 1",
-        "Tick 2",
-        "Tick 3",
-        "Tick 4",
-        "Tick 5",
-        "Tick 6",
-        "Tick 7"
-    ]
+    /// List of available tick sound names (dynamically loaded)
+    static var availableTickSounds: [String] {
+        ["None"] + SoundLoader.loadTickSoundNames()
+    }
 
-    /// List of available ambient sound names
-    static let availableAmbientSounds: [AmbientSound] = AmbientSound.allCases
+    /// List of available completion sounds (dynamically loaded)
+    static var availableCompletionSounds: [BundledSound] {
+        SoundLoader.loadCompletionSounds()
+    }
 
-    /// List of available completion sound options
-    static let availableCompletionSounds: [BundledCompletionSound] = BundledCompletionSound.allCases
+    /// List of available ambient sounds (dynamically loaded)
+    static var availableAmbientSounds: [AmbientSoundItem] {
+        [AmbientSoundItem.none] + SoundLoader.loadAmbientSounds()
+    }
+}
+
+// MARK: - Lifecycle Sound Enum
+
+enum LifecycleSound: String, Codable {
+    case start = "Start"
+    case stop = "Stop"
 }

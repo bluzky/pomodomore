@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FF345AA52F0AAE64009B2843 /* Sounds in Resources */ = {isa = PBXBuildFile; fileRef = FF345AA42F0AAE64009B2843 /* Sounds */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		FF6B02BD2F052D0F00C005A4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,14 +28,59 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FF345AA42F0AAE64009B2843 /* Sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Sounds; path = pomodomore/Resources/Sounds; sourceTree = "<group>"; };
 		FF6B02AD2F052D0E00C005A4 /* pomodomore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pomodomore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF6B02BC2F052D0F00C005A4 /* pomodomoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = pomodomoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF6B02C62F052D0F00C005A4 /* pomodomoreUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = pomodomoreUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FF345AA32F0AADDD009B2843 /* Exceptions for "pomodomore" folder in "pomodomore" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Resources/Sounds/ambient/Camp fire.mp3",
+				"Resources/Sounds/ambient/Morning forest.mp3",
+				"Resources/Sounds/ambient/Ocean wave.mp3",
+				"Resources/Sounds/ambient/Spring rain.mp3",
+				"Resources/Sounds/ambient/Water stream.mp3",
+				"Resources/Sounds/ambient/Wind chime.mp3",
+				"Resources/Sounds/notification/Bell 1.mp3",
+				"Resources/Sounds/notification/Bell 2.mp3",
+				"Resources/Sounds/notification/Bell 3.mp3",
+				"Resources/Sounds/notification/Bell 4.mp3",
+				"Resources/Sounds/notification/Bell 5.mp3",
+				"Resources/Sounds/notification/Bell 6.mp3",
+				"Resources/Sounds/notification/Bell 7.mp3",
+				"Resources/Sounds/notification/Notification 1.mp3",
+				"Resources/Sounds/notification/Notification 2.wav",
+				"Resources/Sounds/notification/Notification 3.wav",
+				"Resources/Sounds/notification/Notification 4.wav",
+				"Resources/Sounds/notification/Notification 5.wav",
+				"Resources/Sounds/notification/Notification 6.mp3",
+				"Resources/Sounds/notification/Tibetan bowl 1.mp3",
+				"Resources/Sounds/notification/Tibetan bowl 2.mp3",
+				"Resources/Sounds/notification/Tibetan bowl 3.mp3",
+				Resources/Sounds/start.mp3,
+				Resources/Sounds/start1.mp3,
+				Resources/Sounds/stop.mp3,
+				"Resources/Sounds/ticks/tick 1.mp3",
+				"Resources/Sounds/ticks/tick 2.mp3",
+				"Resources/Sounds/ticks/tick 3.mp3",
+				"Resources/Sounds/ticks/tick 4.mp3",
+				"Resources/Sounds/ticks/tick 5.mp3",
+				"Resources/Sounds/ticks/tick 6.mp3",
+				"Resources/Sounds/ticks/tick 7.mp3",
+			);
+			target = FF6B02AC2F052D0E00C005A4 /* pomodomore */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FF6B02AF2F052D0E00C005A4 /* pomodomore */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FF345AA32F0AADDD009B2843 /* Exceptions for "pomodomore" folder in "pomodomore" target */,
+			);
 			path = pomodomore;
 			sourceTree = "<group>";
 		};
@@ -75,6 +124,7 @@
 		FF6B02A42F052D0E00C005A4 = {
 			isa = PBXGroup;
 			children = (
+				FF345AA42F0AAE64009B2843 /* Sounds */,
 				FF6B02AF2F052D0E00C005A4 /* pomodomore */,
 				FF6B02BF2F052D0F00C005A4 /* pomodomoreTests */,
 				FF6B02C92F052D0F00C005A4 /* pomodomoreUITests */,
@@ -212,6 +262,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF345AA52F0AAE64009B2843 /* Sounds in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

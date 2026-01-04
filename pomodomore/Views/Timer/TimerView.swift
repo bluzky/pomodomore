@@ -407,7 +407,7 @@ struct TimerView: View {
 // MARK: - Ambient Sound Popover View
 
 struct AmbientSoundPopoverView: View {
-    @Binding var selectedSound: AmbientSound
+    @Binding var selectedSound: AmbientSoundItem
     @ObservedObject var viewModel: TimerViewModel
     @Binding var showPopover: Bool
 
@@ -416,7 +416,7 @@ struct AmbientSoundPopoverView: View {
             ForEach(SoundManager.availableAmbientSounds) { sound in
                 AmbientSoundPopoverItem(
                     sound: sound,
-                    isSelected: selectedSound == sound,
+                    isSelected: selectedSound.id == sound.id,
                     onSelect: {
                         selectedSound = sound
                         showPopover = false
@@ -424,7 +424,7 @@ struct AmbientSoundPopoverView: View {
                         // If Pomodoro is running, replace the current ambient sound immediately
                         if viewModel.currentState == .running && viewModel.currentSessionType == .pomodoro {
                             SoundManager.shared.stopAmbient()
-                            if sound != .none {
+                            if sound.fileName.isEmpty == false {
                                 SoundManager.shared.startAmbient(sound)
                             }
                         }
@@ -444,7 +444,7 @@ struct AmbientSoundPopoverView: View {
 // MARK: - Ambient Sound Popover Item with Hover Effect
 
 struct AmbientSoundPopoverItem: View {
-    let sound: AmbientSound
+    let sound: AmbientSoundItem
     let isSelected: Bool
     let onSelect: () -> Void
 
@@ -453,7 +453,7 @@ struct AmbientSoundPopoverItem: View {
     var body: some View {
         Button(action: onSelect) {
             HStack(spacing: 6) {
-                Image(systemName: sound == .none ? "music.note.slash" : "music.note")
+                Image(systemName: sound.fileName.isEmpty ? "music.note.slash" : "music.note")
                     .font(.system(size: 10))
                     .foregroundColor(.secondary)
                     .frame(width: 10)
