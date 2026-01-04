@@ -45,6 +45,7 @@ class TimerViewModel: ObservableObject {
     private let notificationManager = NotificationManager.shared
     private let storageManager = StorageManager.shared
     private let statisticsManager = StatisticsManager.shared
+    private let windowManager = WindowManager.shared
 
     // MARK: - Private Properties
 
@@ -233,9 +234,13 @@ class TimerViewModel: ObservableObject {
         // Stop all sounds on completion
         soundManager.stopAll()
 
-        // Play completion sound from bundled resources
+        // Play completion sound
+        // - If timer window is visible: play directly (notification is suppressed)
+        // - If timer window is hidden: notification will play the sound
         let completionSound = settingsManager.settings.sound.completionSound
-        soundManager.playCompletionSound(completionSound)
+        if windowManager.isTimerWindowVisible {
+            soundManager.playCompletionSound(completionSound)
+        }
 
         // Create completed session record with selected tag
         let completedSession = Session(
@@ -263,7 +268,7 @@ class TimerViewModel: ObservableObject {
             lastSelectedTag = selectedTag // Save for next session default
             print("📊 Completed Pomodoro \(completedSessions)/4 - Tag: \(selectedTag.name)")
 
-            // Send notification for Pomodoro completion
+            // Send notification for Pomodoro completion (includes completion sound when window is hidden)
             Task {
                 await notificationManager.showPomodoroComplete(
                     sessionsCompleted: completedSessions,
@@ -271,7 +276,7 @@ class TimerViewModel: ObservableObject {
                 )
             }
         } else {
-            // Send notification for break completion
+            // Send notification for break completion (includes completion sound when window is hidden)
             Task {
                 await notificationManager.showBreakComplete()
             }
