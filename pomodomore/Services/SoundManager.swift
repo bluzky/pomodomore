@@ -11,6 +11,12 @@ import AVFAudio
 import AppKit
 import Combine
 
+#if DEBUG
+private let isDebug = true
+#else
+private let isDebug = false
+#endif
+
 /// Manages sound playback for timer notifications
 @MainActor
 final class SoundManager: ObservableObject {
@@ -44,7 +50,7 @@ final class SoundManager: ObservableObject {
         player.numberOfLoops = -1 // Loop infinitely
         player.play()
         isPlayingTick = true
-        print("🎵 Tick loop started: \(soundName)")
+        if isDebug { print("🎵 Tick loop started: \(soundName)") }
     }
 
     /// Stop tick loop
@@ -52,7 +58,7 @@ final class SoundManager: ObservableObject {
         tickPlayer?.stop()
         tickPlayer = nil
         isPlayingTick = false
-        print("🎵 Tick loop stopped")
+        if isDebug { print("🎵 Tick loop stopped") }
     }
 
     // MARK: - Ambient Sounds (Looping)
@@ -71,7 +77,7 @@ final class SoundManager: ObservableObject {
         player.numberOfLoops = -1 // Loop infinitely
         player.play()
         isPlayingAmbient = true
-        print("🎵 Ambient started: \(sound.displayName)")
+        if isDebug { print("🎵 Ambient started: \(sound.displayName)") }
     }
 
     /// Stop ambient sound
@@ -79,7 +85,7 @@ final class SoundManager: ObservableObject {
         ambientPlayer?.stop()
         ambientPlayer = nil
         isPlayingAmbient = false
-        print("🎵 Ambient stopped")
+        if isDebug { print("🎵 Ambient stopped") }
     }
 
     // MARK: - Lifecycle Sounds (One-shot)
@@ -104,7 +110,7 @@ final class SoundManager: ObservableObject {
         }
         lifecyclePlayer = player
         player.play()
-        print("🎵 Lifecycle sound played: \(sound.rawValue)")
+        if isDebug { print("🎵 Lifecycle sound played: \(sound.rawValue)") }
     }
 
     // MARK: - Completion Sounds (One-shot)
@@ -120,7 +126,7 @@ final class SoundManager: ObservableObject {
         }
         lifecyclePlayer = player
         player.play()
-        print("🎵 Completion sound played: \(sound.rawValue)")
+        if isDebug { print("🎵 Completion sound played: \(sound.rawValue)") }
     }
 
     // MARK: - Preview Sounds
@@ -148,7 +154,7 @@ final class SoundManager: ObservableObject {
             guard !Task.isCancelled else { return }
             stopTickLoop()
         }
-        print("🎵 Tick preview started: \(soundName)")
+        if isDebug { print("🎵 Tick preview started: \(soundName)") }
     }
 
     // MARK: - Utility
@@ -184,12 +190,12 @@ final class SoundManager: ObservableObject {
         }
 
         guard let path = resourcePath else {
-            print("⚠️ Sound file not found: \(soundName)")
+            if isDebug { print("⚠️ Sound file not found: \(soundName)") }
             return nil
         }
 
         guard let player = try? AVAudioPlayer(contentsOf: URL(fileURLWithPath: path)) else {
-            print("⚠️ Failed to create audio player for: \(soundName)")
+            if isDebug { print("⚠️ Failed to create audio player for: \(soundName)") }
             return nil
         }
 
@@ -201,12 +207,12 @@ final class SoundManager: ObservableObject {
         let path = Bundle.main.path(forResource: sound.fileName, ofType: "mp3")
 
         guard let path = path else {
-            print("⚠️ Ambient sound file not found: \(sound.fileName).mp3")
+            if isDebug { print("⚠️ Ambient sound file not found: \(sound.fileName).mp3") }
             return nil
         }
 
         guard let player = try? AVAudioPlayer(contentsOf: URL(fileURLWithPath: path)) else {
-            print("⚠️ Failed to create audio player for: \(sound.displayName)")
+            if isDebug { print("⚠️ Failed to create audio player for: \(sound.displayName)") }
             return nil
         }
 
@@ -217,12 +223,12 @@ final class SoundManager: ObservableObject {
     private func createLifecyclePlayer(for sound: LifecycleSound) -> AVAudioPlayer? {
         let fileName = sound.rawValue.lowercased() // "start" or "stop"
         guard let path = Bundle.main.path(forResource: fileName, ofType: "mp3") else {
-            print("⚠️ Lifecycle sound file not found: \(fileName).mp3")
+            if isDebug { print("⚠️ Lifecycle sound file not found: \(fileName).mp3") }
             return nil
         }
 
         guard let player = try? AVAudioPlayer(contentsOf: URL(fileURLWithPath: path)) else {
-            print("⚠️ Failed to create audio player for: \(fileName)")
+            if isDebug { print("⚠️ Failed to create audio player for: \(fileName)") }
             return nil
         }
 
@@ -234,12 +240,12 @@ final class SoundManager: ObservableObject {
         let path = Bundle.main.path(forResource: sound.fileName, ofType: sound.fileExtension)
 
         guard let path = path else {
-            print("⚠️ Completion sound file not found: \(sound.fileName).\(sound.fileExtension)")
+            if isDebug { print("⚠️ Completion sound file not found: \(sound.fileName).\(sound.fileExtension)") }
             return nil
         }
 
         guard let player = try? AVAudioPlayer(contentsOf: URL(fileURLWithPath: path)) else {
-            print("⚠️ Failed to create audio player for: \(sound.fileName)")
+            if isDebug { print("⚠️ Failed to create audio player for: \(sound.fileName)") }
             return nil
         }
 

@@ -25,7 +25,9 @@ struct DashboardView: View {
     @State private var currentWeekOffset: Int = 0
 
     var body: some View {
+        #if DEBUG
         let _ = print("🎨 DashboardView rendering - Today: \(statistics.todaySessions) sessions, \(statistics.todayMinutes) minutes, Streak: \(statistics.currentStreak)")
+        #endif
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 // Today Section

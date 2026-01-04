@@ -8,6 +8,12 @@
 import Foundation
 import UserNotifications
 
+#if DEBUG
+private let isDebug = true
+#else
+private let isDebug = false
+#endif
+
 /// Manages macOS user notifications for timer completion
 final class NotificationManager: NSObject {
     static let shared = NotificationManager()
@@ -23,14 +29,16 @@ final class NotificationManager: NSObject {
     func requestPermission() async -> Bool {
         do {
             let granted = try await center.requestAuthorization(options: [.alert, .sound, .badge])
-            if granted {
-                print("✅ Notification permission granted")
-            } else {
-                print("⚠️ Notification permission denied")
+            if isDebug {
+                if granted {
+                    print("✅ Notification permission granted")
+                } else {
+                    print("⚠️ Notification permission denied")
+                }
             }
             return granted
         } catch {
-            print("❌ Error requesting notification permission: \(error)")
+            if isDebug { print("❌ Error requesting notification permission: \(error)") }
             return false
         }
     }
@@ -45,7 +53,7 @@ final class NotificationManager: NSObject {
     func showPomodoroComplete(sessionsCompleted: Int, totalInSet: Int) async {
         // Only show notification if timer window is not visible
         guard !WindowManager.shared.isTimerWindowVisible else {
-            print("🔔 Notification suppressed: Timer window is visible")
+            if isDebug { print("🔔 Notification suppressed: Timer window is visible") }
             return
         }
 
@@ -65,7 +73,7 @@ final class NotificationManager: NSObject {
     func showBreakComplete() async {
         // Only show notification if timer window is not visible
         guard !WindowManager.shared.isTimerWindowVisible else {
-            print("🔔 Notification suppressed: Timer window is visible")
+            if isDebug { print("🔔 Notification suppressed: Timer window is visible") }
             return
         }
 
@@ -85,14 +93,14 @@ final class NotificationManager: NSObject {
     func showNotification(content: UNMutableNotificationContent) async {
         // Check if notifications are enabled in settings
         guard SettingsManager.shared.settings.sound.notificationsEnabled else {
-            print("🔔 Notifications disabled in settings")
+            if isDebug { print("🔔 Notifications disabled in settings") }
             return
         }
 
         // Check permission before showing
         let status = await checkPermissionStatus()
         guard status == .authorized else {
-            print("⚠️ Cannot show notification: permission not granted")
+            if isDebug { print("⚠️ Cannot show notification: permission not granted") }
             return
         }
 
@@ -104,9 +112,9 @@ final class NotificationManager: NSObject {
 
         do {
             try await center.add(request)
-            print("📣 Notification shown: \(content.title)")
+            if isDebug { print("📣 Notification shown: \(content.title)") }
         } catch {
-            print("❌ Error showing notification: \(error)")
+            if isDebug { print("❌ Error showing notification: \(error)") }
         }
     }
 
@@ -136,7 +144,7 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         // Handle notification tap if needed
-        print("👆 Notification tapped: \(response.notification.request.content.title)")
+        if isDebug { print("👆 Notification tapped: \(response.notification.request.content.title)") }
         completionHandler()
     }
 }
