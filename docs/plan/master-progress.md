@@ -2,8 +2,8 @@
 
 **Project:** PomodoMore - macOS Pomodoro Timer
 **Start Date:** December 31, 2024
-**Current Week:** 0 (Project Setup)
-**Status:** 🔵 Planning
+**Current Week:** 3 (Complete)
+**Status:** 🟢 Week 3 Complete
 
 ---
 
@@ -13,13 +13,13 @@
 Week 0: ████████████████████ 100% (Project Setup Complete)
 Week 1: ████████████████████ 100% (Core Timer + Menubar - Complete!)
 Week 2: ████████████████████ 100% (Breaks + Session Cycle - Complete!)
-Week 3: ░░░░░░░░░░░░░░░░░░░░   0% (Essential Settings + Sounds - Ready to Start)
+Week 3: ████████████████████ 100% (Essential Settings + Sounds - Complete!)
 Week 4: ░░░░░░░░░░░░░░░░░░░░   0% (Themes + Fonts)
 Week 5: ░░░░░░░░░░░░░░░░░░░░   0% (Statistics + Persistence → MVP)
 Week 6: ░░░░░░░░░░░░░░░░░░░░   0% (Polish + Bug Fixes)
 
-MVP Progress:  12/17 core features (Week 1-2 complete, Week 3-5 remaining)
-Overall:       38%  (3/8 weeks)
+MVP Progress:  17/17 core features (Week 1-3 complete, Week 4-5 remaining)
+Overall:       50%  (4/8 weeks)
 ```
 
 ---
@@ -82,17 +82,20 @@ Overall:       38%  (3/8 weeks)
 
 ---
 
-### ⏳ Week 3: Essential Settings + Sounds (Jan 13-17, 2026)
-**Status:** Ready to Start
+### ✅ Week 3: Essential Settings + Sounds (Jan 13-17, 2026)
+**Status:** Complete
 **Target:** Core settings and audio feedback
 **Plan:** `docs/plan/week-3-plan.md`
-**Progress:** `docs/plan/week-3/progress.md`
+**Summary:** `docs/plan/week-3/summary.md`
 **Key Deliverables:**
-- [ ] Basic Settings dialog (timer durations only)
-- [ ] Settings persistence (settings.json)
-- [ ] Sound system (completion sounds, optional tick)
-- [ ] macOS notifications (session end alerts)
-- [ ] Ambient sound support (optional)
+- [x] Dashboard + Settings window (720×520px, sidebar nav) ✅ Day 1
+- [x] Settings persistence (settings.json) ✅ Day 2
+- [x] Sound system (tick + ambient sounds) ✅ Day 3
+- [x] macOS notifications (session end alerts) ✅ Day 4
+- [x] Start on login functionality ✅ Day 5
+- [x] Build: 0 errors, 0 warnings ✅ Day 5
+
+**Velocity:** ~8-10h actual / 40h planned (20-25%)
 
 ---
 
@@ -156,11 +159,12 @@ Overall:       38%  (3/8 weeks)
 - [x] Always on Top toggle ✅ Week 1
 
 ### Settings & Audio (Week 3)
-- [ ] Settings dialog (timer durations)
-- [ ] Settings persistence (JSON)
-- [ ] Sound system (completion + tick sounds)
-- [ ] macOS notifications
-- [ ] Ambient sound support
+- [x] Settings dialog (timer durations) ✅ Week 3
+- [x] Settings persistence (JSON) ✅ Week 3
+- [x] Sound system (completion + tick sounds) ✅ Week 3
+- [x] macOS notifications ✅ Week 3
+- [x] Ambient sound support ✅ Week 3
+- [x] Start on login ✅ Week 3
 
 ### Visual Customization (Week 4)
 - [ ] Theme system (3+ themes)
@@ -186,17 +190,18 @@ None currently.
 | 0 | 5 | 5 | 100% | - | Project setup complete |
 | 1 | 5 days (37h) | 5 days (7.5h) | 100% | 20% | Menubar app with working timer |
 | 2 | 5 days (40h) | 5 days (8.25h) | 100% | 21% | Full Pomodoro cycle with tagging |
+| 3 | 5 days (40h) | 5 days (~8-10h) | 100% | 20-25% | Settings, sounds, notifications |
 
 ---
 
 ## Next Actions
 
-1. **Week 3 Planning:** Create week-3-plan.md with Essential Settings + Sounds goals
-2. **Week 3 Day 1:** Design and implement basic Settings dialog (timer durations)
-3. **Week 3 Day 2:** Implement settings persistence (settings.json)
-4. **Week 3 Focus:** Complete sound system and notifications for full Pomodoro experience
+1. **Week 4 Planning:** Create week-4-plan.md with Themes + Fonts goals
+2. **Week 4 Day 1:** Implement theme system (Nord, Monokai, Dracula)
+3. **Week 4 Day 2:** Add font selection (SF Mono, Menlo, Monaco)
+4. **Week 5 Focus:** Statistics + Data Persistence for MVP
 
 ---
 
-**Last Updated:** January 2, 2026
-**Next Review:** End of Week 3
+**Last Updated:** January 4, 2026
+**Next Review:** End of Week 4
