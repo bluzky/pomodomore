@@ -76,7 +76,7 @@ class TimerViewModel: ObservableObject {
         settingsManager.settings.sound.soundButtonEnabled = isTickSoundEnabled
 
         // If timer is running, start/stop tick sound accordingly
-        if currentState == .running && currentSessionType == .pomodoro {
+        if currentState == .running {
             if isTickSoundEnabled {
                 let tickSound = settingsManager.settings.sound.tickSound
                 if tickSound != "None" {
@@ -141,17 +141,17 @@ class TimerViewModel: ObservableObject {
         // Play start sound
         soundManager.playStart()
 
-        // Start sounds for Pomodoro sessions
-        if currentSessionType == .pomodoro {
-            let tickSound = settingsManager.settings.sound.tickSound
-            let ambientSound = settingsManager.settings.sound.ambientSound
+        // Start sounds
+        let tickSound = settingsManager.settings.sound.tickSound
+        let ambientSound = settingsManager.settings.sound.ambientSound
 
-            if isTickSoundEnabled && tickSound != "None" {
-                soundManager.startTickLoop(soundName: tickSound)
-            }
-            if ambientSound != .none {
-                soundManager.startAmbient(ambientSound)
-            }
+        // Tick sound for all session types (Pomodoro + Breaks)
+        if isTickSoundEnabled && tickSound != "None" {
+            soundManager.startTickLoop(soundName: tickSound)
+        }
+        // Ambient sound only for Pomodoro sessions
+        if currentSessionType == .pomodoro && ambientSound != .none {
+            soundManager.startAmbient(ambientSound)
         }
 
         // Create timer that fires every second
