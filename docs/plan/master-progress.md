@@ -14,8 +14,8 @@ Week 0: ████████████████████ 100% (Proje
 Week 1: ████████████████████ 100% (Core Timer + Menubar - Complete!)
 Week 2: ████████████████████ 100% (Breaks + Session Cycle - Complete!)
 Week 3: ████████████████████ 100% (Essential Settings + Sounds - Complete!)
-Week 4: ░░░░░░░░░░░░░░░░░░░░   0% (Themes + Fonts)
-Week 5: ░░░░░░░░░░░░░░░░░░░░   0% (Statistics + Persistence → MVP)
+Week 4: ░░░░░░░░░░░░░░░░░░░░   0% (Statistics + Data → MVP)
+Week 5: ░░░░░░░░░░░░░░░░░░░░   0% (Themes + Fonts)
 Week 6: ░░░░░░░░░░░░░░░░░░░░   0% (Polish + Bug Fixes)
 
 MVP Progress:  17/17 core features (Week 1-3 complete, Week 4-5 remaining)
@@ -99,18 +99,7 @@ Overall:       50%  (4/8 weeks)
 
 ---
 
-### ⏳ Week 4: Themes + Fonts
-**Status:** Not Started
-**Target:** Visual customization complete
-**Key Deliverables:**
-- [ ] Theme system (Nord, Monokai, Dracula minimum)
-- [ ] Font selection (SF Mono, Menlo, Monaco)
-- [ ] Theme persistence in settings
-- [ ] Visual polish and theme refinement
-
----
-
-### ⏳ Week 5: Statistics + Data Persistence → **MVP**
+### ⏳ Week 4: Statistics + Data → **MVP**
 **Status:** Not Started
 **Target:** MVP ready to ship
 **Key Deliverables:**
@@ -119,6 +108,17 @@ Overall:       50%  (4/8 weeks)
 - [ ] Weekly navigation (prev/next week)
 - [ ] Data aggregation and display
 - [ ] MVP testing and validation
+
+---
+
+### ⏳ Week 5: Themes + Fonts
+**Status:** Not Started
+**Target:** Visual customization complete
+**Key Deliverables:**
+- [ ] Theme system (Nord, Monokai, Dracula minimum)
+- [ ] Font selection (SF Mono, Menlo, Monaco)
+- [ ] Theme persistence in settings
+- [ ] Visual polish and theme refinement
 
 ---
 
@@ -166,11 +166,11 @@ Overall:       50%  (4/8 weeks)
 - [x] Ambient sound support ✅ Week 3
 - [x] Start on login ✅ Week 3
 
-### Visual Customization (Week 4)
+### Visual Customization (Week 5)
 - [ ] Theme system (3+ themes)
 - [ ] Font selection (3+ fonts)
 
-### Data & Statistics (Week 5)
+### Data & Statistics (Week 4)
 - [ ] Session tracking
 - [ ] Weekly statistics chart
 - [ ] Data persistence (sessions.json)
@@ -196,10 +196,10 @@ None currently.
 
 ## Next Actions
 
-1. **Week 4 Planning:** Create week-4-plan.md with Themes + Fonts goals
-2. **Week 4 Day 1:** Implement theme system (Nord, Monokai, Dracula)
-3. **Week 4 Day 2:** Add font selection (SF Mono, Menlo, Monaco)
-4. **Week 5 Focus:** Statistics + Data Persistence for MVP
+1. **Week 4 Planning:** Create week-4-plan.md with Statistics + Data goals
+2. **Week 4 Day 1:** Implement session tracking (sessions.json)
+3. **Week 4 Day 2:** Build statistics window with weekly bar chart
+4. **Week 5 Focus:** Theme system + Fonts for MVP polish
 
 ---
 
