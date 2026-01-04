@@ -88,28 +88,28 @@ struct SoundSettings: Codable {
     var notificationsEnabled: Bool = true
 
     /// Completion sound from bundled resources
-    var completionSound: BundledCompletionSound = .sound1
+    var completionSound: BundledSound
 
-    /// Tick sound option (e.g., "None", "Tick 1", "Tick 2")
-    var tickSound: String = "Tick 1"
+    /// Tick sound option (e.g., "None", "tick 1", "tick 2")
+    var tickSound: String
 
-    /// Ambient sound option (e.g., "None", "Rain", "Forest")
-    var ambientSound: AmbientSound = .none
+    /// Ambient sound option
+    var ambientSound: AmbientSoundItem
 
     /// Enable sound button on timer to toggle tick sound
     var soundButtonEnabled: Bool = true
 
     init(
         notificationsEnabled: Bool = true,
-        completionSound: BundledCompletionSound = .sound1,
-        tickSound: String = "Tick 1",
-        ambientSound: AmbientSound = .none,
+        completionSound: BundledSound? = nil,
+        tickSound: String = "None",
+        ambientSound: AmbientSoundItem? = nil,
         soundButtonEnabled: Bool = true
     ) {
         self.notificationsEnabled = notificationsEnabled
-        self.completionSound = completionSound
+        self.completionSound = completionSound ?? BundledSound(name: "Sound 1", fileExtension: "mp3")
         self.tickSound = tickSound
-        self.ambientSound = ambientSound
+        self.ambientSound = ambientSound ?? AmbientSoundItem.none
         self.soundButtonEnabled = soundButtonEnabled
     }
 }

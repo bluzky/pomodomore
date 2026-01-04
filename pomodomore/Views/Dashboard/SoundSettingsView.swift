@@ -14,8 +14,17 @@ struct SoundSettingsView: View {
     @EnvironmentObject var settingsManager: SettingsManager
     private let soundManager = SoundManager.shared
 
-    private let tickSoundOptions = SoundManager.availableTickSounds
-    private let completionSoundOptions = SoundManager.availableCompletionSounds
+    private var tickSoundOptions: [String] {
+        SoundManager.availableTickSounds
+    }
+
+    private var completionSoundOptions: [BundledSound] {
+        SoundManager.availableCompletionSounds
+    }
+
+    private var ambientSoundOptions: [AmbientSoundItem] {
+        SoundManager.availableAmbientSounds
+    }
 
     var body: some View {
         ScrollView {
@@ -35,7 +44,7 @@ struct SoundSettingsView: View {
                     label: "Sound",
                     selection: $settingsManager.settings.sound.completionSound,
                     options: completionSoundOptions,
-                    optionLabel: { $0.displayName }
+                    optionLabel: { $0.name }
                 )
                 .onChange(of: settingsManager.settings.sound.completionSound) { _, newValue in
                     soundManager.playCompletionSound(newValue)
@@ -73,7 +82,7 @@ struct SoundSettingsView: View {
                 SettingsPickerRow(
                     label: "Sound",
                     selection: $settingsManager.settings.sound.ambientSound,
-                    options: SoundManager.availableAmbientSounds,
+                    options: ambientSoundOptions,
                     optionLabel: { $0.displayName }
                 )
 
