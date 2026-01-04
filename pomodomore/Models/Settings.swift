@@ -107,7 +107,7 @@ struct SoundSettings: Codable {
         soundButtonEnabled: Bool = true
     ) {
         self.notificationsEnabled = notificationsEnabled
-        self.completionSound = completionSound ?? BundledSound(name: "Sound 1", fileExtension: "mp3")
+        self.completionSound = completionSound ?? BundledSound(name: "Bell 1", fileExtension: "mp3")
         self.tickSound = tickSound
         self.ambientSound = ambientSound ?? AmbientSoundItem.none
         self.soundButtonEnabled = soundButtonEnabled
