@@ -34,6 +34,12 @@ class WindowManager: ObservableObject {
         }
     }
 
+    /// Expanded (non-collapsed) position storage
+    private var expandedPosition: NSPoint?
+
+    /// Is window currently collapsed to edge
+    private var isCollapsedToEdge = false
+
     // MARK: - UserDefaults Keys
     private let windowXKey = "timerWindowX"
     private let windowYKey = "timerWindowY"

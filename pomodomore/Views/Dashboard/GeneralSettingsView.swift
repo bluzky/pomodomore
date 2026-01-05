@@ -71,8 +71,18 @@ struct GeneralSettingsView: View {
                 SettingsSectionHeader(title: "Auto-Start")
 
                 SettingsToggleRow(
-                    label: "Automatically start next session",
-                    isOn: $settingsManager.settings.pomodoro.autoStartNextSession
+                    label: "Auto start break",
+                    isOn: $settingsManager.settings.pomodoro.autoStartBreak
+                )
+
+                // Window Size Section
+                SettingsSectionHeader(title: "Window Size")
+
+                SettingsPickerRow(
+                    label: "Timer window",
+                    selection: $settingsManager.settings.appearance.windowSize,
+                    options: WindowSize.allCases,
+                    optionLabel: { $0.displayName }
                 )
 
                 Spacer(minLength: 0)

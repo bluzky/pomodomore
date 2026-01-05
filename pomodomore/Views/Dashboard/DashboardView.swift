@@ -63,19 +63,22 @@ struct DashboardView: View {
                 StatCard(
                     title: "Sessions",
                     value: "\(statistics.todaySessions)",
-                    icon: "🍅"
+                    icon: "🍅",
+                    isLoading: statistics.isLoading
                 )
 
                 StatCard(
                     title: "Minutes",
                     value: "\(statistics.todayMinutes)",
-                    icon: "⏱"
+                    icon: "⏱",
+                    isLoading: statistics.isLoading
                 )
 
                 StatCard(
                     title: "Current Streak",
                     value: "\(statistics.currentStreak)",
-                    icon: "🔥"
+                    icon: "🔥",
+                    isLoading: statistics.isLoading
                 )
             }
         }
@@ -88,6 +91,7 @@ struct DashboardView: View {
             HStack {
                 Text(weekHeaderText)
                     .font(.system(size: 16, weight: .semibold))
+                    .animation(.easeInOut(duration: 0.3), value: currentWeekOffset)
 
                 Spacer()
 
@@ -98,6 +102,7 @@ struct DashboardView: View {
                             .font(.system(size: 12))
                     }
                     .buttonStyle(.plain)
+                    .disabled(currentWeekOffset <= -2)
 
                     Button(action: { currentWeekOffset += 1 }) {
                         Image(systemName: "chevron.right")
@@ -161,6 +166,7 @@ struct DashboardView: View {
         }
         .chartYScale(domain: 0...8)
         .frame(height: 160)
+        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: chartData.map(\.sessions))
     }
 
     private func chartData() -> [DaySessionData] {
@@ -181,19 +187,14 @@ struct StatCard: View {
     let title: String
     let value: String
     let icon: String
+    var isLoading: Bool = false
 
     var body: some View {
         VStack(alignment: .center, spacing: 8) {
-            Text(title)
-                .font(.system(size: 11))
-                .foregroundColor(.secondary)
-
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(value)
-                    .font(.system(size: 32, weight: .bold))
-
-                Text(icon)
-                    .font(.system(size: 20))
+            if isLoading {
+                loadingView
+            } else {
+                contentView
             }
         }
         .frame(maxWidth: .infinity, alignment: .center)
@@ -207,6 +208,80 @@ struct StatCard: View {
                         .stroke(Color.gray.opacity(0.2), lineWidth: 1)
                 )
         )
+    }
+
+    private var contentView: some View {
+        VStack(alignment: .center, spacing: 8) {
+            Text(title)
+                .font(.system(size: 11))
+                .foregroundColor(.secondary)
+
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(value)
+                    .font(.system(size: 32, weight: .bold))
+
+                Text(icon)
+                    .font(.system(size: 20))
+            }
+        }
+    }
+
+    private var loadingView: some View {
+        VStack(alignment: .center, spacing: 8) {
+            Text(title)
+                .font(.system(size: 11))
+                .foregroundColor(.secondary)
+
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                ShimmerView(width: 40, height: 38)
+                    .frame(width: 40, height: 38)
+
+                ShimmerView(width: 20, height: 20)
+                    .frame(width: 20, height: 20)
+            }
+        }
+    }
+}
+
+// MARK: - Shimmer Loading View
+
+struct ShimmerView: View {
+    let width: CGFloat
+    let height: CGFloat
+
+    @State private var phase: CGFloat = 0
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 4)
+            .fill(
+                LinearGradient(
+                    colors: [
+                        Color.gray.opacity(0.2),
+                        Color.gray.opacity(0.5),
+                        Color.gray.opacity(0.2)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .frame(width: width, height: height)
+            .mask(
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            colors: [.clear, .white, .clear],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: width * 2)
+                    .offset(x: -width + phase * width * 3)
+            )
+            .onAppear {
+                withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                    phase = 1
+                }
+            }
     }
 }
 
