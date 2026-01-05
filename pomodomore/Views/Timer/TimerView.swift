@@ -236,6 +236,28 @@ struct HoverButtonStyle: ButtonStyle {
     }
 }
 
+// MARK: - Glass Background View (macOS visual effect)
+struct GlassBackgroundView: NSViewRepresentable {
+    let cornerRadius: CGFloat
+    let material: NSVisualEffectView.Material
+
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        view.material = material
+        view.blendingMode = .behindWindow
+        view.state = .active
+        view.wantsLayer = true
+        view.layer?.cornerRadius = cornerRadius
+        view.layer?.masksToBounds = true
+        return view
+    }
+
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+        nsView.material = material
+        nsView.layer?.cornerRadius = cornerRadius
+    }
+}
+
 // MARK: - Timer View
 struct TimerView: View {
     @ObservedObject var viewModel: TimerViewModel
@@ -496,8 +518,14 @@ struct TimerView: View {
         .animation(.easeOut(duration: 0.25), value: viewWidth)
         .animation(.easeOut(duration: 0.25), value: viewHeight)
         .background(
-            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .fill(Color(nsColor: .windowBackgroundColor).opacity(0.8))
+            ZStack {
+                GlassBackgroundView(
+                    cornerRadius: cornerRadius,
+                    material: .hudWindow
+                )
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(Color.black.opacity(0.05))
+            }
         )
         .overlay(
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)

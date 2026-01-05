@@ -55,7 +55,7 @@ struct DashboardView: View {
     // MARK: - Today Section
 
     private var todaySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             Text("Today")
                 .font(.system(size: 16, weight: .semibold))
 
@@ -87,7 +87,7 @@ struct DashboardView: View {
     // MARK: - This Week Section
 
     private var thisWeekSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Text(weekHeaderText)
                     .font(.system(size: 16, weight: .semibold))

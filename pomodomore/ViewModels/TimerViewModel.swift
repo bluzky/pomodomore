@@ -160,8 +160,8 @@ class TimerViewModel: ObservableObject {
         if isTickSoundEnabled && tickSound != "None" {
             soundManager.startTickLoop(soundName: tickSound)
         }
-        // Ambient sound only for Pomodoro sessions
-        if currentSessionType == .pomodoro && ambientSound != .none {
+        // Ambient sound only for Pomodoro sessions (respects sound button toggle)
+        if isTickSoundEnabled && currentSessionType == .pomodoro && ambientSound != .none {
             soundManager.startAmbient(ambientSound)
         }
 
@@ -357,7 +357,8 @@ class TimerViewModel: ObservableObject {
         if isTickSoundEnabled && tickSound != "None" {
             soundManager.startTickLoop(soundName: tickSound)
         }
-        if currentSessionType == .pomodoro && ambientSound != .none {
+        // Ambient sound only for Pomodoro sessions (respects sound button toggle)
+        if isTickSoundEnabled && currentSessionType == .pomodoro && ambientSound != .none {
             soundManager.startAmbient(ambientSound)
         }
     }
