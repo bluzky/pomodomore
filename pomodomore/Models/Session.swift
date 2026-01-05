@@ -21,17 +21,21 @@ struct Session: Codable {
     /// The tag/category selected for this session (e.g., Study, Work)
     let selectedTag: SessionTag
 
-    init(sessionType: SessionType, sessionNumber: Int = 0, selectedTag: SessionTag = .defaultTag) {
+    /// Actual duration of the session in seconds (stored to preserve historical accuracy)
+    let duration: Int
+
+    init(sessionType: SessionType, sessionNumber: Int = 0, selectedTag: SessionTag = .defaultTag, duration: Int) {
         self.sessionType = sessionType
         self.completionTime = Date()
         self.sessionNumber = sessionType == .pomodoro ? sessionNumber : 0
         self.selectedTag = selectedTag
+        self.duration = duration
     }
 
     // MARK: - Codable
 
     enum CodingKeys: String, CodingKey {
-        case sessionType, completionTime, sessionNumber, selectedTag
+        case sessionType, completionTime, sessionNumber, selectedTag, duration
     }
 
     init(from decoder: Decoder) throws {
@@ -43,6 +47,15 @@ struct Session: Codable {
         // Decode selectedTag as a simple string, then convert to SessionTag
         let tagId = try container.decode(String.self, forKey: .selectedTag)
         selectedTag = SessionTag(id: tagId)
+
+        // Handle migration: old sessions don't have duration field
+        // Fall back to default duration based on session type
+        if let storedDuration = try? container.decode(Int.self, forKey: .duration) {
+            duration = storedDuration
+        } else {
+            // Migrate old sessions: use default duration for their type
+            duration = SessionDurations.defaultDurations.duration(for: sessionType)
+        }
     }
 
     func encode(to encoder: Encoder) throws {
@@ -51,5 +64,6 @@ struct Session: Codable {
         try container.encode(completionTime, forKey: .completionTime)
         try container.encode(sessionNumber, forKey: .sessionNumber)
         try container.encode(selectedTag.id, forKey: .selectedTag)
+        try container.encode(duration, forKey: .duration)
     }
 }
