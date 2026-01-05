@@ -237,11 +237,12 @@ class TimerViewModel: ObservableObject {
         let completionSound = settingsManager.settings.sound.completionSound
         soundManager.playCompletionSound(completionSound)
 
-        // Create completed session record with selected tag
+        // Create completed session record with selected tag and actual duration
         let completedSession = Session(
             sessionType: currentSessionType,
             sessionNumber: completedSessions + 1,
-            selectedTag: selectedTag
+            selectedTag: selectedTag,
+            duration: currentSessionType.duration
         )
         currentSession = completedSession
 

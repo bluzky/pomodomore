@@ -63,7 +63,7 @@ final class StatisticsManager: ObservableObject {
         let todaySessions = filterSessions(from: startOfToday(), to: endOfToday())
         let pomodoroSessions = todaySessions.filter { $0.sessionType == .pomodoro }
         let totalSeconds = pomodoroSessions.reduce(0) { sum, session in
-            sum + session.sessionType.duration(from: ConfigManager.shared.durations)
+            sum + session.duration
         }
         return totalSeconds / 60
     }
