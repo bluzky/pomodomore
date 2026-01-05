@@ -55,7 +55,7 @@ struct DashboardView: View {
     // MARK: - Today Section
 
     private var todaySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             Text("Today")
                 .font(.system(size: 16, weight: .semibold))
 
@@ -87,7 +87,7 @@ struct DashboardView: View {
     // MARK: - This Week Section
 
     private var thisWeekSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Text(weekHeaderText)
                     .font(.system(size: 16, weight: .semibold))
@@ -135,6 +135,9 @@ struct DashboardView: View {
 
     private var weekChart: some View {
         let chartData = chartData()
+        let maxSessions = max(chartData.map(\.sessions).max() ?? 0, 8)
+        let yAxisStep = calculateYAxisStep(maxValue: maxSessions)
+        let yAxisValues = stride(from: 0, through: maxSessions, by: yAxisStep).map { $0 }
 
         return Chart(chartData) { data in
             BarMark(
@@ -158,15 +161,30 @@ struct DashboardView: View {
             }
         }
         .chartYAxis {
-            AxisMarks(values: [0, 2, 4, 6, 8]) { _ in
+            AxisMarks(values: yAxisValues) { _ in
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 1))
                     .foregroundStyle(Color.secondary.opacity(0.15))
                 AxisValueLabel()
             }
         }
-        .chartYScale(domain: 0...8)
+        .chartYScale(domain: 0...maxSessions)
         .frame(height: 160)
         .animation(.spring(response: 0.5, dampingFraction: 0.7), value: chartData.map(\.sessions))
+    }
+
+    private func calculateYAxisStep(maxValue: Int) -> Int {
+        // Calculate appropriate step size based on max value
+        if maxValue <= 8 {
+            return 2
+        } else if maxValue <= 16 {
+            return 4
+        } else if maxValue <= 30 {
+            return 5
+        } else if maxValue <= 50 {
+            return 10
+        } else {
+            return 20
+        }
     }
 
     private func chartData() -> [DaySessionData] {

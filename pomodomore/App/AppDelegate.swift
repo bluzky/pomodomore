@@ -41,6 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             action: #selector(showTimerWindow),
             keyEquivalent: "t"
         )
+        showTimerItem.image = NSImage(systemSymbolName: "timer", accessibilityDescription: nil)
         menu.addItem(showTimerItem)
 
         // Add separator
@@ -52,6 +53,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             action: #selector(toggleTimer),
             keyEquivalent: "s"
         )
+        startPauseItem.image = NSImage(systemSymbolName: "play.fill", accessibilityDescription: nil)
         menu.addItem(startPauseItem)
         timerStatusMenuItem = startPauseItem // Reuse this for Start/Pause text
 
@@ -61,21 +63,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             action: #selector(stopTimer),
             keyEquivalent: ""
         )
+        stopItem.image = NSImage(systemSymbolName: "stop.fill", accessibilityDescription: nil)
         stopItem.isHidden = true // Hidden by default when idle
         menu.addItem(stopItem)
         stopMenuItem = stopItem
-
-        // Add separator
-        menu.addItem(NSMenuItem.separator())
-
-        // Add Always on Top toggle
-        let alwaysOnTopItem = NSMenuItem(
-            title: "Always on Top",
-            action: #selector(toggleAlwaysOnTop),
-            keyEquivalent: ""
-        )
-        alwaysOnTopItem.state = windowManager.alwaysOnTop ? .on : .off
-        menu.addItem(alwaysOnTopItem)
 
         // Add separator
         menu.addItem(NSMenuItem.separator())
@@ -86,7 +77,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             action: #selector(showDashboard),
             keyEquivalent: ","
         )
+        dashboardItem.image = NSImage(systemSymbolName: "square.grid.2x2", accessibilityDescription: nil)
         menu.addItem(dashboardItem)
+
+        // Add separator
+        menu.addItem(NSMenuItem.separator())
+
+        // Add Always on Top toggle
+        let alwaysOnTopItem = NSMenuItem(
+            title: "Always on Top",
+            action: #selector(toggleAlwaysOnTop),
+            keyEquivalent: ""
+        )
+        if windowManager.alwaysOnTop {
+            alwaysOnTopItem.image = NSImage(systemSymbolName: "checkmark", accessibilityDescription: nil)
+        }
+        menu.addItem(alwaysOnTopItem)
+
+        // Add Settings menu item
+        let settingsItem = NSMenuItem(
+            title: "Settings",
+            action: #selector(showSettings),
+            keyEquivalent: ""
+        )
+        settingsItem.image = NSImage(systemSymbolName: "gearshape", accessibilityDescription: nil)
+        menu.addItem(settingsItem)
 
         // Add separator
         menu.addItem(NSMenuItem.separator())
@@ -97,6 +112,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             action: #selector(quitApp),
             keyEquivalent: "q"
         )
+        quitItem.image = NSImage(systemSymbolName: "power", accessibilityDescription: nil)
         menu.addItem(quitItem)
 
         // Assign menu to status item
@@ -125,11 +141,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func toggleAlwaysOnTop() {
         windowManager.alwaysOnTop.toggle()
 
-        // Update menu item checkmark
+        // Update menu item icon
         if let menu = statusItem?.menu {
             for item in menu.items {
                 if item.title == "Always on Top" {
-                    item.state = windowManager.alwaysOnTop ? .on : .off
+                    item.image = windowManager.alwaysOnTop
+                        ? NSImage(systemSymbolName: "checkmark", accessibilityDescription: nil)
+                        : nil
                 }
             }
         }
@@ -137,6 +155,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func showDashboard() {
         windowManager.showDashboardSettingsWindow()
+    }
+
+    @objc func showSettings() {
+        windowManager.showDashboardSettingsWindow(selectedTab: .general)
     }
 
     @objc func quitApp() {
