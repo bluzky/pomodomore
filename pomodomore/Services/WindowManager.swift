@@ -89,42 +89,62 @@ class WindowManager: ObservableObject {
     }
 
     /// Show or bring to front the dashboard + settings window
-    func showDashboardSettingsWindow() {
-        if settingsWindow == nil {
-            // Create the settings view
-            let settingsView = DashboardSettingsView()
+    func showDashboardSettingsWindow(selectedTab: DashboardSection = .dashboard) {
+        // If window exists and section is different, recreate to update navigation
+        if let existingWindow = settingsWindow {
+            // Get current position before closing
+            let currentPosition = existingWindow.frame.origin
+            settingsWindow = nil
+            existingWindow.close()
 
-            // Create hosting controller
-            let hostingController = NSHostingController(rootView: settingsView)
-
-            // Create window with unified toolbar style
-            let window = NSWindow(contentViewController: hostingController)
-            window.title = "Pomo Domo"
-            window.styleMask = [.titled, .closable, .fullSizeContentView]
-            window.titlebarAppearsTransparent = true
-            window.titleVisibility = .hidden
-            window.setContentSize(NSSize(width: 720, height: 520))
-            window.center()
-
-            // Disable zoom/maximize button and hide miniaturize button
-            window.standardWindowButton(.zoomButton)?.isHidden = true
-            window.standardWindowButton(.miniaturizeButton)?.isHidden = true
-
-            // Prevent window from being resized
-            window.minSize = NSSize(width: 720, height: 520)
-            window.maxSize = NSSize(width: 720, height: 520)
-
-            // Configure toolbar for unified appearance
-            let toolbar = NSToolbar()
-            window.toolbar = toolbar
-            window.toolbarStyle = .unified
-
-            settingsWindow = window
+            // Create new window with updated section
+            createDashboardWindow(selectedTab: selectedTab, position: currentPosition)
+        } else {
+            // Create new window centered
+            createDashboardWindow(selectedTab: selectedTab, position: nil)
         }
 
         // Show window
         settingsWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    /// Create the dashboard settings window
+    private func createDashboardWindow(selectedTab: DashboardSection, position: NSPoint?) {
+        // Create the settings view with initial section
+        let settingsView = DashboardSettingsView(selectedSection: selectedTab)
+
+        // Create hosting controller
+        let hostingController = NSHostingController(rootView: settingsView)
+
+        // Create window with unified toolbar style
+        let window = NSWindow(contentViewController: hostingController)
+        window.title = selectedTab.displayName
+        window.styleMask = [.titled, .closable, .fullSizeContentView]
+        window.titlebarAppearsTransparent = true
+        window.setContentSize(NSSize(width: 720, height: 520))
+
+        // Position window
+        if let position = position {
+            window.setFrameOrigin(position)
+        } else {
+            window.center()
+        }
+
+        // Disable zoom/maximize button and hide miniaturize button
+        window.standardWindowButton(.zoomButton)?.isHidden = true
+        window.standardWindowButton(.miniaturizeButton)?.isHidden = true
+
+        // Prevent window from being resized
+        window.minSize = NSSize(width: 720, height: 520)
+        window.maxSize = NSSize(width: 720, height: 520)
+
+        // Configure toolbar for unified appearance
+        let toolbar = NSToolbar()
+        window.toolbar = toolbar
+        window.toolbarStyle = .unified
+
+        settingsWindow = window
     }
 
     /// Save current window position to UserDefaults

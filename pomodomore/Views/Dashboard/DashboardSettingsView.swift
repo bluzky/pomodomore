@@ -48,7 +48,11 @@ enum DashboardSection: String, CaseIterable, Identifiable, Hashable {
 
 /// Main window for Dashboard and Settings with sidebar navigation
 struct DashboardSettingsView: View {
-    @State private var selectedSection: DashboardSection = .dashboard
+    @State private var selectedSection: DashboardSection
+
+    init(selectedSection: DashboardSection = .dashboard) {
+        _selectedSection = State(initialValue: selectedSection)
+    }
 
     var body: some View {
         NavigationSplitView {
@@ -150,6 +154,6 @@ struct DashboardSettingsView: View {
 // MARK: - Preview
 
 #Preview {
-    DashboardSettingsView()
+    DashboardSettingsView(selectedSection: .dashboard)
         .frame(width: 720, height: 520)
 }
