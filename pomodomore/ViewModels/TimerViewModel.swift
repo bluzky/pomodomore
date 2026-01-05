@@ -68,22 +68,33 @@ class TimerViewModel: ObservableObject {
 
     // MARK: - Sound Control
 
-    /// Toggle tick sound on/off
-    func toggleTickSound() {
+    /// Toggle all sounds on/off (tick + ambient)
+    func toggleAllSounds() {
         isTickSoundEnabled.toggle()
 
         // Update settings
         settingsManager.settings.sound.soundButtonEnabled = isTickSoundEnabled
 
-        // If timer is running, start/stop tick sound accordingly
+        // If timer is running, start/stop all sounds accordingly
         if currentState == .running {
             if isTickSoundEnabled {
+                // Start tick sound
                 let tickSound = settingsManager.settings.sound.tickSound
                 if tickSound != "None" {
                     soundManager.startTickLoop(soundName: tickSound)
                 }
+
+                // Start ambient sound (only for Pomodoro)
+                if currentSessionType == .pomodoro {
+                    let ambientSound = settingsManager.settings.sound.ambientSound
+                    if ambientSound != .none {
+                        soundManager.startAmbient(ambientSound)
+                    }
+                }
             } else {
+                // Stop all sounds
                 soundManager.stopTickLoop()
+                soundManager.stopAmbient()
             }
         }
     }
@@ -210,6 +221,24 @@ class TimerViewModel: ObservableObject {
         print("🛑 Stopped - Session counter: \(completedSessions), Tag: \(selectedTag.name)")
     }
 
+    /// Skip the current break and return to Pomodoro
+    func skipBreak() {
+        print("⏭️ Break skipped")
+        currentState = .idle
+        currentSessionType = .pomodoro
+        timeRemaining = currentSessionType.duration
+        timerCancellable?.cancel()
+
+        // Stop looping sounds
+        soundManager.stopLoopingSounds()
+
+        // Play a soft stop sound (not as loud as full stop)
+        soundManager.playStop()
+
+        // Preserve completedSessions (cycle progress) and selectedTag (user choice)
+        print("⏭️ Break skipped - Back to Pomodoro. Counter: \(completedSessions)")
+    }
+
     // MARK: - Private Methods
 
     /// Called every second when timer is running
@@ -285,28 +314,60 @@ class TimerViewModel: ObservableObject {
     /// Transition to the next session type based on Pomodoro cycle logic
     private func transitionToNextSession() {
         let nextSessionType: SessionType
+        let shouldAutoStart: Bool
 
         switch currentSessionType {
         case .pomodoro:
             // After Pomodoro, take a break
             nextSessionType = completedSessions == 4 ? .longBreak : .shortBreak
+            shouldAutoStart = settingsManager.settings.pomodoro.autoStartBreak
         case .shortBreak:
-            // After short break, back to Pomodoro
+            // After short break, back to Pomodoro (never auto-start)
             nextSessionType = .pomodoro
             selectedTag = lastSelectedTag // Restore last selected tag as default
+            shouldAutoStart = false
         case .longBreak:
-            // After long break, reset counter and back to Pomodoro
+            // After long break, reset counter and back to Pomodoro (never auto-start)
             completedSessions = 0
             nextSessionType = .pomodoro
             selectedTag = lastSelectedTag // Restore last selected tag as default
+            shouldAutoStart = false
             print("🔄 Cycle reset! Starting new Pomodoro cycle")
         }
 
         // Update session type and reset timer
         currentSessionType = nextSessionType
         timeRemaining = nextSessionType.duration
-        currentState = .idle
+        currentState = shouldAutoStart ? .running : .idle
 
-        print("🔄 Auto-transitioned to: \(nextSessionType.displayName.isEmpty ? "Pomodoro" : nextSessionType.displayName)")
+        // Start timer if auto-start is enabled
+        if shouldAutoStart {
+            startSounds()
+            startTimer()
+        }
+
+        print("🔄 Auto-transitioned to: \(nextSessionType.displayName.isEmpty ? "Pomodoro" : nextSessionType.displayName) - auto-start: \(shouldAutoStart)")
+    }
+
+    /// Start timer sounds (tick and ambient)
+    private func startSounds() {
+        let tickSound = settingsManager.settings.sound.tickSound
+        let ambientSound = settingsManager.settings.sound.ambientSound
+
+        if isTickSoundEnabled && tickSound != "None" {
+            soundManager.startTickLoop(soundName: tickSound)
+        }
+        if currentSessionType == .pomodoro && ambientSound != .none {
+            soundManager.startAmbient(ambientSound)
+        }
+    }
+
+    /// Start the timer publisher
+    private func startTimer() {
+        timerCancellable = Timer.publish(every: 1.0, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                self?.tick()
+            }
     }
 }

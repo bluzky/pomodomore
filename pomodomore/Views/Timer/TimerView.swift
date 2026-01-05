@@ -244,18 +244,59 @@ struct TimerView: View {
     @State private var isHovered: Bool = false
     @State private var showAmbientPopover: Bool = false
 
-    // Controls are always visible when idle/paused state, or on hover
-    private var shouldShowControls: Bool {
-        viewModel.currentState == .idle || viewModel.currentState == .paused || isHovered
+    // Tiny mode: compact view when not hovered
+    private var isTinyMode: Bool {
+        settingsManager.settings.appearance.windowSize == .tiny
     }
 
-    // Timer scales up and repositions when controls are hidden
+    // Controls are always visible when idle/paused state, or on hover (only in normal mode)
+    private var shouldShowControls: Bool {
+        if isTinyMode {
+            return false // Controls are shown in overlay in tiny mode
+        }
+        return viewModel.currentState == .idle || viewModel.currentState == .paused || isHovered
+    }
+
+    // Timer font size - tiny mode always 36, normal mode 36/42
     private var timerFontSize: CGFloat {
-        shouldShowControls ? 36 : 42
+        if isTinyMode {
+            return 36
+        }
+        return shouldShowControls ? 36 : 42
     }
 
     private var timerVerticalOffset: CGFloat {
-        shouldShowControls ? 0 : 10
+        isTinyMode ? 0 : (shouldShowControls ? 0 : 10)
+    }
+
+    // View height - tiny mode always 60, normal mode 110
+    private var viewHeight: CGFloat {
+        isTinyMode ? 60 : 110
+    }
+
+    // View width - tiny mode always 140, normal mode 200
+    private var viewWidth: CGFloat {
+        isTinyMode ? 140 : 200
+    }
+
+    // Whether to show tag label and top controls
+    private var shouldShowTagLabel: Bool {
+        !isTinyMode
+    }
+
+    // VStack alignment - center in tiny mode, top otherwise
+    private var vStackAlignment: Alignment {
+        isTinyMode ? .center : .top
+    }
+
+    // Show overlay controls on hover in tiny mode
+    private var shouldShowOverlayControls: Bool {
+        isTinyMode && isHovered
+    }
+
+    // Border radius - larger for tiny mode
+    private var cornerRadius: CGFloat {
+        isTinyMode ? 16 : 12
     }
 
     var body: some View {
@@ -274,7 +315,7 @@ struct TimerView: View {
                 HStack(spacing: 4) {
                     // Sound toggle - 160px from left (or 22px from right)
                     Button(action: {
-                        viewModel.toggleTickSound()
+                        viewModel.toggleAllSounds()
                     }) {
                         Image(systemName: viewModel.isTickSoundEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
                             .font(.system(size: 10))
@@ -304,92 +345,162 @@ struct TimerView: View {
             .frame(height: 16)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(.top, 6)
-            .opacity(shouldShowControls ? 1 : 0)
-            .animation(.easeOut(duration: 0.25), value: shouldShowControls)
+            .opacity(shouldShowTagLabel && shouldShowControls ? 1 : 0)
+            .animation(.easeOut(duration: 0.25), value: isHovered)
+            .animation(.easeOut(duration: 0.25), value: viewModel.currentState)
 
             // Center content area
             VStack(spacing: 0) {
                 // Tag label - 30px from top
                 Group {
-                    if viewModel.currentSessionType == .pomodoro {
-                        // Pomodoro: Show custom tag select button (idle) or display tag (active/paused)
-                        if viewModel.currentState == .idle {
-                            TagSelectButton(selectedTag: $viewModel.selectedTag)
-                        } else {
-                            HStack(spacing: 4) {
-                                Circle()
-                                    .fill(viewModel.selectedTag.color)
-                                    .frame(width: 6, height: 6)
-                                Text(viewModel.selectedTag.name)
-                                    .font(.system(size: 11, weight: .regular))
-                                    .foregroundColor(.primary)
+                    if shouldShowTagLabel {
+                        if viewModel.currentSessionType == .pomodoro {
+                            // Pomodoro: Show custom tag select button (idle) or display tag (active/paused)
+                            if viewModel.currentState == .idle {
+                                TagSelectButton(selectedTag: $viewModel.selectedTag)
+                            } else {
+                                HStack(spacing: 4) {
+                                    Circle()
+                                        .fill(viewModel.selectedTag.color)
+                                        .frame(width: 6, height: 6)
+                                    Text(viewModel.selectedTag.name)
+                                        .font(.system(size: 11, weight: .regular))
+                                        .foregroundColor(.primary)
+                                }
                             }
+                        } else {
+                            // Break sessions: Show break type label
+                            Text(viewModel.currentSessionType.displayName)
+                                .font(.system(size: 11, weight: .regular))
+                                .foregroundColor(.primary)
                         }
-                    } else {
-                        // Break sessions: Show break type label
-                        Text(viewModel.currentSessionType.displayName)
-                            .font(.system(size: 11, weight: .regular))
-                            .foregroundColor(.primary)
                     }
                 }
-                .frame(height: 16)
-                .padding(.top, 20)
+                .frame(height: shouldShowTagLabel ? 16 : 0)
+                .padding(.top, shouldShowTagLabel ? 20 : 0)
+                .opacity(shouldShowTagLabel ? 1 : 0)
+                .animation(.easeOut(duration: 0.2), value: shouldShowTagLabel)
 
-                // Timer - 50px from top when controls visible
+                // Timer
                 Text(viewModel.timeFormatted)
                     .font(.system(size: timerFontSize, weight: .medium, design: .monospaced))
                     .foregroundColor(.primary)
                     .offset(y: timerVerticalOffset)
-                    .animation(.easeOut(duration: 0.25), value: shouldShowControls)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .animation(.easeOut(duration: 0.25), value: timerFontSize)
+                    .animation(.easeOut(duration: 0.25), value: isTinyMode)
 
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-
-            // Bottom buttons - only visible when timer is running (and controls should show)
-            HStack(spacing: 8) {
-                // Pause button (only when running)
-                if viewModel.currentState == .running {
-                    Button(action: { viewModel.toggle() }) {
-                        Image(systemName: "pause.fill")
-                            .font(.system(size: 10))
-                            .frame(width: 22, height: 22)
-                    }
-                    .buttonStyle(HoverButtonStyle(hoverColor: .orange))
-                }
-
-                // Stop button (only when running)
-                if viewModel.currentState == .running {
-                    Button(action: { viewModel.stop() }) {
-                        Image(systemName: "stop.fill")
-                            .font(.system(size: 10))
-                            .frame(width: 22, height: 22)
-                    }
-                    .buttonStyle(HoverButtonStyle(hoverColor: .red))
-                }
-
-                // Start button (when idle or paused)
-                if viewModel.currentState == .idle || viewModel.currentState == .paused {
-                    Button(action: { viewModel.toggle() }) {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: 10))
-                            .frame(width: 22, height: 22)
-                    }
-                    .buttonStyle(HoverButtonStyle())
+                if !isTinyMode {
+                    Spacer()
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-            .padding(.bottom, 6)
-            .opacity(shouldShowControls ? 1 : 0)
-            .animation(.easeOut(duration: 0.25), value: shouldShowControls)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: vStackAlignment)
+
+            // Bottom buttons - only visible in normal mode when controls should show
+            if !isTinyMode {
+                HStack(spacing: 8) {
+                    // Pause button (only when running)
+                    if viewModel.currentState == .running {
+                        Button(action: { viewModel.toggle() }) {
+                            Image(systemName: "pause.fill")
+                                .font(.system(size: 10))
+                                .frame(width: 22, height: 22)
+                        }
+                        .buttonStyle(HoverButtonStyle(hoverColor: .orange))
+                    }
+
+                    // Stop button (when running, or on break when idle/paused)
+                    if viewModel.currentState == .running || (viewModel.currentSessionType.isBreak && (viewModel.currentState == .idle || viewModel.currentState == .paused)) {
+                        Button(action: { viewModel.skipBreak() }) {
+                            Image(systemName: "stop.fill")
+                                .font(.system(size: 10))
+                                .frame(width: 22, height: 22)
+                        }
+                        .buttonStyle(HoverButtonStyle(hoverColor: .red))
+                    }
+
+                    // Start button (when idle or paused)
+                    if viewModel.currentState == .idle || viewModel.currentState == .paused {
+                        Button(action: { viewModel.toggle() }) {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 10))
+                                .frame(width: 22, height: 22)
+                        }
+                        .buttonStyle(HoverButtonStyle())
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .padding(.bottom, 6)
+                .opacity(shouldShowControls ? 1 : 0)
+                .animation(.easeOut(duration: 0.25), value: isHovered)
+                .animation(.easeOut(duration: 0.25), value: viewModel.currentState)
+            }
+
+            // Overlay controls for tiny mode (on hover)
+            if shouldShowOverlayControls {
+                ZStack {
+                    // Semi-transparent background (subtle)
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(Color(nsColor: .windowBackgroundColor).opacity(0.90))
+
+                    // Control buttons
+                    HStack(spacing: 8) {
+                        // Pause button (only when running)
+                        if viewModel.currentState == .running {
+                            Button(action: { viewModel.toggle() }) {
+                                Image(systemName: "pause.fill")
+                                    .font(.system(size: 12))
+                                    .frame(width: 26, height: 26)
+                            }
+                            .buttonStyle(HoverButtonStyle(hoverColor: .orange))
+                        }
+
+                        // Stop button (when running, or on break when idle/paused)
+                        if viewModel.currentState == .running || (viewModel.currentSessionType.isBreak && (viewModel.currentState == .idle || viewModel.currentState == .paused)) {
+                            Button(action: { viewModel.skipBreak() }) {
+                                Image(systemName: "stop.fill")
+                                    .font(.system(size: 12))
+                                    .frame(width: 26, height: 26)
+                            }
+                            .buttonStyle(HoverButtonStyle(hoverColor: .red))
+                        }
+
+                        // Start button (when idle or paused)
+                        if viewModel.currentState == .idle || viewModel.currentState == .paused {
+                            Button(action: { viewModel.toggle() }) {
+                                Image(systemName: "play.fill")
+                                    .font(.system(size: 12))
+                                    .frame(width: 26, height: 26)
+                            }
+                            .buttonStyle(HoverButtonStyle())
+                        }
+
+                        // Sound toggle button (only when not idle)
+                        if viewModel.currentState != .idle {
+                            Button(action: {
+                                viewModel.toggleAllSounds()
+                            }) {
+                                Image(systemName: viewModel.isTickSoundEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
+                                    .font(.system(size: 12))
+                                    .frame(width: 26, height: 26)
+                            }
+                            .buttonStyle(HoverButtonStyle())
+                        }
+                    }
+                }
+                .transition(.opacity)
+                .animation(.easeOut(duration: 0.2), value: shouldShowOverlayControls)
+            }
         }
-        .frame(width: 200, height: 110)
+        .frame(width: viewWidth, height: viewHeight)
+        .animation(.easeOut(duration: 0.25), value: viewWidth)
+        .animation(.easeOut(duration: 0.25), value: viewHeight)
         .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .fill(Color(nsColor: .windowBackgroundColor).opacity(0.8))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
         )
         .onHover { hovering in

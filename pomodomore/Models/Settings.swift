@@ -62,21 +62,21 @@ struct PomodoroSettings: Codable {
     /// Number of Pomodoros before long break (default: 4)
     var longBreakInterval: Int = 4
 
-    /// Automatically start next session when current completes
-    var autoStartNextSession: Bool = false
+    /// Automatically start break timer when Pomodoro completes
+    var autoStartBreak: Bool = false
 
     init(
         pomodoroDuration: Int = 1500,
         shortBreakDuration: Int = 300,
         longBreakDuration: Int = 900,
         longBreakInterval: Int = 4,
-        autoStartNextSession: Bool = false
+        autoStartBreak: Bool = false
     ) {
         self.pomodoroDuration = pomodoroDuration
         self.shortBreakDuration = shortBreakDuration
         self.longBreakDuration = longBreakDuration
         self.longBreakInterval = longBreakInterval
-        self.autoStartNextSession = autoStartNextSession
+        self.autoStartBreak = autoStartBreak
     }
 }
 
@@ -117,6 +117,14 @@ struct SoundSettings: Codable {
 // MARK: - Appearance Settings
 
 /// UI appearance and theme configuration (Week 4)
+/// Window size options
+enum WindowSize: String, Codable, CaseIterable {
+    case small = "Small"
+    case tiny = "Tiny"
+
+    var displayName: String { rawValue }
+}
+
 struct AppearanceSettings: Codable {
     /// Light mode theme name
     var lightTheme: String = "Nord Light"
@@ -130,16 +138,21 @@ struct AppearanceSettings: Codable {
     /// Show timer countdown in menubar
     var showTimerInMenubar: Bool = true
 
+    /// Window size mode
+    var windowSize: WindowSize = .small
+
     init(
         lightTheme: String = "Nord Light",
         darkTheme: String = "Nord Dark",
         font: String = "SF Mono",
-        showTimerInMenubar: Bool = true
+        showTimerInMenubar: Bool = true,
+        windowSize: WindowSize = .small
     ) {
         self.lightTheme = lightTheme
         self.darkTheme = darkTheme
         self.font = font
         self.showTimerInMenubar = showTimerInMenubar
+        self.windowSize = windowSize
     }
 }
 

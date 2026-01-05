@@ -43,4 +43,14 @@ enum SessionType: String, Codable {
             return "Long Break"
         }
     }
+
+    /// Whether this is a break session (short or long)
+    var isBreak: Bool {
+        switch self {
+        case .pomodoro:
+            return false
+        case .shortBreak, .longBreak:
+            return true
+        }
+    }
 }
