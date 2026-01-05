@@ -27,6 +27,7 @@ class StorageManager {
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         return encoder
     }()
+
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
