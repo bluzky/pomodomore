@@ -94,12 +94,10 @@ struct SoundSettingsView: View {
 
                 Spacer(minLength: 0)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 24)
+            .padding(.horizontal, 24)
             .padding(.bottom, 12)
         }
-        .frame(width: 520, alignment: .leading)
-        .frame(maxHeight: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(NSColor.windowBackgroundColor))
     }
 }

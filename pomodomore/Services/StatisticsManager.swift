@@ -195,6 +195,11 @@ final class StatisticsManager: ObservableObject {
         return (monday, endOfSunday)
     }
 
+    /// Public week date range for external access (e.g., Dashboard header)
+    func getWeekDateRange(for offset: Int) -> (start: Date, end: Date) {
+        weekRange(for: offset)
+    }
+
     // MARK: - Session Filtering
 
     /// Filter sessions within a date range

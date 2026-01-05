@@ -24,6 +24,12 @@ struct DashboardView: View {
     @ObservedObject private var statistics = StatisticsManager.shared
     @State private var currentWeekOffset: Int = 0
 
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter
+    }()
+
     var body: some View {
         #if DEBUG
         let _ = print("🎨 DashboardView rendering - Today: \(statistics.todaySessions) sessions, \(statistics.todayMinutes) minutes, Current Streak: \(statistics.currentStreak)")
@@ -80,7 +86,7 @@ struct DashboardView: View {
     private var thisWeekSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("This Week")
+                Text(weekHeaderText)
                     .font(.system(size: 16, weight: .semibold))
 
                 Spacer()
@@ -104,6 +110,19 @@ struct DashboardView: View {
 
             // Bar chart placeholder
             weekChart
+        }
+    }
+
+    private var weekHeaderText: String {
+        let (start, end) = StatisticsManager.shared.getWeekDateRange(for: currentWeekOffset)
+
+        let startStr = Self.dateFormatter.string(from: start)
+        let endStr = Self.dateFormatter.string(from: end)
+
+        if currentWeekOffset == 0 {
+            return "This Week"
+        } else {
+            return "\(startStr) - \(endStr)"
         }
     }
 

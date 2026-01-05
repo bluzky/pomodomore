@@ -93,7 +93,7 @@ class WindowManager: ObservableObject {
 
             // Create window with unified toolbar style
             let window = NSWindow(contentViewController: hostingController)
-            window.title = "PomodoMore"
+            window.title = "Pomo Domo"
             window.styleMask = [.titled, .closable, .fullSizeContentView]
             window.titlebarAppearsTransparent = true
             window.titleVisibility = .hidden
