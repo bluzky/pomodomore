@@ -14,6 +14,7 @@ struct PomodomoreApp: App {
     /// Initialize settings manager early to ensure ConfigManager is updated
     init() {
         _ = SettingsManager.shared
+        _ = ThemeManager.shared
     }
 
     var body: some Scene {
