@@ -136,7 +136,7 @@ struct AppearanceSettings: Codable {
     var darkTheme: String = "Nord Dark"
 
     /// Font family name
-    var font: String = "SF Mono"
+    var font: String = "Monaco"
 
     /// Show timer countdown in menubar
     var showTimerInMenubar: Bool = true
@@ -148,7 +148,7 @@ struct AppearanceSettings: Codable {
         theme: String = "Nord",
         lightTheme: String = "Nord Light",
         darkTheme: String = "Nord Dark",
-        font: String = "SF Mono",
+        font: String = "Monaco",
         showTimerInMenubar: Bool = true,
         windowSize: WindowSize = .small
     ) {

@@ -30,27 +30,50 @@ final class SoundManager: ObservableObject {
     private var lifecyclePlayer: AVAudioPlayer?
     private var previewTask: Task<Void, Never>?
 
+    // Pre-loaded audio players for instant playback
+    private var cachedLifecyclePlayers: [LifecycleSound: AVAudioPlayer] = [:]
+
     private init() {
         // No audio session setup needed on macOS
+
+        // Pre-warm lifecycle sounds on background thread for instant playback
+        Task.detached(priority: .background) {
+            await self.prewarmLifecycleSounds()
+        }
+    }
+
+    /// Pre-load lifecycle sounds (start/stop) for instant playback
+    private func prewarmLifecycleSounds() async {
+        for sound in [LifecycleSound.start, LifecycleSound.stop] {
+            if let player = createLifecyclePlayer(for: sound) {
+                cachedLifecyclePlayers[sound] = player
+                if isDebug { print("🎵 Pre-warmed lifecycle sound: \(sound.rawValue)") }
+            }
+        }
     }
 
     // MARK: - Tick Sounds (Looping)
 
-    /// Start looping tick sound for Pomodoro
+    /// Start looping tick sound for Pomodoro (async to avoid blocking UI)
     func startTickLoop(soundName: String) {
         guard soundName != "None" else { return }
 
         stopTickLoop()
 
-        guard let player = createTickPlayer(for: soundName) else {
-            return
-        }
+        // Load audio asynchronously to avoid blocking UI
+        Task.detached(priority: .userInitiated) {
+            guard let player = await self.createTickPlayerAsync(for: soundName) else {
+                return
+            }
 
-        tickPlayer = player
-        player.numberOfLoops = -1 // Loop infinitely
-        player.play()
-        isPlayingTick = true
-        if isDebug { print("🎵 Tick loop started: \(soundName)") }
+            await MainActor.run {
+                self.tickPlayer = player
+                player.numberOfLoops = -1 // Loop infinitely
+                player.play()
+                self.isPlayingTick = true
+                if isDebug { print("🎵 Tick loop started: \(soundName)") }
+            }
+        }
     }
 
     /// Stop tick loop
@@ -63,21 +86,26 @@ final class SoundManager: ObservableObject {
 
     // MARK: - Ambient Sounds (Looping)
 
-    /// Start looping ambient sound
+    /// Start looping ambient sound (async to avoid blocking UI)
     func startAmbient(_ sound: AmbientSoundItem) {
         guard sound.fileName.isEmpty == false else { return }
 
         stopAmbient()
 
-        guard let player = createAmbientPlayer(for: sound) else {
-            return
-        }
+        // Load audio asynchronously to avoid blocking UI (ambient files can be large)
+        Task.detached(priority: .userInitiated) {
+            guard let player = await self.createAmbientPlayerAsync(for: sound) else {
+                return
+            }
 
-        ambientPlayer = player
-        player.numberOfLoops = -1 // Loop infinitely
-        player.play()
-        isPlayingAmbient = true
-        if isDebug { print("🎵 Ambient started: \(sound.displayName)") }
+            await MainActor.run {
+                self.ambientPlayer = player
+                player.numberOfLoops = -1 // Loop infinitely
+                player.play()
+                self.isPlayingAmbient = true
+                if isDebug { print("🎵 Ambient started: \(sound.displayName)") }
+            }
+        }
     }
 
     /// Stop ambient sound
@@ -105,12 +133,21 @@ final class SoundManager: ObservableObject {
         lifecyclePlayer?.stop()
         lifecyclePlayer = nil
 
+        // Try to use cached player first (instant playback)
+        if let cachedPlayer = cachedLifecyclePlayers[sound] {
+            cachedPlayer.currentTime = 0  // Reset to beginning
+            cachedPlayer.play()
+            if isDebug { print("🎵 Lifecycle sound played (cached): \(sound.rawValue)") }
+            return
+        }
+
+        // Fallback: create player on demand (slower)
         guard let player = createLifecyclePlayer(for: sound) else {
             return
         }
         lifecyclePlayer = player
         player.play()
-        if isDebug { print("🎵 Lifecycle sound played: \(sound.rawValue)") }
+        if isDebug { print("🎵 Lifecycle sound played (on-demand): \(sound.rawValue)") }
     }
 
     // MARK: - Completion Sounds (One-shot)
@@ -233,6 +270,42 @@ final class SoundManager: ObservableObject {
 
         player.prepareToPlay()
         return player
+    }
+
+    // MARK: - Async Audio Loading (Non-blocking)
+
+    /// Create tick player asynchronously (doesn't block main thread)
+    private func createTickPlayerAsync(for soundName: String) async -> AVAudioPlayer? {
+        guard let path = Bundle.main.path(forResource: soundName, ofType: "mp3", inDirectory: "Sounds/ticks") else {
+            if isDebug { print("⚠️ Tick sound file not found: Sounds/ticks/\(soundName).mp3") }
+            return nil
+        }
+
+        // Load and prepare audio on background thread
+        return await Task.detached {
+            guard let player = try? AVAudioPlayer(contentsOf: URL(fileURLWithPath: path)) else {
+                return nil
+            }
+            player.prepareToPlay()
+            return player
+        }.value
+    }
+
+    /// Create ambient player asynchronously (doesn't block main thread)
+    private func createAmbientPlayerAsync(for sound: AmbientSoundItem) async -> AVAudioPlayer? {
+        guard let path = Bundle.main.path(forResource: sound.fileName, ofType: "mp3", inDirectory: "Sounds/ambient") else {
+            if isDebug { print("⚠️ Ambient sound file not found: Sounds/ambient/\(sound.fileName).mp3") }
+            return nil
+        }
+
+        // Load and prepare audio on background thread (ambient files can be large)
+        return await Task.detached {
+            guard let player = try? AVAudioPlayer(contentsOf: URL(fileURLWithPath: path)) else {
+                return nil
+            }
+            player.prepareToPlay()
+            return player
+        }.value
     }
 }
 

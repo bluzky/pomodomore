@@ -12,6 +12,7 @@ import SwiftUI
 /// About application information
 struct AboutView: View {
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var fontManager: FontManager
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -24,7 +25,7 @@ struct AboutView: View {
                     InfoRow(label: "Description", value: "A beautiful focus timer for macOS")
 
                     Link("View on GitHub", destination: URL(string: "https://github.com/bluzky/pomodomore")!)
-                        .font(.system(size: 13))
+                        .appFont(size: 13)
                         .padding(.top, 4)
                 }
                 .padding(.horizontal, 16)
@@ -49,12 +50,12 @@ struct InfoRow: View {
     var body: some View {
         HStack {
             Text(label)
-                .font(.system(size: 13))
+                .appFont(size: 13)
                 .foregroundColor(ThemeManager.shared.currentTheme.colors.textSecondary)
                 .frame(width: 100, alignment: .leading)
 
             Text(value)
-                .font(.system(size: 13))
+                .appFont(size: 13)
                 .foregroundColor(ThemeManager.shared.currentTheme.colors.textPrimary)
         }
     }
@@ -66,4 +67,5 @@ struct InfoRow: View {
     AboutView()
         .frame(width: 560, height: 520)
         .environmentObject(ThemeManager.shared)
+        .environmentObject(FontManager.shared)
 }

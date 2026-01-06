@@ -18,6 +18,7 @@ struct SettingsNavigationRow: View {
 
     @State private var isHovering = false
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var fontManager: FontManager
 
     var body: some View {
         Button(action: action) {
@@ -35,14 +36,14 @@ struct SettingsNavigationRow: View {
 
                 // Title
                 Text(title)
-                    .font(.system(size: 13))
+                    .appFont(size: 13)
                     .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
                 Spacer()
 
                 // Chevron
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .appFont(size: 12, weight: .semibold)
                     .foregroundColor(themeManager.currentTheme.colors.textSecondary)
             }
             .padding(.horizontal, 16)
@@ -69,11 +70,12 @@ struct SettingsPickerRow<T: Hashable>: View {
     let options: [T]
     let optionLabel: (T) -> String
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var fontManager: FontManager
 
     var body: some View {
         HStack {
             Text(label)
-                .font(.system(size: 13))
+                .appFont(size: 13)
                 .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
             Spacer()
@@ -98,11 +100,12 @@ struct SettingsToggleRow: View {
     let label: String
     @Binding var isOn: Bool
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var fontManager: FontManager
 
     var body: some View {
         HStack {
             Text(label)
-                .font(.system(size: 13))
+                .appFont(size: 13)
                 .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
             Spacer()
@@ -123,10 +126,11 @@ struct SettingsToggleRow: View {
 struct SettingsSectionHeader: View {
     let title: String
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var fontManager: FontManager
 
     var body: some View {
         Text(title)
-            .font(.system(size: 13, weight: .semibold))
+            .appFont(size: 13, weight: .semibold)
             .foregroundColor(themeManager.currentTheme.colors.textPrimary)
             .padding(.horizontal, 16)
             .padding(.top, 20)
@@ -144,18 +148,19 @@ struct SettingsStepperRow: View {
     let range: ClosedRange<Int>
     let valueFormatter: (Int) -> String
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var fontManager: FontManager
 
     var body: some View {
         HStack {
             Text(label)
-                .font(.system(size: 13))
+                .appFont(size: 13)
                 .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
             Spacer()
 
             HStack(spacing: 8) {
                 Text(valueFormatter(value))
-                    .font(.system(size: 13))
+                    .appFont(size: 13)
                     .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                     .frame(minWidth: 60, alignment: .trailing)
 
@@ -212,4 +217,5 @@ struct SettingsStepperRow: View {
     .frame(width: 520)
     .background(Color(NSColor.windowBackgroundColor))
     .environmentObject(ThemeManager.shared)
+    .environmentObject(FontManager.shared)
 }

@@ -23,6 +23,7 @@ struct DaySessionData: Identifiable {
 struct DashboardView: View {
     @ObservedObject private var statistics = StatisticsManager.shared
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var fontManager: FontManager
     @State private var currentWeekOffset: Int = 0
 
     private static let dateFormatter: DateFormatter = {
@@ -58,7 +59,7 @@ struct DashboardView: View {
     private var todaySection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Today")
-                .font(.system(size: 16, weight: .semibold))
+                .appFont(size: 16, weight: .semibold)
                 .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
             HStack(spacing: 12) {
@@ -89,7 +90,7 @@ struct DashboardView: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Text(weekHeaderText)
-                    .font(.system(size: 16, weight: .semibold))
+                    .appFont(size: 16, weight: .semibold)
                     .foregroundColor(themeManager.currentTheme.colors.textPrimary)
                     .animation(.easeInOut(duration: 0.3), value: currentWeekOffset)
 
@@ -99,7 +100,7 @@ struct DashboardView: View {
                 HStack(spacing: 8) {
                     Button(action: { currentWeekOffset -= 1 }) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 12))
+                            .appFont(size: 12)
                             .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                     }
                     .buttonStyle(.plain)
@@ -107,7 +108,7 @@ struct DashboardView: View {
 
                     Button(action: { currentWeekOffset += 1 }) {
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12))
+                            .appFont(size: 12)
                             .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                     }
                     .buttonStyle(.plain)
@@ -151,7 +152,7 @@ struct DashboardView: View {
             .annotation(position: .top, alignment: .center, spacing: 4) {
                 if data.sessions > 0 {
                     Text("\(data.sessions)")
-                        .font(.system(size: 10))
+                        .appFont(size: 10)
                         .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                 }
             }
@@ -210,15 +211,17 @@ struct StatCard: View {
     let value: String
     let icon: String
 
+    @EnvironmentObject var fontManager: FontManager
+
     var body: some View {
         VStack(alignment: .center, spacing: 8) {
             Text(title)
-                .font(.system(size: 11))
+                .appFont(size: 11)
                 .foregroundColor(ThemeManager.shared.currentTheme.colors.textSecondary)
 
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 Text(value)
-                    .font(.system(size: 32, weight: .bold))
+                    .appFont(size: 32, weight: .bold)
                     .foregroundColor(ThemeManager.shared.currentTheme.colors.textPrimary)
 
                 Text(icon)
@@ -287,4 +290,5 @@ struct ShimmerView: View {
     DashboardView()
         .frame(width: 560, height: 520)
         .environmentObject(ThemeManager.shared)
+        .environmentObject(FontManager.shared)
 }

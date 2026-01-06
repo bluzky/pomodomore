@@ -36,34 +36,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let menu = NSMenu()
 
         // Add Show Timer menu item
-        let showTimerItem = NSMenuItem(
-            title: "Show Timer",
-            action: #selector(showTimerWindow),
-            keyEquivalent: "t"
-        )
-        showTimerItem.image = NSImage(systemSymbolName: "timer", accessibilityDescription: nil)
+        let showTimerItem = createMenuItem(title: "Show Timer", action: #selector(showTimerWindow), keyEquivalent: "t", icon: "timer")
         menu.addItem(showTimerItem)
 
         // Add separator
         menu.addItem(NSMenuItem.separator())
 
         // Add Start/Pause menu item
-        let startPauseItem = NSMenuItem(
-            title: "Start",
-            action: #selector(toggleTimer),
-            keyEquivalent: "s"
-        )
-        startPauseItem.image = NSImage(systemSymbolName: "play.fill", accessibilityDescription: nil)
+        let startPauseItem = createMenuItem(title: "Start", action: #selector(toggleTimer), keyEquivalent: "s", icon: "play.fill")
         menu.addItem(startPauseItem)
         timerStatusMenuItem = startPauseItem // Reuse this for Start/Pause text
 
         // Add Stop menu item (no key equivalent to avoid confusion)
-        let stopItem = NSMenuItem(
-            title: "Stop",
-            action: #selector(stopTimer),
-            keyEquivalent: ""
-        )
-        stopItem.image = NSImage(systemSymbolName: "stop.fill", accessibilityDescription: nil)
+        let stopItem = createMenuItem(title: "Stop", action: #selector(stopTimer), keyEquivalent: "", icon: "stop.fill")
         stopItem.isHidden = true // Hidden by default when idle
         menu.addItem(stopItem)
         stopMenuItem = stopItem
@@ -72,47 +57,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem.separator())
 
         // Add Dashboard menu item
-        let dashboardItem = NSMenuItem(
-            title: "Dashboard",
-            action: #selector(showDashboard),
-            keyEquivalent: ","
-        )
-        dashboardItem.image = NSImage(systemSymbolName: "square.grid.2x2", accessibilityDescription: nil)
+        let dashboardItem = createMenuItem(title: "Dashboard", action: #selector(showDashboard), keyEquivalent: ",", icon: "square.grid.2x2")
         menu.addItem(dashboardItem)
 
         // Add separator
         menu.addItem(NSMenuItem.separator())
 
         // Add Always on Top toggle
-        let alwaysOnTopItem = NSMenuItem(
-            title: "Always on Top",
-            action: #selector(toggleAlwaysOnTop),
-            keyEquivalent: ""
-        )
+        let alwaysOnTopItem = createMenuItem(title: "Always on Top", action: #selector(toggleAlwaysOnTop), keyEquivalent: "", icon: nil)
         if windowManager.alwaysOnTop {
             alwaysOnTopItem.image = NSImage(systemSymbolName: "checkmark", accessibilityDescription: nil)
         }
         menu.addItem(alwaysOnTopItem)
 
         // Add Settings menu item
-        let settingsItem = NSMenuItem(
-            title: "Settings",
-            action: #selector(showSettings),
-            keyEquivalent: ""
-        )
-        settingsItem.image = NSImage(systemSymbolName: "gearshape", accessibilityDescription: nil)
+        let settingsItem = createMenuItem(title: "Settings", action: #selector(showSettings), keyEquivalent: "", icon: "gearshape")
         menu.addItem(settingsItem)
 
         // Add separator
         menu.addItem(NSMenuItem.separator())
 
         // Add Quit menu item
-        let quitItem = NSMenuItem(
-            title: "Quit",
-            action: #selector(quitApp),
-            keyEquivalent: "q"
-        )
-        quitItem.image = NSImage(systemSymbolName: "power", accessibilityDescription: nil)
+        let quitItem = createMenuItem(title: "Quit", action: #selector(quitApp), keyEquivalent: "q", icon: "power")
         menu.addItem(quitItem)
 
         // Assign menu to status item
@@ -120,7 +86,60 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Setup observers for timer state changes
         setupTimerObservers()
+
+        // Setup observer for font changes
+        setupFontObserver()
     }
+
+    // MARK: - Menu Helper
+
+    /// Create a menu item with custom font
+    private func createMenuItem(title: String, action: Selector, keyEquivalent: String, icon: String?) -> NSMenuItem {
+        let item = NSMenuItem(title: title, action: action, keyEquivalent: keyEquivalent)
+        if let icon = icon {
+            item.image = NSImage(systemSymbolName: icon, accessibilityDescription: nil)
+        }
+        item.attributedTitle = createAttributedTitle(title)
+        return item
+    }
+
+    /// Create attributed string with custom font for menu item
+    private func createAttributedTitle(_ title: String) -> NSAttributedString {
+        let fontName = FontManager.shared.currentFontName
+        let fontSize: CGFloat = 13
+        let font = NSFont(name: fontName, size: fontSize) ?? NSFont.systemFont(ofSize: fontSize)
+
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: NSColor.labelColor
+        ]
+
+        return NSAttributedString(string: title, attributes: attributes)
+    }
+
+    /// Update all menu item titles with new font
+    private func updateMenuFont() {
+        if let menu = statusItem?.menu {
+            for item in menu.items {
+                // Skip separators (they have empty title)
+                if !item.title.isEmpty {
+                    item.attributedTitle = createAttributedTitle(item.title)
+                }
+            }
+        }
+    }
+
+    /// Setup observer for font changes
+    private func setupFontObserver() {
+        FontManager.shared.$currentFontName
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateMenuFont()
+            }
+            .store(in: &cancellables)
+    }
+
+    // MARK: - Actions
 
     @objc func showTimerWindow() {
         windowManager.showTimerWindow()

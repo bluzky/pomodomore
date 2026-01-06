@@ -15,6 +15,7 @@ struct PomodomoreApp: App {
     init() {
         _ = SettingsManager.shared
         _ = ThemeManager.shared
+        _ = FontManager.shared
     }
 
     var body: some Scene {

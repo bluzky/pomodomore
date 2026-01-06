@@ -94,4 +94,5 @@ struct GeneralSettingsView: View {
     GeneralSettingsView()
         .frame(width: 560, height: 520)
         .environmentObject(ThemeManager.shared)
+        .environmentObject(FontManager.shared)
 }

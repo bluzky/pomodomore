@@ -130,7 +130,7 @@ struct TagSelectButton: View {
                     .fill(selectedTag.color)
                     .frame(width: 6, height: 6)
                 Text(selectedTag.name)
-                    .font(.system(size: 12, weight: .regular))
+                    .appFont(size: 12, weight: .regular)
                     .foregroundColor(themeManager.currentTheme.colors.textPrimary)
             }
         }
@@ -176,7 +176,7 @@ struct TagPopoverItem: View {
                     .fill(tag.color)
                     .frame(width: 6, height: 6)
                 Text(tag.name)
-                    .font(.system(size: 12))
+                    .appFont(size: 12)
                     .foregroundColor(themeManager.currentTheme.colors.textPrimary)
                 Spacer()
             }
@@ -283,10 +283,10 @@ struct TimerView: View {
         return viewModel.currentState == .idle || viewModel.currentState == .paused || isHovered
     }
 
-    // Timer font size - tiny mode always 36, normal mode 36/42
+    // Timer font size - tiny mode always 28, normal mode 36/42
     private var timerFontSize: CGFloat {
         if isTinyMode {
-            return 36
+            return 28
         }
         return shouldShowControls ? 36 : 42
     }
@@ -295,14 +295,14 @@ struct TimerView: View {
         isTinyMode ? 0 : (shouldShowControls ? 0 : 10)
     }
 
-    // View height - tiny mode always 60, normal mode 110
+    // View height - tiny mode always 50, normal mode 110
     private var viewHeight: CGFloat {
-        isTinyMode ? 60 : 110
+        isTinyMode ? 50 : 110
     }
 
-    // View width - tiny mode always 140, normal mode 200
+    // View width - tiny mode always 120, normal mode 200
     private var viewWidth: CGFloat {
-        isTinyMode ? 140 : 200
+        isTinyMode ? 120 : 200
     }
 
     // Whether to show tag label and top controls
@@ -405,14 +405,14 @@ struct TimerView: View {
                                         .fill(viewModel.selectedTag.color)
                                         .frame(width: 6, height: 6)
                                     Text(viewModel.selectedTag.name)
-                                        .font(.system(size: 11, weight: .regular))
+                                        .appFont(size: 11, weight: .regular)
                                         .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                                 }
                             }
                         } else {
                             // Break sessions: Show break type label
                             Text(viewModel.currentSessionType.displayName)
-                                .font(.system(size: 11, weight: .regular))
+                                .appFont(size: 11, weight: .regular)
                                 .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                         }
                     }
@@ -424,7 +424,7 @@ struct TimerView: View {
 
                 // Timer
                 Text(viewModel.timeFormatted)
-                    .font(.system(size: timerFontSize, weight: .medium, design: .monospaced))
+                    .font(FontManager.shared.swiftUIFont(size: timerFontSize, weight: .medium))
                     .foregroundColor(timerColor)
                     .offset(y: timerVerticalOffset)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -614,7 +614,7 @@ struct AmbientSoundPopoverItem: View {
                     .frame(width: 10)
 
                 Text(sound.displayName)
-                    .font(.system(size: 12))
+                    .appFont(size: 12)
                     .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
                 Spacer()
@@ -639,4 +639,6 @@ struct AmbientSoundPopoverItem: View {
 #Preview {
     TimerView(viewModel: WindowManager.shared.timerViewModel)
         .frame(width: 200, height: 110)
+        .environmentObject(ThemeManager.shared)
+        .environmentObject(FontManager.shared)
 }
