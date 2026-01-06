@@ -11,6 +11,7 @@ import SwiftUI
 
 /// About application information
 struct AboutView: View {
+    @EnvironmentObject var themeManager: ThemeManager
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -35,7 +36,7 @@ struct AboutView: View {
             .padding(.bottom, 12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(NSColor.windowBackgroundColor))
+        .background(themeManager.currentTheme.colors.backgroundPrimary)
     }
 }
 
@@ -49,11 +50,12 @@ struct InfoRow: View {
         HStack {
             Text(label)
                 .font(.system(size: 13))
-                .foregroundColor(.secondary)
+                .foregroundColor(ThemeManager.shared.currentTheme.colors.textSecondary)
                 .frame(width: 100, alignment: .leading)
 
             Text(value)
                 .font(.system(size: 13))
+                .foregroundColor(ThemeManager.shared.currentTheme.colors.textPrimary)
         }
     }
 }
@@ -63,4 +65,5 @@ struct InfoRow: View {
 #Preview {
     AboutView()
         .frame(width: 560, height: 520)
+        .environmentObject(ThemeManager.shared)
 }

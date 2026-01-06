@@ -49,6 +49,7 @@ enum DashboardSection: String, CaseIterable, Identifiable, Hashable {
 /// Main window for Dashboard and Settings with sidebar navigation
 struct DashboardSettingsView: View {
     @State private var selectedSection: DashboardSection
+    @EnvironmentObject var themeManager: ThemeManager
 
     init(selectedSection: DashboardSection = .dashboard) {
         _selectedSection = State(initialValue: selectedSection)
@@ -68,61 +69,59 @@ struct DashboardSettingsView: View {
         .navigationSplitViewStyle(.balanced)
         .frame(width: 720, height: 520)
         .environmentObject(SettingsManager.shared)
+        .environmentObject(ThemeManager.shared)
+        .tint(themeManager.currentTheme.colors.accentPrimary)
     }
 
     // MARK: - Sidebar
 
     private var sidebar: some View {
-        List(selection: $selectedSection) {
+        List {
             // Dashboard section
             Section {
-                NavigationLink(value: DashboardSection.dashboard) {
-                    Label {
-                        Text("Dashboard")
-                    } icon: {
-                        Image(systemName: "chart.bar.fill")
-                    }
-                }
+                sidebarItem(section: .dashboard)
             }
 
             // Settings sections
             Section("Settings") {
-                 NavigationLink(value: DashboardSection.general) {
-                     Label {
-                         Text("General")
-                     } icon: {
-                         Image(systemName: "gearshape.fill")
-                     }
-                 }
-
-                 NavigationLink(value: DashboardSection.sound) {
-                     Label {
-                         Text("Sound")
-                     } icon: {
-                         Image(systemName: "speaker.wave.2.fill")
-                     }
-                 }
-
-                 NavigationLink(value: DashboardSection.appearance) {
-                     Label {
-                         Text("Appearance")
-                     } icon: {
-                         Image(systemName: "paintbrush.fill")
-                     }
-                 }
-                 .disabled(true)
-
-                 NavigationLink(value: DashboardSection.about) {
-                     Label {
-                         Text("About")
-                     } icon: {
-                         Image(systemName: "info.circle.fill")
-                     }
-                 }
+                sidebarItem(section: .general)
+                sidebarItem(section: .sound)
+                sidebarItem(section: .appearance)
+                sidebarItem(section: .about)
             }
         }
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
+        .background(themeManager.currentTheme.colors.sidebarBackground)
+    }
+
+    // MARK: - Sidebar Item Helper
+
+    @ViewBuilder
+    private func sidebarItem(section: DashboardSection) -> some View {
+        Button(action: {
+            selectedSection = section
+        }) {
+            HStack(spacing: 12) {
+                Image(systemName: section.iconName)
+                    .foregroundStyle(selectedSection == section ? themeManager.currentTheme.colors.accentPrimary : themeManager.currentTheme.colors.textSecondary)
+                    .frame(width: 20)
+
+                Text(section.displayName)
+                    .foregroundStyle(selectedSection == section ? themeManager.currentTheme.colors.accentPrimary : themeManager.currentTheme.colors.textSecondary)
+
+                Spacer()
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(selectedSection == section ? themeManager.currentTheme.colors.sidebarSelected : Color.clear)
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .listRowBackground(Color.clear)
     }
 
     // MARK: - Content Area
@@ -139,14 +138,7 @@ struct DashboardSettingsView: View {
         case .about:
             AboutView()
         case .appearance:
-            VStack {
-                Text("Appearance Settings (Week 4)")
-                    .font(.system(size: 14))
-                    .foregroundColor(.secondary)
-            }
-            .frame(width: 520, alignment: .center)
-            .frame(maxHeight: .infinity)
-            .background(Color(NSColor.windowBackgroundColor))
+            AppearanceSettingsView()
         }
     }
 }
@@ -156,4 +148,5 @@ struct DashboardSettingsView: View {
 #Preview {
     DashboardSettingsView(selectedSection: .dashboard)
         .frame(width: 720, height: 520)
+        .environmentObject(ThemeManager.shared)
 }

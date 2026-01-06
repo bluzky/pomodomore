@@ -17,6 +17,11 @@ class ThemeManager: ObservableObject {
 
     private init() {
         // Initialize with default theme (Nord)
+        currentTheme = .nord
+        // Apply window appearance on launch (may not have windows yet, but will apply when they open)
+        DispatchQueue.main.async {
+            self.updateWindowAppearance()
+        }
         print("ThemeManager initialized with theme: \(currentTheme.name)")
     }
 
@@ -38,7 +43,23 @@ class ThemeManager: ObservableObject {
     /// Set the current theme
     func setTheme(_ theme: Theme) {
         currentTheme = theme
+        updateWindowAppearance()
         print("🎨 Theme changed to: \(theme.name)")
+    }
+
+    /// Update all window appearances to match the current theme (light/dark)
+    private func updateWindowAppearance() {
+        let appearance: NSAppearance?
+        if currentTheme.isDark {
+            appearance = NSAppearance(named: .darkAqua)
+        } else {
+            appearance = NSAppearance(named: .aqua)
+        }
+
+        // Update all application windows
+        for window in NSApplication.shared.windows {
+            window.appearance = appearance
+        }
     }
 
     /// Get theme by name (returns nil if not found)

@@ -113,6 +113,8 @@ class WindowManager: ObservableObject {
     private func createDashboardWindow(selectedTab: DashboardSection, position: NSPoint?) {
         // Create the settings view with initial section
         let settingsView = DashboardSettingsView(selectedSection: selectedTab)
+            .environmentObject(SettingsManager.shared)
+            .environmentObject(ThemeManager.shared)
 
         // Create hosting controller
         let hostingController = NSHostingController(rootView: settingsView)
@@ -145,6 +147,18 @@ class WindowManager: ObservableObject {
         window.toolbarStyle = .unified
 
         settingsWindow = window
+
+        // Apply theme appearance
+        applyThemeAppearance(to: window)
+    }
+
+    /// Apply current theme's light/dark appearance to a window
+    private func applyThemeAppearance(to window: NSWindow) {
+        if ThemeManager.shared.currentTheme.isDark {
+            window.appearance = NSAppearance(named: .darkAqua)
+        } else {
+            window.appearance = NSAppearance(named: .aqua)
+        }
     }
 
     /// Save current window position to UserDefaults

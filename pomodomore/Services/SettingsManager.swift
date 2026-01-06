@@ -55,6 +55,8 @@ class SettingsManager: ObservableObject {
             settings = loadedSettings
             // Apply settings to ConfigManager
             ConfigManager.shared.updateFromSettings(settings)
+            // Load theme into ThemeManager
+            ThemeManager.shared.loadTheme(named: settings.appearance.theme)
         }
     }
 
@@ -63,5 +65,12 @@ class SettingsManager: ObservableObject {
     /// Reset all settings to default values
     func resetToDefaults() {
         settings = Settings()
+    }
+
+    /// Update theme (called from AppearanceSettingsView)
+    func updateTheme(_ themeName: String) {
+        settings.appearance.theme = themeName
+        ThemeManager.shared.loadTheme(named: themeName)
+        // Settings will auto-save due to @Published binding
     }
 }

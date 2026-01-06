@@ -22,6 +22,7 @@ struct DaySessionData: Identifiable {
 /// Dashboard showing today's stats and weekly chart
 struct DashboardView: View {
     @ObservedObject private var statistics = StatisticsManager.shared
+    @EnvironmentObject var themeManager: ThemeManager
     @State private var currentWeekOffset: Int = 0
 
     private static let dateFormatter: DateFormatter = {
@@ -49,7 +50,7 @@ struct DashboardView: View {
             .padding(.bottom, 12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(NSColor.windowBackgroundColor))
+        .background(themeManager.currentTheme.colors.backgroundPrimary)
     }
 
     // MARK: - Today Section
@@ -58,27 +59,25 @@ struct DashboardView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Today")
                 .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
             HStack(spacing: 12) {
                 StatCard(
                     title: "Sessions",
                     value: "\(statistics.todaySessions)",
-                    icon: "🍅",
-                    isLoading: statistics.isLoading
+                    icon: "🍅"
                 )
 
                 StatCard(
                     title: "Minutes",
                     value: "\(statistics.todayMinutes)",
-                    icon: "⏱",
-                    isLoading: statistics.isLoading
+                    icon: "⏱"
                 )
 
                 StatCard(
                     title: "Current Streak",
                     value: "\(statistics.currentStreak)",
-                    icon: "🔥",
-                    isLoading: statistics.isLoading
+                    icon: "🔥"
                 )
             }
         }
@@ -91,6 +90,7 @@ struct DashboardView: View {
             HStack {
                 Text(weekHeaderText)
                     .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(themeManager.currentTheme.colors.textPrimary)
                     .animation(.easeInOut(duration: 0.3), value: currentWeekOffset)
 
                 Spacer()
@@ -100,6 +100,7 @@ struct DashboardView: View {
                     Button(action: { currentWeekOffset -= 1 }) {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 12))
+                            .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                     }
                     .buttonStyle(.plain)
                     .disabled(currentWeekOffset <= -2)
@@ -107,6 +108,7 @@ struct DashboardView: View {
                     Button(action: { currentWeekOffset += 1 }) {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 12))
+                            .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                     }
                     .buttonStyle(.plain)
                     .disabled(currentWeekOffset >= 0)
@@ -144,13 +146,13 @@ struct DashboardView: View {
                 x: .value("Day", data.day),
                 y: .value("Sessions", data.sessions)
             )
-            .foregroundStyle(data.sessions > 0 ? Color.accentColor : Color.accentColor.opacity(0.3))
+            .foregroundStyle(data.sessions > 0 ? themeManager.currentTheme.colors.accentPrimary : themeManager.currentTheme.colors.accentPrimary.opacity(0.3))
             .cornerRadius(4)
             .annotation(position: .top, alignment: .center, spacing: 4) {
                 if data.sessions > 0 {
                     Text("\(data.sessions)")
                         .font(.system(size: 10))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                 }
             }
         }
@@ -158,13 +160,15 @@ struct DashboardView: View {
             AxisMarks(position: .bottom) { _ in
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0))
                 AxisValueLabel()
+                    .foregroundStyle(themeManager.currentTheme.colors.textSecondary)
             }
         }
         .chartYAxis {
             AxisMarks(values: yAxisValues) { _ in
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 1))
-                    .foregroundStyle(Color.secondary.opacity(0.15))
+                    .foregroundStyle(themeManager.currentTheme.colors.borderSecondary.opacity(0.3))
                 AxisValueLabel()
+                    .foregroundStyle(themeManager.currentTheme.colors.textSecondary)
             }
         }
         .chartYScale(domain: 0...maxSessions)
@@ -205,14 +209,20 @@ struct StatCard: View {
     let title: String
     let value: String
     let icon: String
-    var isLoading: Bool = false
 
     var body: some View {
         VStack(alignment: .center, spacing: 8) {
-            if isLoading {
-                loadingView
-            } else {
-                contentView
+            Text(title)
+                .font(.system(size: 11))
+                .foregroundColor(ThemeManager.shared.currentTheme.colors.textSecondary)
+
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(value)
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundColor(ThemeManager.shared.currentTheme.colors.textPrimary)
+
+                Text(icon)
+                    .font(.system(size: 20))
             }
         }
         .frame(maxWidth: .infinity, alignment: .center)
@@ -220,44 +230,12 @@ struct StatCard: View {
         .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color(NSColor.controlBackgroundColor))
+                .fill(ThemeManager.shared.currentTheme.colors.backgroundSecondary)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                        .stroke(ThemeManager.shared.currentTheme.colors.borderPrimary.opacity(0.3), lineWidth: 1)
                 )
         )
-    }
-
-    private var contentView: some View {
-        VStack(alignment: .center, spacing: 8) {
-            Text(title)
-                .font(.system(size: 11))
-                .foregroundColor(.secondary)
-
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(value)
-                    .font(.system(size: 32, weight: .bold))
-
-                Text(icon)
-                    .font(.system(size: 20))
-            }
-        }
-    }
-
-    private var loadingView: some View {
-        VStack(alignment: .center, spacing: 8) {
-            Text(title)
-                .font(.system(size: 11))
-                .foregroundColor(.secondary)
-
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                ShimmerView(width: 40, height: 38)
-                    .frame(width: 40, height: 38)
-
-                ShimmerView(width: 20, height: 20)
-                    .frame(width: 20, height: 20)
-            }
-        }
     }
 }
 
@@ -308,4 +286,5 @@ struct ShimmerView: View {
 #Preview {
     DashboardView()
         .frame(width: 560, height: 520)
+        .environmentObject(ThemeManager.shared)
 }

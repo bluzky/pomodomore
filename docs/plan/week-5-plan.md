@@ -119,7 +119,106 @@ struct ThemeColors {
 
 ---
 
-### DAY 2 (Tuesday) - Font System + Availability Detection
+### DAY 2 (Tuesday) - Appearance Settings UI + Theme Integration
+
+**Hours:** ~8 (estimated ~2-3 actual based on velocity)
+**Goal:** Build Appearance settings UI AND apply themes to all UI components
+
+**Deliverables:**
+- Create `AppearanceSettingsView.swift`
+  - Theme section with picker/dropdown
+  - Theme preview (show 3-4 color samples)
+  - Show timer in menubar toggle (existing setting)
+  - Window size picker (existing setting)
+- Theme picker implementation
+  - Display all 10 themes
+  - Show theme name
+  - Show small color preview circles
+  - Highlight selected theme
+  - Clean, flat layout (no section boxes)
+- Connect to SettingsManager
+  - Add appearance.theme property
+  - Save theme selection to settings
+  - Auto-save on change (no Save button)
+- Enable Appearance menu item in sidebar
+  - Remove "greyed out" state
+  - Make clickable and functional
+- Connect ThemeManager to SettingsManager
+  - Load saved theme on app launch
+  - Update ThemeManager when user selects theme
+- **Apply themes to ALL UI components**
+  - TimerView (background, text, buttons, timer colors)
+  - DashboardView (cards, chart, navigation)
+  - All Settings views (backgrounds, text, controls)
+  - Sidebar (background, selection, hover)
+  - SessionIndicatorsView (circle colors)
+- **Live theme switching (no restart required)**
+- Test: Theme selection saves and persists
+- Test: All 10 themes visually distinct and working
+
+**Files:**
+- Create `Views/Dashboard/AppearanceSettingsView.swift` (new file)
+- Update `Views/Dashboard/DashboardSettingsView.swift` (enable Appearance item)
+- Update `Models/Settings.swift` (add appearance.theme property)
+- Update `Services/SettingsManager.swift` (connect to ThemeManager)
+- Update `Services/ThemeManager.swift` (add settings integration)
+- Update `App/PomodomoreApp.swift` (inject ThemeManager as @EnvironmentObject)
+- **Update all View files to use theme colors:**
+  - `Views/Timer/TimerView.swift`
+  - `Views/Timer/SessionIndicatorsView.swift`
+  - `Views/Dashboard/DashboardView.swift`
+  - `Views/Dashboard/GeneralSettingsView.swift`
+  - `Views/Dashboard/PomodoroSettingsView.swift`
+  - `Views/Dashboard/SoundSettingsView.swift`
+
+**Testing:**
+- Build clean (0 errors, 0 warnings)
+- Appearance menu item clickable in sidebar
+- Appearance settings view displays correctly
+- Theme picker shows all 10 themes with color previews
+- Theme selection saves to settings.appearance.theme
+- Theme persists across app restarts
+- ThemeManager.currentTheme updates when theme selected
+- Window size and menubar timer toggles work
+- Settings auto-save on change
+- **Themes apply to all UI components immediately**
+- **Timer window changes colors when theme selected**
+- **Dashboard changes colors when theme selected**
+- **All 10 themes visually distinct**
+- **No UI flicker or delay during theme switch**
+
+**UI Layout:**
+```
+╔═══════════════════════════════════════════════════════╗
+║  Appearance                                           ║
+╠═══════════════════════════════════════════════════════╣
+║                                                       ║
+║  Theme                                                ║
+║  ┌─────────────────────────────────┐                 ║
+║  │ Nord                      ● ● ● │ ← color preview ║
+║  └─────────────────────────────────┘                 ║
+║                                                       ║
+║  Window                                               ║
+║  ┌─────────────────────────────────┐                 ║
+║  │ Small                           │                 ║
+║  └─────────────────────────────────┘                 ║
+║                                                       ║
+║  ☑ Show timer in menubar                             ║
+║                                                       ║
+╚═══════════════════════════════════════════════════════╝
+```
+
+**Implementation Notes:**
+- Use Picker or custom dropdown for theme selection
+- Theme preview: HStack with 3-4 Circle() views showing key colors
+- Flat layout (no section boxes, just headers like other settings)
+- Auto-save on selection change (no Save button)
+- Use @EnvironmentObject for SettingsManager and ThemeManager
+- Connect both managers: Settings ↔ ThemeManager
+
+---
+
+### DAY 3 (Wednesday) - Font System + Font Picker
 
 **Hours:** ~8 (estimated ~2 actual based on velocity)
 **Goal:** Implement font selection system with installed font detection
@@ -142,201 +241,86 @@ struct ThemeColors {
   - Load font by name
   - Handle missing font fallback (use SF Mono)
   - @Published current font property
+- Add font picker to AppearanceSettingsView
+  - Display all fonts
+  - Show "(Not Installed)" for unavailable fonts
+  - Disable unavailable fonts (can't select)
+  - Font preview (show font name in its own font)
+- Connect to SettingsManager
+  - Save font selection to settings.appearance.font
+  - Load saved font on app launch
 - Test: Font detection works correctly
 - Test: Font loading handles missing fonts gracefully
 
 **Files:**
-- Create `Models/Font.swift` (new file)
+- Create `Models/AppFont.swift` (new file)
 - Create `Services/FontManager.swift` (new file)
+- Update `Views/Dashboard/AppearanceSettingsView.swift` (add font picker)
+- Update `Models/Settings.swift` (add appearance.font property)
+- Update `Services/SettingsManager.swift` (connect to FontManager)
 
 **Testing:**
 - Build clean (0 errors, 0 warnings)
 - FontManager detects installed fonts correctly
 - Only installed fonts show as available
-- Missing fonts show "(Not Installed)" label
-- Font selection applies to all UI elements
-- Fallback to SF Mono if selected font unavailable
-- Font changes don't break layout
-
-**Font Detection:**
-```swift
-class FontManager: ObservableObject {
-    static let shared = FontManager()
-
-    @Published var currentFont: String = "SF Mono"
-
-    // All supported fonts
-    let supportedFonts = [
-        "SF Mono",
-        "Menlo",
-        "Monaco",
-        "JetBrains Mono",
-        "Fira Code",
-        "Source Code Pro",
-        "IBM Plex Mono"
-    ]
-
-    func isInstalled(_ fontName: String) -> Bool
-    func getInstalledFonts() -> [String]
-    func applyFont(_ fontName: String)
-}
-```
-
-**Implementation Notes:**
-- Use NSFontManager to query installed fonts
-- Check font family availability with NSFont
-- Store font preference in Settings.appearance.font
-- Apply font globally via @Environment or custom ViewModifier
-- Handle font loading errors gracefully
-
----
-
-### DAY 3 (Wednesday) - Appearance Settings View
-
-**Hours:** ~8 (estimated ~1.5-2 actual based on velocity)
-**Goal:** Build Appearance settings UI with theme and font controls
-
-**Deliverables:**
-- Create `AppearanceSettingsView.swift`
-  - Theme section with dropdown/picker
-  - Theme preview (show color samples)
-  - Font section with dropdown/picker
-  - Font preview (show font rendering)
-  - Show timer in menubar toggle (existing setting)
-  - Window size picker (existing setting)
-- Theme picker shows all 10 themes
-  - Display theme name
-  - Show small color preview (3-4 color circles)
-  - Selected theme highlighted
-- Font picker shows all fonts
-  - Display font name in its own font
-  - Show "(Not Installed)" for unavailable fonts
-  - Disable unavailable fonts (can't select)
-- Connect to SettingsManager
-  - Save theme selection to settings.appearance.lightTheme/darkTheme
-  - Save font selection to settings.appearance.font
-  - Settings auto-save on change
-- Enable Appearance menu item in sidebar
-  - Remove "greyed out" state
-  - Make clickable and functional
-- Test: Appearance settings UI works correctly
-
-**Files:**
-- Create `Views/Dashboard/AppearanceSettingsView.swift` (new file)
-- Update `Views/Dashboard/DashboardSettingsView.swift` (enable Appearance item)
-
-**Testing:**
-- Build clean (0 errors, 0 warnings)
-- Appearance menu item clickable in sidebar
-- Appearance settings view displays correctly
-- Theme picker shows all 10 themes with previews
-- Font picker shows only installed fonts
-- Unavailable fonts greyed out and disabled
-- Theme selection saves to settings
+- Missing fonts show "(Not Installed)" label and are disabled
 - Font selection saves to settings
-- Window size and menubar timer toggles work
-- Settings persist across app restarts
-
-**UI Layout:**
-```
-╔═══════════════════════════════════════════════════════╗
-║  Appearance                                           ║
-╠═══════════════════════════════════════════════════════╣
-║                                                       ║
-║  Theme                                                ║
-║  ┌─────────────────────────────────┐                 ║
-║  │ Nord                      ● ● ● │ ← color preview ║
-║  └─────────────────────────────────┘                 ║
-║                                                       ║
-║  Font                                                 ║
-║  ┌─────────────────────────────────┐                 ║
-║  │ SF Mono                         │ ← in font style ║
-║  └─────────────────────────────────┘                 ║
-║                                                       ║
-║  Window                                               ║
-║  ┌─────────────────────────────────┐                 ║
-║  │ Small                           │                 ║
-║  └─────────────────────────────────┘                 ║
-║                                                       ║
-║  ☑ Show timer in menubar                             ║
-║                                                       ║
-╚═══════════════════════════════════════════════════════╝
-```
-
-**Implementation Notes:**
-- Use Picker or custom dropdown for theme/font selection
-- Theme preview: HStack with 3-4 Circle() views showing key colors
-- Font preview: Text() with .font(.custom(fontName, size: 14))
-- Flat layout (no section boxes, just headers)
-- Auto-save on selection change (no Save button)
-- Use @EnvironmentObject for SettingsManager
+- Font persists across app restarts
+- Fallback to SF Mono if selected font unavailable
+- Font picker displays correctly in Appearance settings
 
 ---
 
-### DAY 4 (Thursday) - Theme Integration + Live Preview
+### DAY 4 (Thursday) - Font Integration + Testing
 
 **Hours:** ~8 (estimated ~2 actual based on velocity)
-**Goal:** Apply themes to all UI components with live switching
+**Goal:** Apply fonts globally and test all theme + font combinations
 
 **Deliverables:**
-- Create theme application system
-  - Custom ViewModifier or @Environment for theme
-  - Apply theme colors to all views
-  - Support both light and dark mode themes
-- Update all views to use theme colors:
-  - TimerView (background, text, buttons, timer color)
-  - DashboardView (cards, chart, navigation)
-  - All Settings views (backgrounds, text, controls)
-  - Sidebar (background, selection, hover)
-- Implement live theme switching
+- Create font application system
+  - Global font modifier or @Environment
+  - Apply selected font to all text in app
+  - Preserve font sizes and weights
+- Update all views to use custom font:
+  - Timer countdown (48pt bold)
+  - Buttons and labels (14pt, 12pt)
+  - Settings text (13pt)
+  - Dashboard stats (various sizes)
+  - Menubar text
+- Implement live font switching
   - No restart required
-  - All UI updates immediately when theme changes
-  - Theme persists across app restarts
-- Handle system appearance (light/dark)
-  - Use lightTheme for light mode
-  - Use darkTheme for dark mode
-  - Respect user's system appearance preference
-- Test: Themes apply correctly to all UI elements
-- Test: Theme switching works without restart
+  - All UI updates immediately when font changes
+  - Font persists across app restarts
+- Handle missing font scenario:
+  - If saved font not installed, show message in Appearance settings
+  - Fallback to SF Mono
+  - Preserve user preference in settings
+- Full integration testing:
+  - Test all theme combinations
+  - Test all installed fonts
+  - Test theme + font combinations
+  - Test persistence (restart app multiple times)
 
 **Files:**
-- Create `Utilities/ThemeModifier.swift` (ViewModifier for theming)
-- Update all View files (apply theme colors)
-- Update `Services/ThemeManager.swift` (add live switching)
-- Update `Services/SettingsManager.swift` (connect to ThemeManager)
+- Create `Utilities/FontModifier.swift` (ViewModifier for fonts)
+- Update all View files (apply custom font)
+- Update `Services/FontManager.swift` (add live switching)
+- Update `Services/SettingsManager.swift` (connect to FontManager)
+- Update `Views/Dashboard/AppearanceSettingsView.swift` (add missing font message)
 
 **Testing:**
 - Build clean (0 errors, 0 warnings)
-- Theme applies to all UI elements
-- Timer window shows correct theme colors
-- Dashboard shows correct theme colors
-- All settings views themed correctly
-- Sidebar themed correctly
-- Theme changes apply immediately when selected
-- No UI flicker or delay during theme switch
-- Theme persists after app restart
-- System light/dark mode switches themes correctly
-- All 10 themes visually distinct and readable
-
-**Theme Application Strategy:**
-```swift
-// Option 1: Environment Object
-@EnvironmentObject var themeManager: ThemeManager
-
-// Option 2: Custom ViewModifier
-.themed(theme: themeManager.currentTheme)
-
-// Option 3: Direct Color Access
-.foregroundColor(themeManager.currentTheme.colors.textPrimary)
-```
-
-**Implementation Notes:**
-- Prefer @EnvironmentObject for clean code
-- Inject ThemeManager at app root
-- Use computed properties for dynamic colors
-- Cache theme colors for performance
-- Update all hardcoded colors to theme references
-- Test each theme for visual quality
+- Font applies to all text in app
+- Timer countdown uses selected font (48pt bold)
+- All UI text uses selected font
+- Font changes apply immediately when selected
+- Font persists after app restart
+- Missing font shows helpful message
+- Fallback to SF Mono if font unavailable
+- All fonts readable at all sizes
+- Fonts render correctly in tiny window mode
+- Theme + font combinations look good together
+- No layout breaks with different fonts
 
 ---
 
@@ -448,26 +432,26 @@ To use JetBrains Mono, install it system-wide and restart the app.
 ## Success Metrics
 
 By Friday EOD:
-- [ ] Theme system implemented (10 themes)
-- [ ] All themes defined with complete color palettes
-- [ ] ThemeManager service working
-- [ ] Font system implemented (7 fonts)
-- [ ] Font detection working (show only installed fonts)
-- [ ] FontManager service working
-- [ ] Appearance settings view created
-- [ ] Theme picker with color previews
-- [ ] Font picker with availability detection
-- [ ] Theme applies to all UI elements
-- [ ] Font applies to all text
-- [ ] Live theme switching (no restart)
-- [ ] Live font switching (no restart)
-- [ ] Theme/font persistence working
-- [ ] System appearance (light/dark) switches themes
-- [ ] Missing font fallback working
-- [ ] Build: 0 errors, 0 warnings
-- [ ] All themes visually distinct and readable
-- [ ] All fonts render clearly
-- [ ] Week 5 summary created
+- [ ] Theme system implemented (10 themes) ✅ Day 1
+- [ ] All themes defined with complete color palettes ✅ Day 1
+- [ ] ThemeManager service working ✅ Day 1
+- [ ] Appearance settings view created ✅ Day 2
+- [ ] Theme picker with color previews ✅ Day 2
+- [ ] Theme applies to all UI elements ✅ Day 2
+- [ ] Live theme switching (no restart) ✅ Day 2
+- [ ] Theme persistence working ✅ Day 2
+- [ ] All themes visually distinct and readable ✅ Day 2
+- [ ] Font system implemented (7 fonts) ✅ Day 3
+- [ ] Font detection working (show only installed fonts) ✅ Day 3
+- [ ] FontManager service working ✅ Day 3
+- [ ] Font picker with availability detection ✅ Day 3
+- [ ] Font applies to all text ✅ Day 4
+- [ ] Live font switching (no restart) ✅ Day 4
+- [ ] Font persistence working ✅ Day 3-4
+- [ ] Missing font fallback working ✅ Day 3-4
+- [ ] All fonts render clearly ✅ Day 4
+- [ ] Build: 0 errors, 0 warnings ✅ Every day
+- [ ] Week 5 summary created ✅ Day 5
 
 ---
 

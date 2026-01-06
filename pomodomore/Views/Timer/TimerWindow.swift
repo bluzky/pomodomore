@@ -29,6 +29,7 @@ class TimerWindow: NSWindow {
         // Host SwiftUI view with shared timer view model and environment objects
         let timerView = TimerView(viewModel: windowManager.timerViewModel)
             .environmentObject(SettingsManager.shared)
+            .environmentObject(ThemeManager.shared)
         let hostingView = NSHostingView(rootView: timerView)
 
         // Disable clipping to allow dropdown and popups to overflow
@@ -36,6 +37,13 @@ class TimerWindow: NSWindow {
         hostingView.layer?.masksToBounds = false
 
         self.contentView = hostingView
+
+        // Apply theme appearance
+        if ThemeManager.shared.currentTheme.isDark {
+            self.appearance = NSAppearance(named: .darkAqua)
+        } else {
+            self.appearance = NSAppearance(named: .aqua)
+        }
     }
 
     // Allow borderless window to become key window (receive keyboard focus)

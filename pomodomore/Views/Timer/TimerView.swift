@@ -119,6 +119,7 @@ struct SoundButtonStyle: ButtonStyle {
 struct TagSelectButton: View {
     @Binding var selectedTag: SessionTag
     @State private var showPopover = false
+    @EnvironmentObject var themeManager: ThemeManager
 
     var body: some View {
         Button(action: {
@@ -130,7 +131,7 @@ struct TagSelectButton: View {
                     .frame(width: 6, height: 6)
                 Text(selectedTag.name)
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(.primary)
+                    .foregroundColor(themeManager.currentTheme.colors.textPrimary)
             }
         }
         .buttonStyle(.plain)
@@ -153,6 +154,7 @@ struct TagSelectButton: View {
                 RoundedRectangle(cornerRadius: 4, style: .continuous)
                     .fill(Color(nsColor: .controlBackgroundColor))
             )
+            .environmentObject(themeManager)
         }
     }
 }
@@ -165,6 +167,7 @@ struct TagPopoverItem: View {
     let onSelect: () -> Void
 
     @State private var isHovered = false
+    @EnvironmentObject var themeManager: ThemeManager
 
     var body: some View {
         Button(action: onSelect) {
@@ -174,7 +177,7 @@ struct TagPopoverItem: View {
                     .frame(width: 6, height: 6)
                 Text(tag.name)
                     .font(.system(size: 12))
-                    .foregroundColor(.primary)
+                    .foregroundColor(themeManager.currentTheme.colors.textPrimary)
                 Spacer()
             }
             .padding(.horizontal, 10)
@@ -183,7 +186,7 @@ struct TagPopoverItem: View {
         }
         .buttonStyle(.plain)
         .background(
-            isSelected ? Color.accentColor.opacity(0.15) :
+            isSelected ? themeManager.currentTheme.colors.accentPrimary.opacity(0.15) :
             isHovered ? Color.primary.opacity(0.06) :
             Color.clear
         )
@@ -262,6 +265,7 @@ struct GlassBackgroundView: NSViewRepresentable {
 struct TimerView: View {
     @ObservedObject var viewModel: TimerViewModel
     @EnvironmentObject var settingsManager: SettingsManager
+    @EnvironmentObject var themeManager: ThemeManager
 
     @State private var isHovered: Bool = false
     @State private var showAmbientPopover: Bool = false
@@ -309,6 +313,20 @@ struct TimerView: View {
     // VStack alignment - center in tiny mode, top otherwise
     private var vStackAlignment: Alignment {
         isTinyMode ? .center : .top
+    }
+
+    // Timer color based on state - uses theme accent color
+    private var timerColor: Color {
+        let theme = themeManager.currentTheme.colors
+        switch viewModel.currentState {
+        case .running:
+            // Use accent color for active timer (more visually striking and theme-cohesive)
+            return theme.accentPrimary
+        case .paused:
+            return theme.timerPaused
+        case .idle, .completed:
+            return theme.textPrimary
+        }
     }
 
     // Show overlay controls on hover in tiny mode
@@ -360,6 +378,7 @@ struct TimerView: View {
                             viewModel: viewModel,
                             showPopover: $showAmbientPopover
                         )
+                        .environmentObject(themeManager)
                     }
                 }
                 .padding(.trailing, 2)
@@ -387,14 +406,14 @@ struct TimerView: View {
                                         .frame(width: 6, height: 6)
                                     Text(viewModel.selectedTag.name)
                                         .font(.system(size: 11, weight: .regular))
-                                        .foregroundColor(.primary)
+                                        .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                                 }
                             }
                         } else {
                             // Break sessions: Show break type label
                             Text(viewModel.currentSessionType.displayName)
                                 .font(.system(size: 11, weight: .regular))
-                                .foregroundColor(.primary)
+                                .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                         }
                     }
                 }
@@ -406,7 +425,7 @@ struct TimerView: View {
                 // Timer
                 Text(viewModel.timeFormatted)
                     .font(.system(size: timerFontSize, weight: .medium, design: .monospaced))
-                    .foregroundColor(.primary)
+                    .foregroundColor(timerColor)
                     .offset(y: timerVerticalOffset)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .animation(.easeOut(duration: 0.25), value: timerFontSize)
@@ -518,14 +537,8 @@ struct TimerView: View {
         .animation(.easeOut(duration: 0.25), value: viewWidth)
         .animation(.easeOut(duration: 0.25), value: viewHeight)
         .background(
-            ZStack {
-                GlassBackgroundView(
-                    cornerRadius: cornerRadius,
-                    material: .hudWindow
-                )
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(Color.black.opacity(0.05))
-            }
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill(themeManager.currentTheme.colors.backgroundPrimary.opacity(0.85))
         )
         .overlay(
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
@@ -549,6 +562,7 @@ struct AmbientSoundPopoverView: View {
     @Binding var selectedSound: AmbientSoundItem
     @ObservedObject var viewModel: TimerViewModel
     @Binding var showPopover: Bool
+    @EnvironmentObject var themeManager: ThemeManager
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -577,6 +591,7 @@ struct AmbientSoundPopoverView: View {
             RoundedRectangle(cornerRadius: 4, style: .continuous)
                 .fill(Color(nsColor: .controlBackgroundColor))
         )
+        .environmentObject(themeManager)
     }
 }
 
@@ -588,18 +603,19 @@ struct AmbientSoundPopoverItem: View {
     let onSelect: () -> Void
 
     @State private var isHovered = false
+    @EnvironmentObject var themeManager: ThemeManager
 
     var body: some View {
         Button(action: onSelect) {
             HStack(spacing: 6) {
                 Image(systemName: sound.fileName.isEmpty ? "music.note.slash" : "music.note")
                     .font(.system(size: 10))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                     .frame(width: 10)
 
                 Text(sound.displayName)
                     .font(.system(size: 12))
-                    .foregroundColor(.primary)
+                    .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
                 Spacer()
             }
@@ -609,7 +625,7 @@ struct AmbientSoundPopoverItem: View {
         }
         .buttonStyle(.plain)
         .background(
-            isSelected ? Color.accentColor.opacity(0.15) :
+            isSelected ? themeManager.currentTheme.colors.accentPrimary.opacity(0.15) :
             isHovered ? Color.primary.opacity(0.06) :
             Color.clear
         )

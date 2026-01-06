@@ -30,19 +30,14 @@ final class StatisticsManager: ObservableObject {
     /// Cached sessions (loaded once, refreshed on demand)
     private var cachedSessions: [Session]?
 
-    /// Loading state for UI feedback
-    @Published private(set) var isLoading = false
-
     /// Load sessions with caching
     private func getSessions() -> [Session] {
         if let cached = cachedSessions {
             if isDebug { print("📊 StatisticsManager: Using cached sessions (\(cached.count) sessions)") }
             return cached
         }
-        isLoading = true
         let sessions = storage.loadSessions()
         cachedSessions = sessions
-        isLoading = false
         if isDebug { print("📊 StatisticsManager: Loaded \(sessions.count) sessions from storage") }
         if sessions.count > 0 {
             if isDebug { print("   First session: \(sessions[0].completionTime)") }
