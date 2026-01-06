@@ -2,8 +2,8 @@
 
 **Project:** PomodoMore - macOS Pomodoro Timer
 **Start Date:** December 31, 2024
-**Current Week:** 3 (Complete)
-**Status:** 🟢 Week 3 Complete
+**Current Week:** 5 (Planned)
+**Status:** 🟢 Week 4 Complete → Week 5 Ready
 
 ---
 
@@ -14,12 +14,13 @@ Week 0: ████████████████████ 100% (Proje
 Week 1: ████████████████████ 100% (Core Timer + Menubar - Complete!)
 Week 2: ████████████████████ 100% (Breaks + Session Cycle - Complete!)
 Week 3: ████████████████████ 100% (Essential Settings + Sounds - Complete!)
-Week 4: ░░░░░░░░░░░░░░░░░░░░   0% (Statistics + Data → MVP)
-Week 5: ░░░░░░░░░░░░░░░░░░░░   0% (Themes + Fonts)
+Week 4: ████████████████████ 100% (Statistics + Data Validation - Complete!)
+Week 5: ░░░░░░░░░░░░░░░░░░░░   0% (Themes + Fonts → NEXT)
 Week 6: ░░░░░░░░░░░░░░░░░░░░   0% (Polish + Bug Fixes)
 
-MVP Progress:  17/17 core features (Week 1-3 complete, Week 4-5 remaining)
-Overall:       50%  (4/8 weeks)
+MVP Core Features:  17/17 complete ✅
+Visual Polish:      0/2 (Week 5-6 remaining)
+Overall:            63%  (5/8 weeks)
 ```
 
 ---
@@ -99,26 +100,35 @@ Overall:       50%  (4/8 weeks)
 
 ---
 
-### ⏳ Week 4: Statistics + Data → **MVP**
-**Status:** Not Started
-**Target:** MVP ready to ship
+### ✅ Week 4: Statistics + Data Validation (Jan 5-9, 2026)
+**Status:** Complete
+**Target:** Statistics validation and UI polish
+**Plan:** `docs/plan/week-4-plan.md`
+**Summary:** `docs/plan/week-4/summary.md`
 **Key Deliverables:**
-- [ ] Statistics window with weekly bar chart
-- [ ] Session tracking and storage (sessions.json)
-- [ ] Weekly navigation (prev/next week)
-- [ ] Data aggregation and display
-- [ ] MVP testing and validation
+- [x] Statistics aggregation validation ✅ Day 2
+- [x] Dashboard animations (shimmer loading, chart) ✅ Day 4
+- [x] Skip break functionality ✅ Day 4
+- [x] Auto-start break setting ✅ Day 4
+- [x] Unified sound toggle ✅ Day 4
+- [x] Tiny window mode (140×60px with hover) ✅ Day 4 BONUS
+
+**Velocity:** ~6h actual / 15h planned (2.5x faster)
 
 ---
 
-### ⏳ Week 5: Themes + Fonts
-**Status:** Not Started
+### ⏳ Week 5: Themes + Fonts (Jan 13-17, 2026)
+**Status:** Planned
 **Target:** Visual customization complete
+**Plan:** `docs/plan/week-5-plan.md`
 **Key Deliverables:**
-- [ ] Theme system (Nord, Monokai, Dracula minimum)
-- [ ] Font selection (SF Mono, Menlo, Monaco)
-- [ ] Theme persistence in settings
-- [ ] Visual polish and theme refinement
+- [ ] Theme system (10 themes: Nord, Monokai, Dracula, Solarized, Tokyo Night, Gruvbox, One Dark, Catppuccin, GitHub Dark, Solarized Light)
+- [ ] Font selection (7 fonts: SF Mono, Menlo, Monaco, JetBrains Mono, Fira Code, Source Code Pro, IBM Plex Mono)
+- [ ] Font availability detection (show only installed fonts)
+- [ ] Appearance settings view with theme/font controls
+- [ ] Live theme/font switching (no restart required)
+- [ ] Theme/font persistence in settings
+- [ ] System appearance (light/dark) integration
 
 ---
 
@@ -167,13 +177,13 @@ Overall:       50%  (4/8 weeks)
 - [x] Start on login ✅ Week 3
 
 ### Visual Customization (Week 5)
-- [ ] Theme system (3+ themes)
-- [ ] Font selection (3+ fonts)
+- [ ] Theme system (10 themes)
+- [ ] Font selection (7 fonts with availability detection)
 
 ### Data & Statistics (Week 4)
-- [ ] Session tracking
-- [ ] Weekly statistics chart
-- [ ] Data persistence (sessions.json)
+- [x] Session tracking ✅ Week 4
+- [x] Weekly statistics chart ✅ Week 4
+- [x] Data persistence (sessions.json) ✅ Week 4
 
 ---
 
@@ -191,17 +201,19 @@ None currently.
 | 1 | 5 days (37h) | 5 days (7.5h) | 100% | 20% | Menubar app with working timer |
 | 2 | 5 days (40h) | 5 days (8.25h) | 100% | 21% | Full Pomodoro cycle with tagging |
 | 3 | 5 days (40h) | 5 days (~8-10h) | 100% | 20-25% | Settings, sounds, notifications |
+| 4 | 5 days (15h) | 2 days (~6h) | 100% | 40% | Statistics validation + UI polish |
 
 ---
 
 ## Next Actions
 
-1. **Week 4 Planning:** Create week-4-plan.md with Statistics + Data goals
-2. **Week 4 Day 1:** Implement session tracking (sessions.json)
-3. **Week 4 Day 2:** Build statistics window with weekly bar chart
-4. **Week 5 Focus:** Theme system + Fonts for MVP polish
+1. **Week 5 Day 1:** Create theme foundation and define all 10 themes
+2. **Week 5 Day 2:** Implement font system with availability detection
+3. **Week 5 Day 3:** Build Appearance settings view
+4. **Week 5 Day 4:** Apply themes to all UI with live switching
+5. **Week 5 Day 5:** Apply fonts globally and final polish
 
 ---
 
-**Last Updated:** January 4, 2026
-**Next Review:** End of Week 4
+**Last Updated:** January 6, 2026
+**Next Review:** End of Week 5
