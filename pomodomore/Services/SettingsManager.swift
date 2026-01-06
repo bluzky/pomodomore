@@ -57,6 +57,8 @@ class SettingsManager: ObservableObject {
             ConfigManager.shared.updateFromSettings(settings)
             // Load theme into ThemeManager
             ThemeManager.shared.loadTheme(named: settings.appearance.theme)
+            // Load font into FontManager
+            FontManager.shared.loadFont(named: settings.appearance.font)
         }
     }
 
@@ -71,6 +73,13 @@ class SettingsManager: ObservableObject {
     func updateTheme(_ themeName: String) {
         settings.appearance.theme = themeName
         ThemeManager.shared.loadTheme(named: themeName)
+        // Settings will auto-save due to @Published binding
+    }
+
+    /// Update font (called from AppearanceSettingsView)
+    func updateFont(_ fontName: String) {
+        settings.appearance.font = fontName
+        FontManager.shared.loadFont(named: fontName)
         // Settings will auto-save due to @Published binding
     }
 }

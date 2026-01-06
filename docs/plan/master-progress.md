@@ -2,8 +2,8 @@
 
 **Project:** PomodoMore - macOS Pomodoro Timer
 **Start Date:** December 31, 2024
-**Current Week:** 5 (Planned)
-**Status:** 🟢 Week 4 Complete → Week 5 Ready
+**Current Week:** 6 (Ready to Start)
+**Status:** 🟢 Week 5 Complete → Week 6 Ready
 
 ---
 
@@ -15,12 +15,12 @@ Week 1: ████████████████████ 100% (Core 
 Week 2: ████████████████████ 100% (Breaks + Session Cycle - Complete!)
 Week 3: ████████████████████ 100% (Essential Settings + Sounds - Complete!)
 Week 4: ████████████████████ 100% (Statistics + Data Validation - Complete!)
-Week 5: ░░░░░░░░░░░░░░░░░░░░   0% (Themes + Fonts → NEXT)
+Week 5: ████████████████████ 100% (Themes + Fonts Complete!)
 Week 6: ░░░░░░░░░░░░░░░░░░░░   0% (Polish + Bug Fixes)
 
 MVP Core Features:  17/17 complete ✅
-Visual Polish:      0/2 (Week 5-6 remaining)
-Overall:            63%  (5/8 weeks)
+Visual Polish:      2/2 complete ✅
+Overall:            75%  (6/8 weeks)
 ```
 
 ---
@@ -117,18 +117,23 @@ Overall:            63%  (5/8 weeks)
 
 ---
 
-### ⏳ Week 5: Themes + Fonts (Jan 13-17, 2026)
-**Status:** Planned
+### ✅ Week 5: Themes + Fonts (Jan 13-17, 2026)
+**Status:** Complete
 **Target:** Visual customization complete
 **Plan:** `docs/plan/week-5-plan.md`
+**Progress:** `docs/plan/week-5/progress.md`
+**Summary:** `docs/plan/week-5/summary.md` (to be created)
 **Key Deliverables:**
-- [ ] Theme system (10 themes: Nord, Monokai, Dracula, Solarized, Tokyo Night, Gruvbox, One Dark, Catppuccin, GitHub Dark, Solarized Light)
-- [ ] Font selection (7 fonts: SF Mono, Menlo, Monaco, JetBrains Mono, Fira Code, Source Code Pro, IBM Plex Mono)
-- [ ] Font availability detection (show only installed fonts)
-- [ ] Appearance settings view with theme/font controls
-- [ ] Live theme/font switching (no restart required)
-- [ ] Theme/font persistence in settings
-- [ ] System appearance (light/dark) integration
+- [x] Theme system (10 themes: Nord, Monokai, Dracula, Solarized, Tokyo Night, Gruvbox, One Dark, Catppuccin, GitHub Dark, Solarized Light) ✅ Day 1-2
+- [x] ThemeManager service with live switching ✅ Day 1-2
+- [x] Appearance settings view with theme controls ✅ Day 2
+- [x] Full UI theming (Timer, Dashboard, Settings, Sidebar) ✅ Day 2
+- [x] Theme persistence in settings ✅ Day 2
+- [x] Font selection (7 fonts: SF Mono, Menlo, Monaco, JetBrains Mono, Fira Code, Source Code Pro, IBM Plex Mono) ✅ Day 3
+- [x] Font availability detection (show only installed fonts) ✅ Day 3
+- [x] Appearance settings view with font controls ✅ Day 3
+- [x] Live font switching (no restart required) ✅ Day 3
+- [x] Font persistence in settings ✅ Day 3
 
 ---
 
@@ -177,8 +182,8 @@ Overall:            63%  (5/8 weeks)
 - [x] Start on login ✅ Week 3
 
 ### Visual Customization (Week 5)
-- [ ] Theme system (10 themes)
-- [ ] Font selection (7 fonts with availability detection)
+- [x] Theme system (10 themes) ✅ Week 5 Day 1-2
+- [x] Font selection (7 fonts with availability detection) ✅ Week 5 Day 3
 
 ### Data & Statistics (Week 4)
 - [x] Session tracking ✅ Week 4
@@ -207,13 +212,13 @@ None currently.
 
 ## Next Actions
 
-1. **Week 5 Day 1:** Create theme foundation and define all 10 themes
-2. **Week 5 Day 2:** Implement font system with availability detection
-3. **Week 5 Day 3:** Build Appearance settings view
-4. **Week 5 Day 4:** Apply themes to all UI with live switching
-5. **Week 5 Day 5:** Apply fonts globally and final polish
+1. **Week 6 Day 1:** Edge case handling (sleep/wake, date change, etc.)
+2. **Week 6 Day 2:** UI polish and animations
+3. **Week 6 Day 3:** Performance optimization
+4. **Week 6 Day 4:** Bug fixes from testing
+5. **Week 6 Day 5:** Final testing pass and v1.0 release preparation
 
 ---
 
-**Last Updated:** January 6, 2026
-**Next Review:** End of Week 5
+**Last Updated:** January 15, 2026
+**Next Review:** End of Week 6

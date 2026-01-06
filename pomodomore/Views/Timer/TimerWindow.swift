@@ -30,6 +30,7 @@ class TimerWindow: NSWindow {
         let timerView = TimerView(viewModel: windowManager.timerViewModel)
             .environmentObject(SettingsManager.shared)
             .environmentObject(ThemeManager.shared)
+            .environmentObject(FontManager.shared)
         let hostingView = NSHostingView(rootView: timerView)
 
         // Disable clipping to allow dropdown and popups to overflow

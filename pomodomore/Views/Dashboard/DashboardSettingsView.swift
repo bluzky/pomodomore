@@ -50,6 +50,7 @@ enum DashboardSection: String, CaseIterable, Identifiable, Hashable {
 struct DashboardSettingsView: View {
     @State private var selectedSection: DashboardSection
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var fontManager: FontManager
 
     init(selectedSection: DashboardSection = .dashboard) {
         _selectedSection = State(initialValue: selectedSection)
@@ -108,6 +109,7 @@ struct DashboardSettingsView: View {
                     .frame(width: 20)
 
                 Text(section.displayName)
+                    .appFont(size: 13)
                     .foregroundStyle(selectedSection == section ? themeManager.currentTheme.colors.accentPrimary : themeManager.currentTheme.colors.textSecondary)
 
                 Spacer()
@@ -149,4 +151,5 @@ struct DashboardSettingsView: View {
     DashboardSettingsView(selectedSection: .dashboard)
         .frame(width: 720, height: 520)
         .environmentObject(ThemeManager.shared)
+        .environmentObject(FontManager.shared)
 }

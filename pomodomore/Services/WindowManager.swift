@@ -115,6 +115,7 @@ class WindowManager: ObservableObject {
         let settingsView = DashboardSettingsView(selectedSection: selectedTab)
             .environmentObject(SettingsManager.shared)
             .environmentObject(ThemeManager.shared)
+            .environmentObject(FontManager.shared)
 
         // Create hosting controller
         let hostingController = NSHostingController(rootView: settingsView)
