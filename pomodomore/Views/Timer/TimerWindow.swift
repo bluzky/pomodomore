@@ -29,6 +29,7 @@ class TimerWindow: NSWindow {
         // Host SwiftUI view with shared timer view model and environment objects
         let timerView = TimerView(viewModel: windowManager.timerViewModel)
             .environmentObject(SettingsManager.shared)
+            .environmentObject(ThemeManager.shared)
         let hostingView = NSHostingView(rootView: timerView)
 
         // Disable clipping to allow dropdown and popups to overflow

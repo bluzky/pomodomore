@@ -110,7 +110,6 @@ struct DashboardSettingsView: View {
                          Image(systemName: "paintbrush.fill")
                      }
                  }
-                 .disabled(true)
 
                  NavigationLink(value: DashboardSection.about) {
                      Label {
@@ -139,14 +138,7 @@ struct DashboardSettingsView: View {
         case .about:
             AboutView()
         case .appearance:
-            VStack {
-                Text("Appearance Settings (Week 4)")
-                    .font(.system(size: 14))
-                    .foregroundColor(.secondary)
-            }
-            .frame(width: 520, alignment: .center)
-            .frame(maxHeight: .infinity)
-            .background(Color(NSColor.windowBackgroundColor))
+            AppearanceSettingsView()
         }
     }
 }

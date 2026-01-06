@@ -126,10 +126,13 @@ enum WindowSize: String, Codable, CaseIterable {
 }
 
 struct AppearanceSettings: Codable {
-    /// Light mode theme name
+    /// Current theme name (Day 2 implementation - single theme for both light/dark)
+    var theme: String = "Nord"
+
+    /// Light mode theme name (Week 5 Day 5 - for future system appearance support)
     var lightTheme: String = "Nord Light"
 
-    /// Dark mode theme name
+    /// Dark mode theme name (Week 5 Day 5 - for future system appearance support)
     var darkTheme: String = "Nord Dark"
 
     /// Font family name
@@ -142,12 +145,14 @@ struct AppearanceSettings: Codable {
     var windowSize: WindowSize = .small
 
     init(
+        theme: String = "Nord",
         lightTheme: String = "Nord Light",
         darkTheme: String = "Nord Dark",
         font: String = "SF Mono",
         showTimerInMenubar: Bool = true,
         windowSize: WindowSize = .small
     ) {
+        self.theme = theme
         self.lightTheme = lightTheme
         self.darkTheme = darkTheme
         self.font = font

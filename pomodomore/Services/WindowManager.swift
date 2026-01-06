@@ -113,6 +113,8 @@ class WindowManager: ObservableObject {
     private func createDashboardWindow(selectedTab: DashboardSection, position: NSPoint?) {
         // Create the settings view with initial section
         let settingsView = DashboardSettingsView(selectedSection: selectedTab)
+            .environmentObject(SettingsManager.shared)
+            .environmentObject(ThemeManager.shared)
 
         // Create hosting controller
         let hostingController = NSHostingController(rootView: settingsView)
