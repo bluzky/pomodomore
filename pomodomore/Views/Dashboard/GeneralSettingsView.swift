@@ -12,6 +12,7 @@ import SwiftUI
 /// General application settings
 struct GeneralSettingsView: View {
     @EnvironmentObject var settingsManager: SettingsManager
+    @EnvironmentObject var themeManager: ThemeManager
 
     var body: some View {
         ScrollView {
@@ -75,23 +76,13 @@ struct GeneralSettingsView: View {
                     isOn: $settingsManager.settings.pomodoro.autoStartBreak
                 )
 
-                // Window Size Section
-                SettingsSectionHeader(title: "Window Size")
-
-                SettingsPickerRow(
-                    label: "Timer window",
-                    selection: $settingsManager.settings.appearance.windowSize,
-                    options: WindowSize.allCases,
-                    optionLabel: { $0.displayName }
-                )
-
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(NSColor.windowBackgroundColor))
+        .background(themeManager.currentTheme.colors.backgroundPrimary)
     }
 }
 
@@ -102,4 +93,5 @@ struct GeneralSettingsView: View {
 #Preview {
     GeneralSettingsView()
         .frame(width: 560, height: 520)
+        .environmentObject(ThemeManager.shared)
 }

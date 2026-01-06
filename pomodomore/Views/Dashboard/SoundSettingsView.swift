@@ -12,6 +12,7 @@ import SwiftUI
 /// Sound and notification configuration settings
 struct SoundSettingsView: View {
     @EnvironmentObject var settingsManager: SettingsManager
+    @EnvironmentObject var themeManager: ThemeManager
     private let soundManager = SoundManager.shared
 
     private var tickSoundOptions: [String] {
@@ -52,7 +53,7 @@ struct SoundSettingsView: View {
 
                 Text("Sound played when timer completes")
                     .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 8)
 
@@ -72,7 +73,7 @@ struct SoundSettingsView: View {
 
                 Text("Play a looping tick sound during Pomodoro sessions")
                     .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 8)
 
@@ -88,7 +89,7 @@ struct SoundSettingsView: View {
 
                 Text("Play ambient sound during Pomodoro sessions")
                     .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 8)
 
@@ -98,7 +99,7 @@ struct SoundSettingsView: View {
             .padding(.bottom, 12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(NSColor.windowBackgroundColor))
+        .background(themeManager.currentTheme.colors.backgroundPrimary)
     }
 }
 
@@ -107,4 +108,5 @@ struct SoundSettingsView: View {
 #Preview {
     SoundSettingsView()
         .frame(width: 560, height: 520)
+        .environmentObject(ThemeManager.shared)
 }

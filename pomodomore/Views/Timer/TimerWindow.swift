@@ -37,6 +37,13 @@ class TimerWindow: NSWindow {
         hostingView.layer?.masksToBounds = false
 
         self.contentView = hostingView
+
+        // Apply theme appearance
+        if ThemeManager.shared.currentTheme.isDark {
+            self.appearance = NSAppearance(named: .darkAqua)
+        } else {
+            self.appearance = NSAppearance(named: .aqua)
+        }
     }
 
     // Allow borderless window to become key window (receive keyboard focus)

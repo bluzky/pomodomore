@@ -56,12 +56,14 @@ struct ThemeColors {
 
 struct Theme {
     let name: String
+    let isDark: Bool  // Indicates if this is a dark theme (affects system control appearance)
     let colors: ThemeColors
 
     // MARK: - Nord Theme (Default)
 
     static let nord = Theme(
         name: "Nord",
+        isDark: true,
         colors: ThemeColors(
             backgroundPrimary: Color(hex: "#2E3440"),
             backgroundSecondary: Color(hex: "#3B4252"),
@@ -92,6 +94,7 @@ struct Theme {
 
     static let monokai = Theme(
         name: "Monokai",
+        isDark: true,
         colors: ThemeColors(
             backgroundPrimary: Color(hex: "#272822"),
             backgroundSecondary: Color(hex: "#3E3D32"),
@@ -122,6 +125,7 @@ struct Theme {
 
     static let dracula = Theme(
         name: "Dracula",
+        isDark: true,
         colors: ThemeColors(
             backgroundPrimary: Color(hex: "#282A36"),
             backgroundSecondary: Color(hex: "#44475A"),
@@ -152,6 +156,7 @@ struct Theme {
 
     static let solarizedDark = Theme(
         name: "Solarized Dark",
+        isDark: true,
         colors: ThemeColors(
             backgroundPrimary: Color(hex: "#002B36"),
             backgroundSecondary: Color(hex: "#073642"),
@@ -182,6 +187,7 @@ struct Theme {
 
     static let tokyoNight = Theme(
         name: "Tokyo Night",
+        isDark: true,
         colors: ThemeColors(
             backgroundPrimary: Color(hex: "#1A1B26"),
             backgroundSecondary: Color(hex: "#24283B"),
@@ -212,6 +218,7 @@ struct Theme {
 
     static let gruvboxDark = Theme(
         name: "Gruvbox Dark",
+        isDark: true,
         colors: ThemeColors(
             backgroundPrimary: Color(hex: "#282828"),
             backgroundSecondary: Color(hex: "#3C3836"),
@@ -242,6 +249,7 @@ struct Theme {
 
     static let oneDark = Theme(
         name: "One Dark",
+        isDark: true,
         colors: ThemeColors(
             backgroundPrimary: Color(hex: "#282C34"),
             backgroundSecondary: Color(hex: "#21252B"),
@@ -272,6 +280,7 @@ struct Theme {
 
     static let catppuccinMocha = Theme(
         name: "Catppuccin Mocha",
+        isDark: true,
         colors: ThemeColors(
             backgroundPrimary: Color(hex: "#1E1E2E"),
             backgroundSecondary: Color(hex: "#313244"),
@@ -302,6 +311,7 @@ struct Theme {
 
     static let githubDark = Theme(
         name: "GitHub Dark",
+        isDark: true,
         colors: ThemeColors(
             backgroundPrimary: Color(hex: "#0D1117"),
             backgroundSecondary: Color(hex: "#161B22"),
@@ -332,6 +342,7 @@ struct Theme {
 
     static let solarizedLight = Theme(
         name: "Solarized Light",
+        isDark: false,
         colors: ThemeColors(
             backgroundPrimary: Color(hex: "#FDF6E3"),
             backgroundSecondary: Color(hex: "#EEE8D5"),

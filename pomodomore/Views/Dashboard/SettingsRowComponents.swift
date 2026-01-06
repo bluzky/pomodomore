@@ -17,6 +17,7 @@ struct SettingsNavigationRow: View {
     let action: () -> Void
 
     @State private var isHovering = false
+    @EnvironmentObject var themeManager: ThemeManager
 
     var body: some View {
         Button(action: action) {
@@ -35,20 +36,20 @@ struct SettingsNavigationRow: View {
                 // Title
                 Text(title)
                     .font(.system(size: 13))
-                    .foregroundColor(.primary)
+                    .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
                 Spacer()
 
                 // Chevron
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(themeManager.currentTheme.colors.textSecondary)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(isHovering ? Color.gray.opacity(0.08) : Color.clear)
+                    .fill(isHovering ? themeManager.currentTheme.colors.backgroundTertiary : Color.clear)
             )
             .contentShape(Rectangle())
         }
@@ -67,12 +68,13 @@ struct SettingsPickerRow<T: Hashable>: View {
     @Binding var selection: T
     let options: [T]
     let optionLabel: (T) -> String
+    @EnvironmentObject var themeManager: ThemeManager
 
     var body: some View {
         HStack {
             Text(label)
                 .font(.system(size: 13))
-                .foregroundColor(.primary)
+                .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
             Spacer()
 
@@ -95,12 +97,13 @@ struct SettingsPickerRow<T: Hashable>: View {
 struct SettingsToggleRow: View {
     let label: String
     @Binding var isOn: Bool
+    @EnvironmentObject var themeManager: ThemeManager
 
     var body: some View {
         HStack {
             Text(label)
                 .font(.system(size: 13))
-                .foregroundColor(.primary)
+                .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
             Spacer()
 
@@ -119,11 +122,12 @@ struct SettingsToggleRow: View {
 /// Section header with title
 struct SettingsSectionHeader: View {
     let title: String
+    @EnvironmentObject var themeManager: ThemeManager
 
     var body: some View {
         Text(title)
             .font(.system(size: 13, weight: .semibold))
-            .foregroundColor(.primary)
+            .foregroundColor(themeManager.currentTheme.colors.textPrimary)
             .padding(.horizontal, 16)
             .padding(.top, 20)
             .padding(.bottom, 8)
@@ -139,19 +143,20 @@ struct SettingsStepperRow: View {
     @Binding var value: Int
     let range: ClosedRange<Int>
     let valueFormatter: (Int) -> String
+    @EnvironmentObject var themeManager: ThemeManager
 
     var body: some View {
         HStack {
             Text(label)
                 .font(.system(size: 13))
-                .foregroundColor(.primary)
+                .foregroundColor(themeManager.currentTheme.colors.textPrimary)
 
             Spacer()
 
             HStack(spacing: 8) {
                 Text(valueFormatter(value))
                     .font(.system(size: 13))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(themeManager.currentTheme.colors.textSecondary)
                     .frame(minWidth: 60, alignment: .trailing)
 
                 Stepper("", value: $value, in: range)
@@ -206,4 +211,5 @@ struct SettingsStepperRow: View {
     }
     .frame(width: 520)
     .background(Color(NSColor.windowBackgroundColor))
+    .environmentObject(ThemeManager.shared)
 }
