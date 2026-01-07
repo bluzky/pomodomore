@@ -117,23 +117,27 @@ Overall:            75%  (6/8 weeks)
 
 ---
 
-### ✅ Week 5: Themes + Fonts (Jan 13-17, 2026)
-**Status:** Complete
+### ✅ Week 5: Themes + Fonts (Jan 13-17, 2026 → Completed Jan 7, 2026)
+**Status:** Complete (ahead of schedule)
 **Target:** Visual customization complete
 **Plan:** `docs/plan/week-5-plan.md`
 **Progress:** `docs/plan/week-5/progress.md`
-**Summary:** `docs/plan/week-5/summary.md` (to be created)
+**Summary:** `docs/plan/week-5/summary.md`
 **Key Deliverables:**
 - [x] Theme system (10 themes: Nord, Monokai, Dracula, Solarized, Tokyo Night, Gruvbox, One Dark, Catppuccin, GitHub Dark, Solarized Light) ✅ Day 1-2
 - [x] ThemeManager service with live switching ✅ Day 1-2
 - [x] Appearance settings view with theme controls ✅ Day 2
 - [x] Full UI theming (Timer, Dashboard, Settings, Sidebar) ✅ Day 2
 - [x] Theme persistence in settings ✅ Day 2
-- [x] Font selection (7 fonts: SF Mono, Menlo, Monaco, JetBrains Mono, Fira Code, Source Code Pro, IBM Plex Mono) ✅ Day 3
-- [x] Font availability detection (show only installed fonts) ✅ Day 3
-- [x] Appearance settings view with font controls ✅ Day 3
+- [x] Font selection (ALL system fonts via NSFontManager) ✅ Day 3
+- [x] FontManager service with lazy loading ✅ Day 3
+- [x] Font picker with system font detection ✅ Day 3
 - [x] Live font switching (no restart required) ✅ Day 3
 - [x] Font persistence in settings ✅ Day 3
+- [x] Global font application via .appFont() modifier ✅ Day 3
+- [x] All theme + font combinations tested ✅ Day 4-5
+
+**Velocity:** ~6h actual / 40h planned (15%)
 
 ---
 
@@ -183,7 +187,7 @@ Overall:            75%  (6/8 weeks)
 
 ### Visual Customization (Week 5)
 - [x] Theme system (10 themes) ✅ Week 5 Day 1-2
-- [x] Font selection (7 fonts with availability detection) ✅ Week 5 Day 3
+- [x] Font selection (ALL system fonts with detection) ✅ Week 5 Day 3
 
 ### Data & Statistics (Week 4)
 - [x] Session tracking ✅ Week 4
@@ -207,6 +211,7 @@ None currently.
 | 2 | 5 days (40h) | 5 days (8.25h) | 100% | 21% | Full Pomodoro cycle with tagging |
 | 3 | 5 days (40h) | 5 days (~8-10h) | 100% | 20-25% | Settings, sounds, notifications |
 | 4 | 5 days (15h) | 2 days (~6h) | 100% | 40% | Statistics validation + UI polish |
+| 5 | 5 days (40h) | 3 days (~6h) | 100% | 15% | Themes + fonts (ahead of schedule) |
 
 ---
 
@@ -220,5 +225,5 @@ None currently.
 
 ---
 
-**Last Updated:** January 15, 2026
-**Next Review:** End of Week 6
+**Last Updated:** January 7, 2026
+**Next Review:** Start of Week 6
