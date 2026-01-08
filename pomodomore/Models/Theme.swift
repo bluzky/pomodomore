@@ -90,37 +90,6 @@ struct Theme {
         )
     )
 
-    // MARK: - Monokai Theme
-
-    static let monokai = Theme(
-        name: "Monokai",
-        isDark: true,
-        colors: ThemeColors(
-            backgroundPrimary: Color(hex: "#272822"),
-            backgroundSecondary: Color(hex: "#3E3D32"),
-            backgroundTertiary: Color(hex: "#49483E"),
-            textPrimary: Color(hex: "#F8F8F2"),
-            textSecondary: Color(hex: "#CFCFC2"),
-            textMuted: Color(hex: "#75715E"),
-            accentPrimary: Color(hex: "#66D9EF"),
-            accentSecondary: Color(hex: "#AE81FF"),
-            borderPrimary: Color(hex: "#49483E"),
-            borderSecondary: Color(hex: "#3E3D32"),
-            success: Color(hex: "#A6E22E"),
-            warning: Color(hex: "#E6DB74"),
-            error: Color(hex: "#F92672"),
-            timerActive: Color(hex: "#A6E22E"),
-            timerPaused: Color(hex: "#E6DB74"),
-            timerBreak: Color(hex: "#66D9EF"),
-            sessionComplete: Color(hex: "#66D9EF"),
-            sessionIncomplete: Color(hex: "#75715E"),
-            shadow: Color(hex: "#000000").opacity(0.4),
-            sidebarBackground: Color(hex: "#272822"),
-            sidebarSelected: Color(hex: "#49483E"),
-            buttonHover: Color(hex: "#49483E")
-        )
-    )
-
     // MARK: - Dracula Theme
 
     static let dracula = Theme(
@@ -183,99 +152,6 @@ struct Theme {
         )
     )
 
-    // MARK: - Tokyo Night Theme
-
-    static let tokyoNight = Theme(
-        name: "Tokyo Night",
-        isDark: true,
-        colors: ThemeColors(
-            backgroundPrimary: Color(hex: "#1A1B26"),
-            backgroundSecondary: Color(hex: "#24283B"),
-            backgroundTertiary: Color(hex: "#414868"),
-            textPrimary: Color(hex: "#C0CAF5"),
-            textSecondary: Color(hex: "#A9B1D6"),
-            textMuted: Color(hex: "#565F89"),
-            accentPrimary: Color(hex: "#7AA2F7"),
-            accentSecondary: Color(hex: "#BB9AF7"),
-            borderPrimary: Color(hex: "#414868"),
-            borderSecondary: Color(hex: "#24283B"),
-            success: Color(hex: "#9ECE6A"),
-            warning: Color(hex: "#E0AF68"),
-            error: Color(hex: "#F7768E"),
-            timerActive: Color(hex: "#9ECE6A"),
-            timerPaused: Color(hex: "#E0AF68"),
-            timerBreak: Color(hex: "#7DCFFF"),
-            sessionComplete: Color(hex: "#7AA2F7"),
-            sessionIncomplete: Color(hex: "#565F89"),
-            shadow: Color(hex: "#000000").opacity(0.5),
-            sidebarBackground: Color(hex: "#1A1B26"),
-            sidebarSelected: Color(hex: "#24283B"),
-            buttonHover: Color(hex: "#24283B")
-        )
-    )
-
-    // MARK: - Gruvbox Dark Theme
-
-    static let gruvboxDark = Theme(
-        name: "Gruvbox Dark",
-        isDark: true,
-        colors: ThemeColors(
-            backgroundPrimary: Color(hex: "#282828"),
-            backgroundSecondary: Color(hex: "#3C3836"),
-            backgroundTertiary: Color(hex: "#504945"),
-            textPrimary: Color(hex: "#EBDBB2"),
-            textSecondary: Color(hex: "#D5C4A1"),
-            textMuted: Color(hex: "#928374"),
-            accentPrimary: Color(hex: "#83A598"),
-            accentSecondary: Color(hex: "#D3869B"),
-            borderPrimary: Color(hex: "#504945"),
-            borderSecondary: Color(hex: "#3C3836"),
-            success: Color(hex: "#B8BB26"),
-            warning: Color(hex: "#FABD2F"),
-            error: Color(hex: "#FB4934"),
-            timerActive: Color(hex: "#B8BB26"),
-            timerPaused: Color(hex: "#FABD2F"),
-            timerBreak: Color(hex: "#8EC07C"),
-            sessionComplete: Color(hex: "#83A598"),
-            sessionIncomplete: Color(hex: "#928374"),
-            shadow: Color(hex: "#000000").opacity(0.4),
-            sidebarBackground: Color(hex: "#282828"),
-            sidebarSelected: Color(hex: "#3C3836"),
-            buttonHover: Color(hex: "#3C3836")
-        )
-    )
-
-    // MARK: - One Dark Theme
-
-    static let oneDark = Theme(
-        name: "One Dark",
-        isDark: true,
-        colors: ThemeColors(
-            backgroundPrimary: Color(hex: "#282C34"),
-            backgroundSecondary: Color(hex: "#21252B"),
-            backgroundTertiary: Color(hex: "#2C323C"),
-            textPrimary: Color(hex: "#ABB2BF"),
-            textSecondary: Color(hex: "#9DA5B4"),
-            textMuted: Color(hex: "#5C6370"),
-            accentPrimary: Color(hex: "#61AFEF"),
-            accentSecondary: Color(hex: "#C678DD"),
-            borderPrimary: Color(hex: "#3E4451"),
-            borderSecondary: Color(hex: "#2C323C"),
-            success: Color(hex: "#98C379"),
-            warning: Color(hex: "#E5C07B"),
-            error: Color(hex: "#E06C75"),
-            timerActive: Color(hex: "#98C379"),
-            timerPaused: Color(hex: "#E5C07B"),
-            timerBreak: Color(hex: "#56B6C2"),
-            sessionComplete: Color(hex: "#61AFEF"),
-            sessionIncomplete: Color(hex: "#5C6370"),
-            shadow: Color(hex: "#000000").opacity(0.3),
-            sidebarBackground: Color(hex: "#21252B"),
-            sidebarSelected: Color(hex: "#2C323C"),
-            buttonHover: Color(hex: "#2C323C")
-        )
-    )
-
     // MARK: - Catppuccin Mocha Theme
 
     static let catppuccinMocha = Theme(
@@ -304,37 +180,6 @@ struct Theme {
             sidebarBackground: Color(hex: "#1E1E2E"),
             sidebarSelected: Color(hex: "#313244"),
             buttonHover: Color(hex: "#313244")
-        )
-    )
-
-    // MARK: - GitHub Dark Theme
-
-    static let githubDark = Theme(
-        name: "GitHub Dark",
-        isDark: true,
-        colors: ThemeColors(
-            backgroundPrimary: Color(hex: "#0D1117"),
-            backgroundSecondary: Color(hex: "#161B22"),
-            backgroundTertiary: Color(hex: "#21262D"),
-            textPrimary: Color(hex: "#C9D1D9"),
-            textSecondary: Color(hex: "#8B949E"),
-            textMuted: Color(hex: "#6E7681"),
-            accentPrimary: Color(hex: "#58A6FF"),
-            accentSecondary: Color(hex: "#A371F7"),
-            borderPrimary: Color(hex: "#30363D"),
-            borderSecondary: Color(hex: "#21262D"),
-            success: Color(hex: "#3FB950"),
-            warning: Color(hex: "#D29922"),
-            error: Color(hex: "#F85149"),
-            timerActive: Color(hex: "#3FB950"),
-            timerPaused: Color(hex: "#D29922"),
-            timerBreak: Color(hex: "#56D4DD"),
-            sessionComplete: Color(hex: "#58A6FF"),
-            sessionIncomplete: Color(hex: "#6E7681"),
-            shadow: Color(hex: "#000000").opacity(0.5),
-            sidebarBackground: Color(hex: "#0D1117"),
-            sidebarSelected: Color(hex: "#161B22"),
-            buttonHover: Color(hex: "#161B22")
         )
     )
 
@@ -369,18 +214,205 @@ struct Theme {
         )
     )
 
+    // MARK: - Nord Light Theme
+
+    static let nordLight = Theme(
+        name: "Nord Light",
+        isDark: false,
+        colors: ThemeColors(
+            backgroundPrimary: Color(hex: "#ECEFF4"),
+            backgroundSecondary: Color(hex: "#E5E9F0"),
+            backgroundTertiary: Color(hex: "#D8DEE9"),
+            textPrimary: Color(hex: "#2E3440"),
+            textSecondary: Color(hex: "#3B4252"),
+            textMuted: Color(hex: "#4C566A"),
+            accentPrimary: Color(hex: "#5E81AC"),
+            accentSecondary: Color(hex: "#81A1C1"),
+            borderPrimary: Color(hex: "#D8DEE9"),
+            borderSecondary: Color(hex: "#E5E9F0"),
+            success: Color(hex: "#A3BE8C"),
+            warning: Color(hex: "#EBCB8B"),
+            error: Color(hex: "#BF616A"),
+            timerActive: Color(hex: "#A3BE8C"),
+            timerPaused: Color(hex: "#EBCB8B"),
+            timerBreak: Color(hex: "#88C0D0"),
+            sessionComplete: Color(hex: "#5E81AC"),
+            sessionIncomplete: Color(hex: "#D8DEE9"),
+            shadow: Color(hex: "#000000").opacity(0.1),
+            sidebarBackground: Color(hex: "#E5E9F0"),
+            sidebarSelected: Color(hex: "#ECEFF4"),
+            buttonHover: Color(hex: "#ECEFF4")
+        )
+    )
+
+    // MARK: - Ayu Dark Theme
+
+    static let ayuDark = Theme(
+        name: "Ayu Dark",
+        isDark: true,
+        colors: ThemeColors(
+            backgroundPrimary: Color(hex: "#0A0E14"),
+            backgroundSecondary: Color(hex: "#0D1017"),
+            backgroundTertiary: Color(hex: "#151A1E"),
+            textPrimary: Color(hex: "#B3B1AD"),
+            textSecondary: Color(hex: "#8A8986"),
+            textMuted: Color(hex: "#4D5566"),
+            accentPrimary: Color(hex: "#59C2FF"),
+            accentSecondary: Color(hex: "#FFB454"),
+            borderPrimary: Color(hex: "#151A1E"),
+            borderSecondary: Color(hex: "#0D1017"),
+            success: Color(hex: "#91B362"),
+            warning: Color(hex: "#E6B450"),
+            error: Color(hex: "#D95757"),
+            timerActive: Color(hex: "#91B362"),
+            timerPaused: Color(hex: "#E6B450"),
+            timerBreak: Color(hex: "#59C2FF"),
+            sessionComplete: Color(hex: "#59C2FF"),
+            sessionIncomplete: Color(hex: "#4D5566"),
+            shadow: Color(hex: "#000000").opacity(0.4),
+            sidebarBackground: Color(hex: "#0A0E14"),
+            sidebarSelected: Color(hex: "#0D1017"),
+            buttonHover: Color(hex: "#0D1017")
+        )
+    )
+
+    // MARK: - Ayu Light Theme
+
+    static let ayuLight = Theme(
+        name: "Ayu Light",
+        isDark: false,
+        colors: ThemeColors(
+            backgroundPrimary: Color(hex: "#FAFAFA"),
+            backgroundSecondary: Color(hex: "#F3F4F5"),
+            backgroundTertiary: Color(hex: "#E7E8E9"),
+            textPrimary: Color(hex: "#5C6166"),
+            textSecondary: Color(hex: "#828C99"),
+            textMuted: Color(hex: "#ABB0B6"),
+            accentPrimary: Color(hex: "#399EE6"),
+            accentSecondary: Color(hex: "#FA8D3E"),
+            borderPrimary: Color(hex: "#E7E8E9"),
+            borderSecondary: Color(hex: "#F3F4F5"),
+            success: Color(hex: "#86B300"),
+            warning: Color(hex: "#F2AE49"),
+            error: Color(hex: "#F07171"),
+            timerActive: Color(hex: "#86B300"),
+            timerPaused: Color(hex: "#F2AE49"),
+            timerBreak: Color(hex: "#399EE6"),
+            sessionComplete: Color(hex: "#399EE6"),
+            sessionIncomplete: Color(hex: "#E7E8E9"),
+            shadow: Color(hex: "#000000").opacity(0.1),
+            sidebarBackground: Color(hex: "#F3F4F5"),
+            sidebarSelected: Color(hex: "#FAFAFA"),
+            buttonHover: Color(hex: "#FAFAFA")
+        )
+    )
+
+    // MARK: - Everforest Dark Theme
+
+    static let everforestDark = Theme(
+        name: "Everforest Dark",
+        isDark: true,
+        colors: ThemeColors(
+            backgroundPrimary: Color(hex: "#2B3339"),
+            backgroundSecondary: Color(hex: "#323D43"),
+            backgroundTertiary: Color(hex: "#3A464C"),
+            textPrimary: Color(hex: "#D3C6AA"),
+            textSecondary: Color(hex: "#9DA9A0"),
+            textMuted: Color(hex: "#7A8478"),
+            accentPrimary: Color(hex: "#A7C080"),
+            accentSecondary: Color(hex: "#E69875"),
+            borderPrimary: Color(hex: "#3A464C"),
+            borderSecondary: Color(hex: "#323D43"),
+            success: Color(hex: "#A7C080"),
+            warning: Color(hex: "#DBBC7F"),
+            error: Color(hex: "#E67E80"),
+            timerActive: Color(hex: "#A7C080"),
+            timerPaused: Color(hex: "#DBBC7F"),
+            timerBreak: Color(hex: "#83C092"),
+            sessionComplete: Color(hex: "#7FBBB3"),
+            sessionIncomplete: Color(hex: "#7A8478"),
+            shadow: Color(hex: "#000000").opacity(0.4),
+            sidebarBackground: Color(hex: "#2B3339"),
+            sidebarSelected: Color(hex: "#323D43"),
+            buttonHover: Color(hex: "#323D43")
+        )
+    )
+
+    // MARK: - Everforest Light Theme
+
+    static let everforestLight = Theme(
+        name: "Everforest Light",
+        isDark: false,
+        colors: ThemeColors(
+            backgroundPrimary: Color(hex: "#FDF6E3"),
+            backgroundSecondary: Color(hex: "#F3EFDA"),
+            backgroundTertiary: Color(hex: "#E6E2CC"),
+            textPrimary: Color(hex: "#5C6A72"),
+            textSecondary: Color(hex: "#829181"),
+            textMuted: Color(hex: "#A6B0A0"),
+            accentPrimary: Color(hex: "#8DA101"),
+            accentSecondary: Color(hex: "#F85552"),
+            borderPrimary: Color(hex: "#E6E2CC"),
+            borderSecondary: Color(hex: "#F3EFDA"),
+            success: Color(hex: "#93B259"),
+            warning: Color(hex: "#DFA000"),
+            error: Color(hex: "#F85552"),
+            timerActive: Color(hex: "#93B259"),
+            timerPaused: Color(hex: "#DFA000"),
+            timerBreak: Color(hex: "#35A77C"),
+            sessionComplete: Color(hex: "#3A94C5"),
+            sessionIncomplete: Color(hex: "#E6E2CC"),
+            shadow: Color(hex: "#000000").opacity(0.1),
+            sidebarBackground: Color(hex: "#F3EFDA"),
+            sidebarSelected: Color(hex: "#FDF6E3"),
+            buttonHover: Color(hex: "#FDF6E3")
+        )
+    )
+
+    // MARK: - Catppuccin Latte Theme
+
+    static let catppuccinLatte = Theme(
+        name: "Catppuccin Latte",
+        isDark: false,
+        colors: ThemeColors(
+            backgroundPrimary: Color(hex: "#EFF1F5"),
+            backgroundSecondary: Color(hex: "#E6E9EF"),
+            backgroundTertiary: Color(hex: "#DCE0E8"),
+            textPrimary: Color(hex: "#4C4F69"),
+            textSecondary: Color(hex: "#5C5F77"),
+            textMuted: Color(hex: "#9CA0B0"),
+            accentPrimary: Color(hex: "#1E66F5"),
+            accentSecondary: Color(hex: "#8839EF"),
+            borderPrimary: Color(hex: "#DCE0E8"),
+            borderSecondary: Color(hex: "#E6E9EF"),
+            success: Color(hex: "#40A02B"),
+            warning: Color(hex: "#DF8E1D"),
+            error: Color(hex: "#D20F39"),
+            timerActive: Color(hex: "#40A02B"),
+            timerPaused: Color(hex: "#DF8E1D"),
+            timerBreak: Color(hex: "#04A5E5"),
+            sessionComplete: Color(hex: "#1E66F5"),
+            sessionIncomplete: Color(hex: "#DCE0E8"),
+            shadow: Color(hex: "#000000").opacity(0.1),
+            sidebarBackground: Color(hex: "#E6E9EF"),
+            sidebarSelected: Color(hex: "#EFF1F5"),
+            buttonHover: Color(hex: "#EFF1F5")
+        )
+    )
+
     // MARK: - All Themes
 
     static let allThemes: [Theme] = [
         nord,
-        monokai,
+        nordLight,
         dracula,
         solarizedDark,
-        tokyoNight,
-        gruvboxDark,
-        oneDark,
+        solarizedLight,
         catppuccinMocha,
-        githubDark,
-        solarizedLight
+        catppuccinLatte,
+        ayuDark,
+        ayuLight,
+        everforestDark,
+        everforestLight
     ]
 }

@@ -1,8 +1,8 @@
 # Week 5 Progress
 
-**Week:** Week 5 (Jan 13-17, 2026)
-**Focus:** Themes + Fonts - Visual Customization
-**Status:** Day 1 Complete → Day 2 Complete (40%)
+**Week:** Week 5 (Jan 13-17, 2026 → Extended to Jan 8, 2026)
+**Focus:** Themes + Fonts + UX Improvements
+**Status:** Days 1-6 Complete (100%)
 
 ---
 
@@ -122,7 +122,42 @@
 **Blockers/Notes:**
 - No blockers
 - All font tests verified and passing
-- Week 5 complete ahead of schedule
+- Theme + font features complete
+
+---
+
+### Day 6 - Session Completion Floating View (NEW) ✅
+**Date:** January 8, 2026
+**Goal:** Implement session completion floating view for improved workflow
+
+**Progress:** ✅ Complete
+
+**Plan:** `docs/plan/week-5/day-4-plan.md`
+
+**Actual Time:** ~1.5 hours
+
+**Completed Tasks:**
+- ✅ Created CompletionState enum model (4 states: hidden, pomodoroComplete, breakComplete, breakRunning)
+- ✅ Created CompletionButton reusable component (primary and secondary styles)
+- ✅ Created CompletionView SwiftUI component with celebration UI (400x320, themed)
+- ✅ Created CompletionWindow NSWindow (centered, floating, borderless)
+- ✅ Modified TimerViewModel:
+  - Added completionState @Published property
+  - Modified complete() method to show completion view instead of auto-transition
+  - Updated tick() to update breakRunning state
+  - Added 4 new action methods (startBreakFromCompletion, skipBreakFromCompletion, startNextPomodoroFromCompletion, dismissCompletionView)
+- ✅ Extended WindowManager:
+  - Added completionWindow property
+  - Added Combine observer to watch completionState
+  - Added showCompletionWindow() and hideCompletionWindow() methods
+- ✅ Auto-start break setting respected (shows break countdown if ON, buttons if OFF)
+- ✅ Build: 0 errors, 0 warnings
+
+**Blockers/Notes:**
+- No blockers
+- All 4 new files created successfully
+- 2 existing files modified (TimerViewModel, WindowManager)
+- Ready for user testing
 
 ---
 
@@ -142,6 +177,9 @@
 - ✅ Font persistence across app restarts
 - ✅ All theme + font combinations tested
 
+**Completed (continued):**
+- ✅ Session completion floating view (Day 6)
+
 **Blockers:**
 - None
 
@@ -150,7 +188,8 @@
 - Day 2: ~2 hours (planned 2-3h) - 100% of estimate
 - Day 3: ~3 hours (planned 2h) - 150% of estimate
 - Day 4-5: User verified (planned 4-6h) - Completed ahead of schedule
-- **Total: ~6 hours actual / 40 hours planned = 15% velocity**
+- Day 6: ~1.5 hours (planned 3-4h) - 50% of estimate
+- **Total: ~7.5 hours actual / 48 hours planned = 15.6% velocity**
 
 **Highlights:**
 - Complete visual customization system implemented
@@ -158,5 +197,8 @@
 - Font system works with ALL system fonts (not limited to 7)
 - Memory-optimized with lazy font loading
 - All UI components respond to theme/font changes immediately
+- **Session completion floating view adds celebration and manual control**
+- **Improved workflow: Always shows completion view with contextual actions**
+- **Respects auto-start break setting while maintaining visibility**
 - Clean build maintained throughout (0 errors, 0 warnings)
-- Week 5 completed ahead of schedule
+- **Week extended with Day 6 for major UX improvement**

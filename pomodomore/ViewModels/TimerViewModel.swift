@@ -32,6 +32,9 @@ class TimerViewModel: ObservableObject {
     /// Last selected tag (persisted as default for next session)
     @Published var lastSelectedTag: SessionTag = .defaultTag
 
+    /// Completion state for session completion floating view
+    @Published var completionState: CompletionState = .hidden
+
     /// Whether tick sound is currently enabled (toggled by sound button)
     @Published var isTickSoundEnabled: Bool = true
 
@@ -239,6 +242,63 @@ class TimerViewModel: ObservableObject {
         print("⏭️ Break skipped - Back to Pomodoro. Counter: \(completedSessions)")
     }
 
+    // MARK: - Completion View Actions
+
+    /// Start break from completion view - break runs inside completion window
+    func startBreakFromCompletion() {
+        print("⏯️ Starting break from completion view")
+
+        // Determine which break type based on completed sessions
+        let nextBreakType: SessionType = completedSessions == 4 ? .longBreak : .shortBreak
+
+        currentSessionType = nextBreakType
+        timeRemaining = nextBreakType.duration
+        currentState = .running
+        completionState = .breakRunning(timeRemaining: timeRemaining)
+
+        // Start timer and sounds
+        startTimer()
+        startSounds()
+    }
+
+    /// Skip break and start next Pomodoro immediately
+    func skipBreakFromCompletion() {
+        print("⏭️ Skipping break and starting next Pomodoro")
+
+        currentSessionType = .pomodoro
+        timeRemaining = currentSessionType.duration
+        currentState = .running
+        completionState = .hidden
+
+        // Start timer and sounds immediately
+        soundManager.playStart()
+        startTimer()
+        startSounds()
+    }
+
+    /// Start next Pomodoro after break (always idle, never auto-start)
+    func startNextPomodoroFromCompletion() {
+        print("▶️ Starting next Pomodoro from completion view")
+
+        // Reset counter if long break just completed
+        if currentSessionType == .longBreak {
+            completedSessions = 0
+            print("🔄 Cycle reset! Starting new Pomodoro cycle")
+        }
+
+        currentSessionType = .pomodoro
+        timeRemaining = currentSessionType.duration
+        currentState = .idle
+        completionState = .hidden
+        selectedTag = lastSelectedTag // Restore last tag
+    }
+
+    /// Cancel/dismiss completion view
+    func dismissCompletionView() {
+        print("❌ Dismissing completion view")
+        completionState = .hidden
+    }
+
     // MARK: - Private Methods
 
     /// Called every second when timer is running
@@ -251,6 +311,11 @@ class TimerViewModel: ObservableObject {
 
         // Decrement time by one second
         timeRemaining -= 1
+
+        // Update completion state with new time if break is running
+        if case .breakRunning(_) = completionState {
+            completionState = .breakRunning(timeRemaining: timeRemaining)
+        }
     }
 
     /// Called when timer reaches 00:00
@@ -307,8 +372,37 @@ class TimerViewModel: ObservableObject {
             }
         }
 
-        // Auto-transition to next session
-        transitionToNextSession()
+        // Show completion view or auto-transition based on setting
+        if settingsManager.settings.pomodoro.showCompletionView {
+            // Show completion view instead of auto-transitioning
+            if currentSessionType == .pomodoro {
+                // Check auto-start break setting
+                if settingsManager.settings.pomodoro.autoStartBreak {
+                    // Auto-start break in completion view
+                    let nextBreakType: SessionType = completedSessions == 4 ? .longBreak : .shortBreak
+                    currentSessionType = nextBreakType
+                    timeRemaining = nextBreakType.duration
+                    currentState = .running
+                    completionState = .breakRunning(timeRemaining: timeRemaining)
+
+                    // Start timer and sounds
+                    startTimer()
+                    startSounds()
+                    print("⏯️ Auto-starting \(nextBreakType.displayName) in completion view")
+                } else {
+                    // Wait for user to manually start break
+                    completionState = .pomodoroComplete
+                    print("✅ Pomodoro complete - waiting for user action")
+                }
+            } else {
+                // Break completed
+                completionState = .breakComplete
+                print("✅ Break complete - waiting for user action")
+            }
+        } else {
+            // Auto-transition to next session (original behavior)
+            transitionToNextSession()
+        }
     }
 
     /// Transition to the next session type based on Pomodoro cycle logic

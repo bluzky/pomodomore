@@ -65,18 +65,23 @@ struct PomodoroSettings: Codable {
     /// Automatically start break timer when Pomodoro completes
     var autoStartBreak: Bool = false
 
+    /// Show completion view after sessions complete
+    var showCompletionView: Bool = true
+
     init(
         pomodoroDuration: Int = 1500,
         shortBreakDuration: Int = 300,
         longBreakDuration: Int = 900,
         longBreakInterval: Int = 4,
-        autoStartBreak: Bool = false
+        autoStartBreak: Bool = false,
+        showCompletionView: Bool = true
     ) {
         self.pomodoroDuration = pomodoroDuration
         self.shortBreakDuration = shortBreakDuration
         self.longBreakDuration = longBreakDuration
         self.longBreakInterval = longBreakInterval
         self.autoStartBreak = autoStartBreak
+        self.showCompletionView = showCompletionView
     }
 }
 

@@ -2,6 +2,8 @@
 
 AI assistant following solo developer + AI methodology for focused, efficient development.
 
+Use 'bd' for task tracking.
+
 ## Workflow Reference
 
 This project uses **Solo Dev + AI Methodology**. See [dev_start.md](./dev_start.md) for full overview.

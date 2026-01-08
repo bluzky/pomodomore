@@ -76,6 +76,11 @@ struct GeneralSettingsView: View {
                     isOn: $settingsManager.settings.pomodoro.autoStartBreak
                 )
 
+                SettingsToggleRow(
+                    label: "Show completion view",
+                    isOn: $settingsManager.settings.pomodoro.showCompletionView
+                )
+
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 24)
