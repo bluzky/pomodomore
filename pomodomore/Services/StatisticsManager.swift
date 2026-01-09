@@ -200,6 +200,60 @@ final class StatisticsManager: ObservableObject {
         weekRange(for: offset)
     }
 
+    /// Month range for a specific offset
+    private func monthRange(for offset: Int) -> (start: Date, end: Date) {
+        let today = calendar.startOfDay(for: Date())
+
+        guard let targetMonth = calendar.date(byAdding: .month, value: offset, to: today) else {
+            return (today, today)
+        }
+
+        guard let firstDay = calendar.date(from: calendar.dateComponents([.year, .month], from: targetMonth)) else {
+            return (today, today)
+        }
+
+        guard let lastDay = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: firstDay) else {
+            return (firstDay, firstDay)
+        }
+
+        var endComponents = calendar.dateComponents([.year, .month, .day], from: lastDay)
+        endComponents.hour = 23
+        endComponents.minute = 59
+        endComponents.second = 59
+
+        let endOfMonth = calendar.date(from: endComponents) ?? lastDay
+
+        return (firstDay, endOfMonth)
+    }
+
+    /// Public month date range for external access
+    func getMonthDateRange(for offset: Int) -> (start: Date, end: Date) {
+        monthRange(for: offset)
+    }
+
+    /// Sessions per day for a specific month offset
+    /// Returns dictionary mapping day number (1-31) to session count
+    func monthSessions(for offset: Int) -> [Int: Int] {
+        let (monthStart, monthEnd) = monthRange(for: offset)
+        let monthSessions = filterSessions(from: monthStart, to: monthEnd)
+
+        var dailyCounts: [Int: Int] = [:]
+
+        for session in monthSessions where session.sessionType == .pomodoro {
+            let day = calendar.component(.day, from: session.completionTime)
+            dailyCounts[day, default: 0] += 1
+        }
+
+        if isDebug {
+            print("📊 StatisticsManager.monthSessions(offset: \(offset))")
+            print("   Month range: \(monthStart) to \(monthEnd)")
+            print("   Found \(monthSessions.count) sessions")
+            print("   Days with sessions: \(dailyCounts.keys.sorted())")
+        }
+
+        return dailyCounts
+    }
+
     // MARK: - Session Filtering
 
     /// Filter sessions within a date range

@@ -37,12 +37,15 @@ struct DashboardView: View {
         let _ = print("🎨 DashboardView rendering - Today: \(statistics.todaySessions) sessions, \(statistics.todayMinutes) minutes, Current Streak: \(statistics.currentStreak)")
         #endif
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 36) {
                 // Today Section
                 todaySection
 
                 // This Week Section
                 thisWeekSection
+
+                // Month Heatmap Section
+                monthHeatmapSection
 
                 Spacer(minLength: 0)
             }
@@ -87,7 +90,7 @@ struct DashboardView: View {
     // MARK: - This Week Section
 
     private var thisWeekSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 20) {
             HStack {
                 Text(weekHeaderText)
                     .appFont(size: 16, weight: .semibold)
@@ -161,6 +164,7 @@ struct DashboardView: View {
             AxisMarks(position: .bottom) { _ in
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0))
                 AxisValueLabel()
+                    .font(fontManager.swiftUIFont(size: 11))
                     .foregroundStyle(themeManager.currentTheme.colors.textSecondary)
             }
         }
@@ -169,6 +173,7 @@ struct DashboardView: View {
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 1))
                     .foregroundStyle(themeManager.currentTheme.colors.borderSecondary.opacity(0.3))
                 AxisValueLabel()
+                    .font(fontManager.swiftUIFont(size: 11))
                     .foregroundStyle(themeManager.currentTheme.colors.textSecondary)
             }
         }
@@ -202,6 +207,12 @@ struct DashboardView: View {
     }
 
     private let chartHeight: CGFloat = 160
+
+    // MARK: - Month Heatmap Section
+
+    private var monthHeatmapSection: some View {
+        MonthHeatmapView()
+    }
 }
 
 // MARK: - Stat Card
