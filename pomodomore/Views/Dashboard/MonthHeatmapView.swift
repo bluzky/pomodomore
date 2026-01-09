@@ -114,7 +114,7 @@ struct MonthHeatmapView: View {
     // MARK: - Data Helpers
 
     private struct DayData: Identifiable {
-        let id = UUID()
+        let id: String
         let day: Int
         let sessions: Int
         let isToday: Bool
@@ -135,12 +135,14 @@ struct MonthHeatmapView: View {
         var data: [DayData] = []
 
         // Add empty cells for days before month starts
-        for _ in 0..<firstWeekdayIndex {
-            data.append(DayData(day: 0, sessions: 0, isToday: false, isFuture: false))
+        for index in 0..<firstWeekdayIndex {
+            data.append(DayData(id: "empty_\(index)", day: 0, sessions: 0, isToday: false, isFuture: false))
         }
 
         // Add cells for each day of the month
         let today = calendar.startOfDay(for: Date())
+        let year = calendar.component(.year, from: monthStart)
+        let month = calendar.component(.month, from: monthStart)
         for day in 1...daysInMonth {
             guard let dayDate = calendar.date(byAdding: .day, value: day - 1, to: monthStart) else {
                 continue
@@ -148,7 +150,7 @@ struct MonthHeatmapView: View {
             let isToday = calendar.isDate(dayDate, inSameDayAs: today)
             let isFuture = dayDate > today
             let sessions = sessionsMap[day] ?? 0
-            data.append(DayData(day: day, sessions: sessions, isToday: isToday, isFuture: isFuture))
+            data.append(DayData(id: "day_\(year)_\(month)_\(day)", day: day, sessions: sessions, isToday: isToday, isFuture: isFuture))
         }
 
         return data
