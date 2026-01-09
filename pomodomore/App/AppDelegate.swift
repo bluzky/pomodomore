@@ -14,6 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var timerStatusMenuItem: NSMenuItem?
     var stopMenuItem: NSMenuItem?
     let windowManager = WindowManager.shared
+    let settingsManager = SettingsManager.shared
     private var cancellables = Set<AnyCancellable>()
     private var appIcon: NSImage?
 
@@ -89,9 +90,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Setup observer for font changes
         setupFontObserver()
-
-        // Setup observer for menubar timer setting
-        setupMenubarTimerObserver()
     }
 
     // MARK: - Menu Helper
@@ -138,17 +136,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.updateMenuFont()
-            }
-            .store(in: &cancellables)
-    }
-
-    /// Setup observer for menubar timer visibility setting
-    private func setupMenubarTimerObserver() {
-        SettingsManager.shared.$settings
-            .map(\.appearance.showTimerInMenubar)
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.updateMenubarStatus()
             }
             .store(in: &cancellables)
     }
@@ -226,24 +213,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func updateMenubarStatus() {
         let viewModel = windowManager.timerViewModel
         let timeText = viewModel.timeFormatted
-        let showTimerInMenubar = SettingsManager.shared.settings.appearance.showTimerInMenubar
+        let showTimer = settingsManager.settings.appearance.showTimerInMenubar
 
         // Update menubar button (shows time with icon)
         // Show time when running or paused, just icon when idle or completed
-        // Only show time if the setting is enabled
         if let button = statusItem?.button {
             button.image = appIcon
             button.image?.size = NSSize(width: 18, height: 18)
 
-            if !showTimerInMenubar {
+            switch viewModel.currentState {
+            case .running, .paused:
+                button.title = showTimer ? timeText : ""
+            case .idle, .completed:
                 button.title = ""
-            } else {
-                switch viewModel.currentState {
-                case .running, .paused:
-                    button.title = timeText
-                case .idle, .completed:
-                    button.title = ""
-                }
             }
         }
 

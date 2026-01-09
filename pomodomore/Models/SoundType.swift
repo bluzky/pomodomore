@@ -119,4 +119,25 @@ enum SoundLoader {
             return []
         }
     }
+
+    /// Import a sound file to the target directory
+    static func importSound(from sourceURL: URL, to targetDir: String) -> Bool {
+        let fileManager = FileManager.default
+        guard let targetPath = Bundle.main.path(forResource: targetDir, ofType: nil) else {
+            return false
+        }
+
+        let destinationURL = URL(fileURLWithPath: targetPath).appendingPathComponent(sourceURL.lastPathComponent)
+
+        do {
+            if fileManager.fileExists(atPath: destinationURL.path) {
+                try fileManager.removeItem(at: destinationURL)
+            }
+            try fileManager.copyItem(at: sourceURL, to: destinationURL)
+            return true
+        } catch {
+            print("⚠️ Failed to import sound: \(error)")
+            return false
+        }
+    }
 }

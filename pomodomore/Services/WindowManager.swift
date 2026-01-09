@@ -29,9 +29,6 @@ class WindowManager: ObservableObject {
     /// The completion window
     private(set) var completionWindow: CompletionWindow?
 
-    /// Combine cancellables for subscriptions
-    private var cancellables = Set<AnyCancellable>()
-
     /// Always on top state
     @Published var alwaysOnTop: Bool {
         didSet {
@@ -46,6 +43,9 @@ class WindowManager: ObservableObject {
     /// Is window currently collapsed to edge
     private var isCollapsedToEdge = false
 
+    /// Combine cancellables for subscriptions
+    private var cancellables = Set<AnyCancellable>()
+
     // MARK: - UserDefaults Keys
     private let windowXKey = "timerWindowX"
     private let windowYKey = "timerWindowY"
@@ -57,7 +57,7 @@ class WindowManager: ObservableObject {
         // Load always on top preference
         self.alwaysOnTop = UserDefaults.standard.bool(forKey: alwaysOnTopKey)
 
-        // Watch completion state to show/hide completion window
+        // Observe completion state changes
         timerViewModel.$completionState
             .sink { [weak self] state in
                 Task { @MainActor in
@@ -193,17 +193,20 @@ class WindowManager: ObservableObject {
 
     /// Show completion window centered on screen
     func showCompletionWindow() {
+        print("📍 [WindowManager] showCompletionWindow() called")
         // Hide timer window when showing completion
         timerWindow?.orderOut(nil)
 
         // Create window if needed
         if completionWindow == nil {
+            print("📍 [WindowManager] Creating new CompletionWindow")
             completionWindow = CompletionWindow(windowManager: self)
         }
 
         // Show centered (position set in window init)
         completionWindow?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+        print("📍 [WindowManager] CompletionWindow shown")
     }
 
     /// Hide completion window and restore timer if needed

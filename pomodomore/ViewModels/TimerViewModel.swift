@@ -276,7 +276,7 @@ class TimerViewModel: ObservableObject {
         startSounds()
     }
 
-    /// Start next Pomodoro after break (always idle, never auto-start)
+    /// Start next Pomodoro after break
     func startNextPomodoroFromCompletion() {
         print("▶️ Starting next Pomodoro from completion view")
 
@@ -288,9 +288,14 @@ class TimerViewModel: ObservableObject {
 
         currentSessionType = .pomodoro
         timeRemaining = currentSessionType.duration
-        currentState = .idle
+        currentState = .running
         completionState = .hidden
         selectedTag = lastSelectedTag // Restore last tag
+
+        // Start timer and sounds immediately
+        soundManager.playStart()
+        startTimer()
+        startSounds()
     }
 
     /// Cancel/dismiss completion view
@@ -311,11 +316,6 @@ class TimerViewModel: ObservableObject {
 
         // Decrement time by one second
         timeRemaining -= 1
-
-        // Update completion state with new time if break is running
-        if case .breakRunning(_) = completionState {
-            completionState = .breakRunning(timeRemaining: timeRemaining)
-        }
     }
 
     /// Called when timer reaches 00:00

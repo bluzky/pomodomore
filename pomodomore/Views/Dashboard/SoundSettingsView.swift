@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - Sound Settings View
 
@@ -16,6 +17,8 @@ struct SoundSettingsView: View {
     @EnvironmentObject var fontManager: FontManager
     private let soundManager = SoundManager.shared
 
+    @State private var showingFilePicker = false
+
     private var tickSoundOptions: [String] {
         SoundManager.availableTickSounds
     }
@@ -24,26 +27,23 @@ struct SoundSettingsView: View {
         SoundManager.availableCompletionSounds
     }
 
+    @State private var ambientSoundList: [AmbientSoundItem] = []
+
     private var ambientSoundOptions: [AmbientSoundItem] {
-        SoundManager.availableAmbientSounds
+        ambientSoundList
     }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                // Notifications Section
-                SettingsSectionHeader(title: "Notifications")
-
                 SettingsToggleRow(
-                    label: "Enable completion notifications",
+                    label: "Completion Notifications",
                     isOn: $settingsManager.settings.sound.notificationsEnabled
                 )
 
-                // Completion Sound Section
-                SettingsSectionHeader(title: "Completion Sound")
-
+                // Completion Sound
                 SettingsPickerRow(
-                    label: "Sound",
+                    label: "Completion Sound",
                     selection: $settingsManager.settings.sound.completionSound,
                     options: completionSoundOptions,
                     optionLabel: { $0.name }
@@ -52,17 +52,9 @@ struct SoundSettingsView: View {
                     soundManager.playCompletionSound(newValue)
                 }
 
-                Text("Sound played when timer completes")
-                    .appFont(size: 11)
-                    .foregroundColor(themeManager.currentTheme.colors.textSecondary)
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
-
-                // Tick Sound Section
-                SettingsSectionHeader(title: "Tick Sound")
-
+                // Tick Sound
                 SettingsPickerRow(
-                    label: "Sound",
+                    label: "Tick Sound",
                     selection: $settingsManager.settings.sound.tickSound,
                     options: tickSoundOptions,
                     optionLabel: { $0 }
@@ -72,27 +64,24 @@ struct SoundSettingsView: View {
                     soundManager.previewTickSound(soundName: newValue)
                 }
 
-                Text("Play a looping tick sound during Pomodoro sessions")
-                    .appFont(size: 11)
-                    .foregroundColor(themeManager.currentTheme.colors.textSecondary)
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
-
-                // Ambient Sound Section
-                SettingsSectionHeader(title: "Ambient Sound")
-
+                // Ambient Sound
                 SettingsPickerRow(
-                    label: "Sound",
+                    label: "Ambient Sound",
                     selection: $settingsManager.settings.sound.ambientSound,
                     options: ambientSoundOptions,
                     optionLabel: { $0.displayName }
                 )
 
-                Text("Play ambient sound during Pomodoro sessions")
-                    .appFont(size: 11)
-                    .foregroundColor(themeManager.currentTheme.colors.textSecondary)
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
+                HStack {
+                    Spacer()
+                    Button(action: { showingFilePicker = true }) {
+                        Label("Add Sound", systemImage: "plus")
+                            .appFont(size: 12)
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundColor(themeManager.currentTheme.colors.accentPrimary)
+                }
+                .padding(.horizontal, 16)
 
                 Spacer(minLength: 0)
             }
@@ -101,6 +90,26 @@ struct SoundSettingsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(themeManager.currentTheme.colors.backgroundPrimary)
+        .onAppear { loadAmbientSounds() }
+        .fileImporter(
+            isPresented: $showingFilePicker,
+            allowedContentTypes: [.audio],
+            allowsMultipleSelection: false
+        ) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    _ = SoundLoader.importSound(from: url, to: "Sounds/ambient")
+                    loadAmbientSounds()
+                }
+            case .failure:
+                break
+            }
+        }
+    }
+
+    private func loadAmbientSounds() {
+        ambientSoundList = SoundLoader.loadAmbientSounds()
     }
 }
 
@@ -109,6 +118,7 @@ struct SoundSettingsView: View {
 #Preview {
     SoundSettingsView()
         .frame(width: 560, height: 520)
+        .environmentObject(SettingsManager.shared)
         .environmentObject(ThemeManager.shared)
         .environmentObject(FontManager.shared)
 }

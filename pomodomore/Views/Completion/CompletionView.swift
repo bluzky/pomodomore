@@ -17,7 +17,7 @@ struct CompletionView: View {
     @EnvironmentObject var fontManager: FontManager
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 20) {
             // Top: Celebration message with emoji
             celebrationHeader
 
@@ -87,25 +87,26 @@ struct CompletionView: View {
     }
 
     private var actionButtons: some View {
-        HStack(spacing: 20) {
+        HStack(spacing: 12) {
             switch viewModel.completionState {
             case .pomodoroComplete:
                 // Skip button (secondary - subtle)
-                iconButton(icon: "forward.fill", isPrimary: false, action: { viewModel.skipBreakFromCompletion() })
+                textButton(title: "Skip Break", isPrimary: false, action: { viewModel.skipBreakFromCompletion() })
 
                 // Start Break button (primary - prominent)
-                iconButton(icon: "play.fill", isPrimary: true, action: { viewModel.startBreakFromCompletion() })
+                textButton(title: "Start Break", isPrimary: true, action: { viewModel.startBreakFromCompletion() })
 
             case .breakComplete:
-                // Start Next Pomodoro button (single button - centered)
-                Spacer()
-                iconButton(icon: "play.fill", isPrimary: true, action: { viewModel.startNextPomodoroFromCompletion() })
-                Spacer()
+                // Cancel button (secondary - subtle)
+                textButton(title: "Cancel", isPrimary: false, action: { viewModel.dismissCompletionView() })
+
+                // Start Next Pomodoro button (primary - prominent)
+                textButton(title: "Start Pomodoro", isPrimary: true, action: { viewModel.startNextPomodoroFromCompletion() })
 
             case .breakRunning:
                 // Skip Break button (centered)
                 Spacer()
-                iconButton(icon: "forward.fill", isPrimary: false, action: { viewModel.skipBreakFromCompletion() })
+                textButton(title: "Skip Break", isPrimary: false, action: { viewModel.skipBreakFromCompletion() })
                 Spacer()
 
             case .hidden:
@@ -114,8 +115,8 @@ struct CompletionView: View {
         }
     }
 
-    private func iconButton(icon: String, isPrimary: Bool, action: @escaping () -> Void) -> some View {
-        IconButtonView(icon: icon, isPrimary: isPrimary, action: action)
+    private func textButton(title: String, isPrimary: Bool, action: @escaping () -> Void) -> some View {
+        TextButtonView(title: title, isPrimary: isPrimary, action: action)
             .environmentObject(themeManager)
     }
 
@@ -168,10 +169,10 @@ struct CompletionView: View {
     }
 }
 
-// MARK: - Icon Button with Hover Effect
+// MARK: - Text Button with Hover Effect
 
-struct IconButtonView: View {
-    let icon: String
+struct TextButtonView: View {
+    let title: String
     let isPrimary: Bool
     let action: () -> Void
     @EnvironmentObject var themeManager: ThemeManager
@@ -179,23 +180,36 @@ struct IconButtonView: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(isPrimary ?
-                    themeManager.currentTheme.colors.accentPrimary :
-                    themeManager.currentTheme.colors.textPrimary.opacity(0.5))
-                .frame(width: 36, height: 36)
-                .background(isHovered ?
-                    themeManager.currentTheme.colors.accentPrimary.opacity(0.2) :
-                    themeManager.currentTheme.colors.backgroundSecondary)
-                .clipShape(Circle())
-                .scaleEffect(isHovered ? 1.05 : 1.0)
+            Text(title)
+                .appFont(size: 12, weight: .medium)
+                .foregroundColor(textColor)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 7)
+                .background(backgroundColor)
+                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .scaleEffect(isHovered ? 1.02 : 1.0)
                 .animation(.easeInOut(duration: 0.15), value: isHovered)
         }
         .buttonStyle(.plain)
         .onHover { hovering in
             isHovered = hovering
         }
+    }
+
+    private var backgroundColor: Color {
+        if isPrimary {
+            return isHovered ?
+                themeManager.currentTheme.colors.accentPrimary.opacity(0.9) :
+                themeManager.currentTheme.colors.accentPrimary
+        } else {
+            return isHovered ?
+                themeManager.currentTheme.colors.backgroundSecondary.opacity(0.8) :
+                themeManager.currentTheme.colors.backgroundSecondary
+        }
+    }
+
+    private var textColor: Color {
+        isPrimary ? .white : themeManager.currentTheme.colors.textPrimary
     }
 }
 
