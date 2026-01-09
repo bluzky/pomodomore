@@ -14,6 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var timerStatusMenuItem: NSMenuItem?
     var stopMenuItem: NSMenuItem?
     let windowManager = WindowManager.shared
+    let settingsManager = SettingsManager.shared
     private var cancellables = Set<AnyCancellable>()
     private var appIcon: NSImage?
 
@@ -212,6 +213,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func updateMenubarStatus() {
         let viewModel = windowManager.timerViewModel
         let timeText = viewModel.timeFormatted
+        let showTimer = settingsManager.settings.appearance.showTimerInMenubar
 
         // Update menubar button (shows time with icon)
         // Show time when running or paused, just icon when idle or completed
@@ -221,7 +223,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
             switch viewModel.currentState {
             case .running, .paused:
-                button.title = timeText
+                button.title = showTimer ? timeText : ""
             case .idle, .completed:
                 button.title = ""
             }
