@@ -26,6 +26,12 @@ class WindowManager: ObservableObject {
     /// The dashboard + settings window
     private var settingsWindow: NSWindow?
 
+    /// The completion window
+    private(set) var completionWindow: CompletionWindow?
+
+    /// Combine cancellables for subscriptions
+    private var cancellables = Set<AnyCancellable>()
+
     /// Always on top state
     @Published var alwaysOnTop: Bool {
         didSet {
@@ -50,6 +56,20 @@ class WindowManager: ObservableObject {
     private init() {
         // Load always on top preference
         self.alwaysOnTop = UserDefaults.standard.bool(forKey: alwaysOnTopKey)
+
+        // Watch completion state to show/hide completion window
+        timerViewModel.$completionState
+            .sink { [weak self] state in
+                Task { @MainActor in
+                    switch state {
+                    case .hidden:
+                        self?.hideCompletionWindow()
+                    case .pomodoroComplete, .breakComplete, .breakRunning:
+                        self?.showCompletionWindow()
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
@@ -169,6 +189,31 @@ class WindowManager: ObservableObject {
         let frame = window.frame
         UserDefaults.standard.set(Double(frame.origin.x), forKey: windowXKey)
         UserDefaults.standard.set(Double(frame.origin.y), forKey: windowYKey)
+    }
+
+    /// Show completion window centered on screen
+    func showCompletionWindow() {
+        // Hide timer window when showing completion
+        timerWindow?.orderOut(nil)
+
+        // Create window if needed
+        if completionWindow == nil {
+            completionWindow = CompletionWindow(windowManager: self)
+        }
+
+        // Show centered (position set in window init)
+        completionWindow?.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    /// Hide completion window and restore timer if needed
+    func hideCompletionWindow() {
+        completionWindow?.orderOut(nil)
+
+        // Show timer window if there's an active session
+        if timerViewModel.currentState != .idle {
+            showTimerWindow()
+        }
     }
 
     // MARK: - Private Methods
