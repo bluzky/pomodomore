@@ -24,18 +24,22 @@ struct Session: Codable {
     /// Actual duration of the session in seconds (stored to preserve historical accuracy)
     let duration: Int
 
-    init(sessionType: SessionType, sessionNumber: Int = 0, selectedTag: SessionTag = .defaultTag, duration: Int) {
+    /// Whether the session was completed fully or stopped early
+    let isCompleted: Bool
+
+    init(sessionType: SessionType, sessionNumber: Int = 0, selectedTag: SessionTag = .defaultTag, duration: Int, isCompleted: Bool = true) {
         self.sessionType = sessionType
         self.completionTime = Date()
         self.sessionNumber = sessionType == .pomodoro ? sessionNumber : 0
         self.selectedTag = selectedTag
         self.duration = duration
+        self.isCompleted = isCompleted
     }
 
     // MARK: - Codable
 
     enum CodingKeys: String, CodingKey {
-        case sessionType, completionTime, sessionNumber, selectedTag, duration
+        case sessionType, completionTime, sessionNumber, selectedTag, duration, isCompleted
     }
 
     init(from decoder: Decoder) throws {
@@ -56,6 +60,15 @@ struct Session: Codable {
             // Migrate old sessions: use default duration for their type
             duration = SessionDurations.defaultDurations.duration(for: sessionType)
         }
+
+        // Handle migration: old sessions don't have isCompleted field
+        // Default to true (assume old sessions were completed)
+        if let storedCompleted = try? container.decode(Bool.self, forKey: .isCompleted) {
+            isCompleted = storedCompleted
+        } else {
+            // Migrate old sessions: assume they were completed
+            isCompleted = true
+        }
     }
 
     func encode(to encoder: Encoder) throws {
@@ -65,5 +78,6 @@ struct Session: Codable {
         try container.encode(sessionNumber, forKey: .sessionNumber)
         try container.encode(selectedTag.id, forKey: .selectedTag)
         try container.encode(duration, forKey: .duration)
+        try container.encode(isCompleted, forKey: .isCompleted)
     }
 }

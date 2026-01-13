@@ -229,8 +229,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
-        // Update Start/Pause menu item text
-        timerStatusMenuItem?.title = viewModel.primaryActionTitle
+        // Update Start/Pause menu item text and icon
+        let actionTitle = viewModel.primaryActionTitle
+        let actionIcon = viewModel.currentState == .running ? "pause.fill" : "play.fill"
+        timerStatusMenuItem?.title = actionTitle
+        timerStatusMenuItem?.attributedTitle = createAttributedTitle(actionTitle)
+        timerStatusMenuItem?.image = NSImage(systemSymbolName: actionIcon, accessibilityDescription: nil)
 
         // Show/hide Stop menu item based on state
         stopMenuItem?.isHidden = viewModel.currentState == .idle
