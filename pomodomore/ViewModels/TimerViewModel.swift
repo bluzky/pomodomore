@@ -211,6 +211,33 @@ class TimerViewModel: ObservableObject {
     /// Stop the current session and return to idle Pomodoro state
     func stop() {
         print("🛑 Session stopped")
+
+        // Save incomplete Pomodoro session if time was spent
+        if currentSessionType == .pomodoro && (currentState == .running || currentState == .paused) {
+            let plannedDuration = currentSessionType.duration
+            let timeSpent = plannedDuration - timeRemaining
+
+            // Only save if at least 1 minute was spent
+            if timeSpent >= 60 {
+                let incompleteSession = Session(
+                    sessionType: currentSessionType,
+                    sessionNumber: completedSessions + 1,
+                    selectedTag: selectedTag,
+                    duration: timeSpent,
+                    isCompleted: false
+                )
+
+                var allSessions = storageManager.loadSessions()
+                allSessions.append(incompleteSession)
+                storageManager.saveSessions(allSessions)
+
+                // Refresh statistics to update dashboard
+                statisticsManager.refresh()
+
+                print("💾 Incomplete session saved - Duration: \(timeSpent/60) min")
+            }
+        }
+
         currentState = .idle
         currentSessionType = .pomodoro
         timeRemaining = currentSessionType.duration
@@ -302,6 +329,23 @@ class TimerViewModel: ObservableObject {
     func dismissCompletionView() {
         print("❌ Dismissing completion view")
         completionState = .hidden
+
+        // Reset to idle Pomodoro state
+        // If long break just completed, reset the cycle counter
+        if currentSessionType == .longBreak {
+            completedSessions = 0
+            print("🔄 Cycle reset after dismissing long break")
+        }
+
+        currentState = .idle
+        currentSessionType = .pomodoro
+        timeRemaining = currentSessionType.duration
+        selectedTag = lastSelectedTag // Restore last tag
+
+        // Stop timer if running
+        timerCancellable?.cancel()
+
+        print("🔄 Reset to idle Pomodoro state")
     }
 
     // MARK: - Private Methods
@@ -316,6 +360,11 @@ class TimerViewModel: ObservableObject {
 
         // Decrement time by one second
         timeRemaining -= 1
+
+        // Update completion state if break is running in completion view
+        if case .breakRunning = completionState {
+            completionState = .breakRunning(timeRemaining: timeRemaining)
+        }
     }
 
     /// Called when timer reaches 00:00

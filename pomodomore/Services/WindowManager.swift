@@ -234,15 +234,24 @@ class WindowManager: ObservableObject {
             let origin = NSPoint(x: savedX, y: savedY)
             window.setFrameOrigin(origin)
         } else {
-            // First launch - center window
-            window.center()
+            // First launch - position at top center
+            if let screen = NSScreen.main {
+                let screenFrame = screen.visibleFrame
+                let windowFrame = window.frame
+                let x = screenFrame.origin.x + (screenFrame.width - windowFrame.width) / 2
+                let y = screenFrame.origin.y + screenFrame.height - windowFrame.height - 10
+                window.setFrameOrigin(NSPoint(x: x, y: y))
+            } else {
+                // Fallback to center if no screen found
+                window.center()
+            }
         }
     }
 
     /// Update window level based on always on top preference
     private func updateWindowLevel() {
         guard let window = timerWindow else { return }
-        window.level = alwaysOnTop ? .floating : .normal
+        window.level = alwaysOnTop ? .popUpMenu : .normal
     }
 
     /// Setup position tracking to save when window moves

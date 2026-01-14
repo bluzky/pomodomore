@@ -11,11 +11,13 @@ import SwiftUI
 struct TrafficLightButton: View {
     let type: ButtonType
     let action: () -> Void
+    var isCollapsed: Bool = false // For collapse button state
 
     enum ButtonType {
         case close
         case minimize
         case maximize
+        case collapse
     }
 
     @State private var isHovered = false
@@ -28,9 +30,9 @@ struct TrafficLightButton: View {
                     .frame(width: 12, height: 12)
 
                 if isHovered {
-                    Image(systemName: type.symbol)
+                    Image(systemName: type.symbol(isCollapsed: isCollapsed))
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundColor(type.iconColor)
+                        .foregroundColor(type.iconColor(isHovered: isHovered))
                 }
             }
         }
@@ -52,22 +54,26 @@ extension TrafficLightButton.ButtonType {
             return Color(red: 1.0, green: 0.77, blue: 0.22) // #FFBD2E
         case .maximize:
             return Color(red: 0.35, green: 0.83, blue: 0.44) // #28C940
+        case .collapse:
+            return isHovered ? Color.orange : Color.primary.opacity(0.3) // Orange on hover, gray default
         }
     }
     
-    var iconColor: Color {
+    func iconColor(isHovered: Bool) -> Color {
         switch self {
         case .close: return Color(red: 0.6, green: 0.0, blue: 0.0) // Dark red
         case .minimize: return .white
         case .maximize: return .white
+        case .collapse: return isHovered ? .white : Color.primary.opacity(0.6)
         }
     }
 
-    var symbol: String {
+    func symbol(isCollapsed: Bool) -> String {
         switch self {
         case .close: return "xmark"
         case .minimize: return "minus"
         case .maximize: return "plus"
+        case .collapse: return isCollapsed ? "arrow.up.left.and.arrow.down.right" : "arrow.down.right.and.arrow.up.left"
         }
     }
 }
@@ -199,9 +205,11 @@ struct TagPopoverItem: View {
 // MARK: - Hover Button Style
 struct HoverButtonStyle: ButtonStyle {
     let hoverColor: Color?
+    let useAccentColor: Bool
 
-    init(hoverColor: Color? = nil) {
+    init(hoverColor: Color? = nil, useAccentColor: Bool = false) {
         self.hoverColor = hoverColor
+        self.useAccentColor = useAccentColor
     }
 
     func makeBody(configuration: Configuration) -> some View {
@@ -233,6 +241,8 @@ struct HoverButtonStyle: ButtonStyle {
     private func iconColor(isPressed: Bool, isHovered: Bool) -> Color {
         if let hoverColor = hoverColor, (isHovered || isPressed) {
             return hoverColor
+        } else if useAccentColor && (isHovered || isPressed) {
+            return ThemeManager.shared.currentTheme.colors.accentPrimary
         } else {
             return .primary
         }
@@ -283,10 +293,10 @@ struct TimerView: View {
         return viewModel.currentState == .idle || viewModel.currentState == .paused || isHovered
     }
 
-    // Timer font size - tiny mode always 28, normal mode 36/42
+    // Timer font size - tiny mode always 22, normal mode 36/42
     private var timerFontSize: CGFloat {
         if isTinyMode {
-            return 28
+            return 22
         }
         return shouldShowControls ? 36 : 42
     }
@@ -295,9 +305,9 @@ struct TimerView: View {
         isTinyMode ? 0 : (shouldShowControls ? 0 : 10)
     }
 
-    // View height - tiny mode always 50, normal mode 110
+    // View height - tiny mode always 38, normal mode 110
     private var viewHeight: CGFloat {
-        isTinyMode ? 50 : 110
+        isTinyMode ? 38 : 110
     }
 
     // View width - tiny mode always 120, normal mode 200
@@ -343,9 +353,17 @@ struct TimerView: View {
         ZStack {
             // Top controls row - absolute positioning
             HStack(spacing: 0) {
-                // Close button - 6px from left (traffic light style)
-                TrafficLightButton(type: .close) {
-                    closeWindow()
+                // Window control buttons - left side
+                HStack(spacing: 4) {
+                    // Close button
+                    TrafficLightButton(type: .close) {
+                        closeWindow()
+                    }
+                    
+                    // Collapse/Expand button
+                    TrafficLightButton(type: .collapse, isCollapsed: isTinyMode) {
+                        toggleWindowSize()
+                    }
                 }
                 .padding(.leading, 6)
 
@@ -467,7 +485,7 @@ struct TimerView: View {
                                 .font(.system(size: 10))
                                 .frame(width: 22, height: 22)
                         }
-                        .buttonStyle(HoverButtonStyle())
+                        .buttonStyle(HoverButtonStyle(useAccentColor: true))
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
@@ -485,13 +503,13 @@ struct TimerView: View {
                         .fill(Color(nsColor: .windowBackgroundColor).opacity(0.90))
 
                     // Control buttons
-                    HStack(spacing: 8) {
+                    HStack(spacing: 6) {
                         // Pause button (only when running)
                         if viewModel.currentState == .running {
                             Button(action: { viewModel.toggle() }) {
                                 Image(systemName: "pause.fill")
-                                    .font(.system(size: 12))
-                                    .frame(width: 26, height: 26)
+                                    .font(.system(size: 10))
+                                    .frame(width: 20, height: 20)
                             }
                             .buttonStyle(HoverButtonStyle(hoverColor: .orange))
                         }
@@ -500,8 +518,8 @@ struct TimerView: View {
                         if viewModel.currentState == .running || (viewModel.currentSessionType.isBreak && (viewModel.currentState == .idle || viewModel.currentState == .paused)) {
                             Button(action: { viewModel.skipBreak() }) {
                                 Image(systemName: "stop.fill")
-                                    .font(.system(size: 12))
-                                    .frame(width: 26, height: 26)
+                                    .font(.system(size: 10))
+                                    .frame(width: 20, height: 20)
                             }
                             .buttonStyle(HoverButtonStyle(hoverColor: .red))
                         }
@@ -510,8 +528,18 @@ struct TimerView: View {
                         if viewModel.currentState == .idle || viewModel.currentState == .paused {
                             Button(action: { viewModel.toggle() }) {
                                 Image(systemName: "play.fill")
-                                    .font(.system(size: 12))
-                                    .frame(width: 26, height: 26)
+                                    .font(.system(size: 10))
+                                    .frame(width: 20, height: 20)
+                            }
+                            .buttonStyle(HoverButtonStyle(useAccentColor: true))
+                        }
+
+                        // Expand button (only when idle or paused)
+                        if viewModel.currentState == .idle || viewModel.currentState == .paused {
+                            Button(action: { toggleWindowSize() }) {
+                                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                    .font(.system(size: 10))
+                                    .frame(width: 20, height: 20)
                             }
                             .buttonStyle(HoverButtonStyle())
                         }
@@ -522,8 +550,8 @@ struct TimerView: View {
                                 viewModel.toggleAllSounds()
                             }) {
                                 Image(systemName: viewModel.isTickSoundEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                                    .font(.system(size: 12))
-                                    .frame(width: 26, height: 26)
+                                    .font(.system(size: 10))
+                                    .frame(width: 20, height: 20)
                             }
                             .buttonStyle(HoverButtonStyle())
                         }
@@ -553,6 +581,11 @@ struct TimerView: View {
         if let window = NSApplication.shared.windows.first(where: { $0 is TimerWindow }) {
             window.close()
         }
+    }
+    
+    private func toggleWindowSize() {
+        // Toggle between tiny and small window sizes
+        settingsManager.settings.appearance.windowSize = isTinyMode ? .small : .tiny
     }
 }
 

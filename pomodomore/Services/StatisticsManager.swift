@@ -53,12 +53,12 @@ final class StatisticsManager: ObservableObject {
         let start = startOfToday()
         let end = endOfToday()
         let todaySessions = filterSessions(from: start, to: end)
-        let count = todaySessions.filter { $0.sessionType == .pomodoro }.count
+        let count = todaySessions.filter { $0.sessionType == .pomodoro && $0.isCompleted }.count
         if isDebug { print("📊 StatisticsManager.todaySessions: \(count) (from \(start) to \(end))") }
         return count
     }
 
-    /// Total focus minutes from Pomodoro sessions today
+    /// Total focus minutes from all Pomodoro sessions today (completed and incomplete)
     var todayMinutes: Int {
         let todaySessions = filterSessions(from: startOfToday(), to: endOfToday())
         let pomodoroSessions = todaySessions.filter { $0.sessionType == .pomodoro }
@@ -68,11 +68,11 @@ final class StatisticsManager: ObservableObject {
         return totalSeconds / 60
     }
 
-    /// Current streak of consecutive days with at least one Pomodoro session
+    /// Current streak of consecutive days with at least one completed Pomodoro session
     var currentStreak: Int {
         let sessions = getSessions()
         let sortedDates = Set(sessions
-            .filter { $0.sessionType == .pomodoro }
+            .filter { $0.sessionType == .pomodoro && $0.isCompleted }
             .map { calendar.startOfDay(for: $0.completionTime) }
         ).sorted(by: >)
 
@@ -107,7 +107,7 @@ final class StatisticsManager: ObservableObject {
         // Create array for 7 days, initialized to 0
         var dailyCounts = Array(repeating: 0, count: 7)
 
-        for session in weekSessions where session.sessionType == .pomodoro {
+        for session in weekSessions where session.sessionType == .pomodoro && session.isCompleted {
             if let weekday = weekdayIndex(for: session.completionTime) {
                 dailyCounts[weekday] += 1
             }
@@ -124,7 +124,7 @@ final class StatisticsManager: ObservableObject {
 
         var dailyCounts = Array(repeating: 0, count: 7)
 
-        for session in weekSessions where session.sessionType == .pomodoro {
+        for session in weekSessions where session.sessionType == .pomodoro && session.isCompleted {
             if let weekday = weekdayIndex(for: session.completionTime) {
                 dailyCounts[weekday] += 1
             }
@@ -239,7 +239,7 @@ final class StatisticsManager: ObservableObject {
 
         var dailyCounts: [Int: Int] = [:]
 
-        for session in monthSessions where session.sessionType == .pomodoro {
+        for session in monthSessions where session.sessionType == .pomodoro && session.isCompleted {
             let day = calendar.component(.day, from: session.completionTime)
             dailyCounts[day, default: 0] += 1
         }
